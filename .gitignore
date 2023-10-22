@@ -1,1 +1,4 @@
 *__pycache__*
+
+# Do NOT remove this! We do not want database passwords to be public!
+Commitment_to_Change_App/Commitment_to_Change_Site/database_authentication.py

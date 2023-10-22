@@ -1,3 +1,5 @@
+from .database_authentication import POSTGRESQL_DATABASE_NAME, POSTGRESQL_DATABASE_USERNAME, POSTGRESQL_DATABASE_PASSWORD
+
 """
 Django settings for Commitment_to_Change_Site project.
 
@@ -76,8 +78,12 @@ WSGI_APPLICATION = 'Commitment_to_Change_Site.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': POSTGRESQL_DATABASE_NAME,
+        'USER': POSTGRESQL_DATABASE_USERNAME,
+        'PASSWORD': POSTGRESQL_DATABASE_PASSWORD,
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
