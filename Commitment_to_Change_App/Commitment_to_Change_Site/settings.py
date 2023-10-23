@@ -1,4 +1,5 @@
-from .database_authentication import POSTGRESQL_DATABASE_NAME, POSTGRESQL_DATABASE_USERNAME, POSTGRESQL_DATABASE_PASSWORD
+from .database_authentication import POSTGRESQL_DATABASE_NAME, POSTGRESQL_DATABASE_USERNAME, \
+    POSTGRESQL_DATABASE_PASSWORD
 
 """
 Django settings for Commitment_to_Change_Site project.
