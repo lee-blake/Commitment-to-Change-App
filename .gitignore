@@ -1,4 +1,8 @@
+# Remove compiled binaries
 *__pycache__*
 
 # Do NOT remove this! We do not want database passwords to be public!
 Commitment_to_Change_App/Commitment_to_Change_Site/database_authentication.py
+
+# Migrations do not seem necessary to build at this point in time
+Commitment_to_Change_App/*/migrations
