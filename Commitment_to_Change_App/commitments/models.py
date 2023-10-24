@@ -12,5 +12,14 @@ class CommitmentParent:
 # Create your models here.
 
 class Commitment(models.Model, CommitmentParent):
-    title = models.CharField(max_length=200)
-    description = models.CharField(max_length=2000)
+    class CommitmentStatus(models.IntegerChoices):
+        IN_PROGRESS = 0
+        COMPLETE = 1
+        EXPIRED = 2
+
+    created = models.DateTimeField("Datetime of creation")
+    last_updated = models.DateTimeField("Datetime of last modification")
+    title = models.CharField("Title", max_length=200)
+    description = models.TextField("Detailed description", max_length=2000)
+    status = models.IntegerField(choices=CommitmentStatus.choices)
+    deadline = models.DateField("Deadline of the commitment")
