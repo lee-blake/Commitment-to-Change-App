@@ -18,6 +18,6 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('commitmenttochange/', include("commitments.urls")),
+    path('app/', include("commitments.urls")),
     path('admin/', admin.site.urls),
 ]
