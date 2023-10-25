@@ -1,3 +1,5 @@
+import datetime
+
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 
@@ -103,3 +105,19 @@ def view_commitment(request, commitment_id):
         commitment.last_updated
     )
     return HttpResponse(response_table)
+
+
+def create_commitment(request):
+    title = request.GET.get("title")
+    description = request.GET.get("description")
+    deadline = datetime.date.fromisoformat(request.GET.get("deadline"))
+    commitment = Commitment.objects.create(
+        title=title,
+        description=description,
+        deadline=deadline,
+        status=Commitment.CommitmentStatus.IN_PROGRESS
+    )
+    return HttpResponse(
+        """Successfully created a new commitment with id {0}. 
+        Here is a <a href="/app/commitment/{0}/view">link</a> to it.""".format(commitment.id)
+    )
