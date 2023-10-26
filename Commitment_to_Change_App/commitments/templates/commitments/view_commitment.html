@@ -1,0 +1,43 @@
+{% load static %}
+<!-- ----CONTEXT----
+    {{ id }}
+    {{ title }}
+    {{ description }}
+    {{ deadline }}
+    {{ status }}
+    {{ created_date }}
+    {{ modified_date }} -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ title }} view</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+
+<body>
+    <div class="w3-container">
+        <header class="w3-panel primary-accent">
+            <h1>{{ title }}</h1>
+        </header>
+        <div class="w3-container w3-round-large foreground">
+
+
+            <div class="w3-panel w3-round-xlarge secondary-accent">
+                <p>Started: {{ created_date }}</p>
+                <p>Due: {{ deadline }}</p>
+                <p>Status: {{ status }}</p>
+            </div>
+            <div class="w3-panel w3-round-xlarge secondary-accent">
+                <p>{{ description }}</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
