@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Create Commitment</title>
+  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <div class="w3-container background">
+      <div class="w3-cell-row foreground center">
+          <form action="{% url 'create commitment' %}" method="get">
+            <label for="title">Title:</label><br>
+            <input type="text" id="title" name="title" required><br><br>
+
+            <label for="description">Description:</label><br>
+            <textarea id="description" name="description" required></textarea><br><br>
+
+            <label for="deadline">Deadline:</label><br>
+            <input type="date" id="deadline" name="deadline" required><br><br>
+
+            <input type="submit" value="Submit">
+    </form>
+  </div>
+  </div>
+</body>
+</html>
+    
+
+</body>
+</html>
