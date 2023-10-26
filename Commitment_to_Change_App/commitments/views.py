@@ -2,6 +2,7 @@ import datetime
 
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 
 from .models import Commitment
 
@@ -58,10 +59,55 @@ def show_all_commitments(request):
     return HttpResponse(response_table)
 
 
+# def view_commitmentOLD(request, commitment_id):
+#     # NOTE: The HTML in this route is particularly bad because there incredible duplication of styling. Better would
+#     # be to make this into a template. However, we will go with this mess right now because that template is part
+#     # of the frontend development, and it will be easy to integrate later.
+#     commitment = get_object_or_404(Commitment, id=commitment_id)
+
+#     def status_value_to_string(num):
+#         match num:
+#             case 0:
+#                 return "In progress"
+#             case 1:
+#                 return "Complete"
+#             case 2:
+#                 return "Expired"
+#             case _:
+#                 return num
+
+#     response_table = """
+#     <table style="border-collapse: collapse; border: 1px solid;">
+#         <tr>
+#         <th style="border: 1px solid;">ID</th>
+#         <th style="border: 1px solid;">Title</th>
+#         <th style="border: 1px solid;">Description</th>
+#         <th style="border: 1px solid;">Deadline</th>
+#         <th style="border: 1px solid;">Status</th>
+#         <th style="border: 1px solid;">Created</th>
+#         <th style="border: 1px solid;">Modified</th>
+#         </tr>
+#         <tr>
+#         <td style="border: 1px solid;">{}</td>
+#         <td style="border: 1px solid;">{}</td>
+#         <td style="border: 1px solid;">{}</td>
+#         <td style="border: 1px solid;">{}</td>
+#         <td style="border: 1px solid;">{}</td>
+#         <td style="border: 1px solid;">{}</td>
+#         <td style="border: 1px solid;">{}</td>
+#         </tr>
+#     </table>""".format(
+#         commitment.id,
+#         commitment.title,
+#         commitment.description,
+#         commitment.deadline,
+#         status_value_to_string(commitment.status),
+#         commitment.created,
+#         commitment.last_updated
+#     )
+#     return HttpResponse(response_table)
+
 def view_commitment(request, commitment_id):
-    # NOTE: The HTML in this route is particularly bad because there incredible duplication of styling. Better would
-    # be to make this into a template. However, we will go with this mess right now because that template is part
-    # of the frontend development, and it will be easy to integrate later.
     commitment = get_object_or_404(Commitment, id=commitment_id)
 
     def status_value_to_string(num):
@@ -73,38 +119,23 @@ def view_commitment(request, commitment_id):
             case 2:
                 return "Expired"
             case _:
-                return num
+                return "no number"
+    status = status_value_to_string(commitment.status)
+    id = commitment.id
+    commitmentContext = {
+        "id": commitment.id,
+        "title": commitment.title,
+        "description": commitment.description,
+        "deadline": commitment.deadline,
+        "status": status,
+        "created_date": commitment.created,
+        # TODO: created_date currently converts our timestamp with timezone to UTC
+        # so if you have 22:00:00-5 (-5 being EST), it will add 5 to convert
+        # to UTC, so it becomes 03:00:00
+        "last_update":commitment.last_updated}
+    
+    return render(request, "commitments/view_commitment.html", commitmentContext)
 
-    response_table = """
-    <table style="border-collapse: collapse; border: 1px solid;">
-        <tr>
-        <th style="border: 1px solid;">ID</th>
-        <th style="border: 1px solid;">Title</th>
-        <th style="border: 1px solid;">Description</th>
-        <th style="border: 1px solid;">Deadline</th>
-        <th style="border: 1px solid;">Status</th>
-        <th style="border: 1px solid;">Created</th>
-        <th style="border: 1px solid;">Modified</th>
-        </tr>
-        <tr>
-        <td style="border: 1px solid;">{}</td>
-        <td style="border: 1px solid;">{}</td>
-        <td style="border: 1px solid;">{}</td>
-        <td style="border: 1px solid;">{}</td>
-        <td style="border: 1px solid;">{}</td>
-        <td style="border: 1px solid;">{}</td>
-        <td style="border: 1px solid;">{}</td>
-        </tr>
-    </table>""".format(
-        commitment.id,
-        commitment.title,
-        commitment.description,
-        commitment.deadline,
-        status_value_to_string(commitment.status),
-        commitment.created,
-        commitment.last_updated
-    )
-    return HttpResponse(response_table)
 
 
 def create_commitment(request):
