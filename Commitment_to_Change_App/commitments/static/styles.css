@@ -1,0 +1,72 @@
+@charset "utf-8";
+
+:root {
+    --primary-accent: #AA1400;
+    --primary-select: #e61d02;
+    --primary-border: #670000;
+    --secondary-accent: #FFCDCD;
+    --background: #DDE6EC;
+    --foreground: #FFFFFF;
+    --primary-text: #000000;
+    --light-text: #7B7B7B;
+    --opposite-text: #FFFFFF;
+}
+
+.primary-accent {
+    background-color: var(--primary-accent);
+}
+
+.secondary-accent {
+    background-color: var(--secondary-accent);
+}
+
+.background {
+    background-color: var(--background);
+}
+
+.foreground {
+    background-color: var(--foreground);
+}
+
+body {
+    background-color: var(--background);
+}
+
+header {
+    text-align: center;
+    color: #FFFFFF;
+    background-color: var(--primary-accent);
+    border-width: 6px;
+    border-color: var(--primary-border);
+    border-radius: 17px;
+    -webkit-transition: all .5s ease-in 0s;
+    -o-transition: all .5s ease-in 0s;
+    transition: all .5s ease-in 0s;
+
+}
+
+header:hover {
+    background-color: var(--primary-select);
+}
+
+.center {
+    display: block;
+    text-align: center;
+}
+
+form {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+#commitment_title {
+    background-color: var(--primary_accent);
+    color: white;
+    border-radius: 30px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
