@@ -59,54 +59,6 @@ def show_all_commitments(request):
     return HttpResponse(response_table)
 
 
-# def view_commitmentOLD(request, commitment_id):
-#     # NOTE: The HTML in this route is particularly bad because there incredible duplication of styling. Better would
-#     # be to make this into a template. However, we will go with this mess right now because that template is part
-#     # of the frontend development, and it will be easy to integrate later.
-#     commitment = get_object_or_404(Commitment, id=commitment_id)
-
-#     def status_value_to_string(num):
-#         match num:
-#             case 0:
-#                 return "In progress"
-#             case 1:
-#                 return "Complete"
-#             case 2:
-#                 return "Expired"
-#             case _:
-#                 return num
-
-#     response_table = """
-#     <table style="border-collapse: collapse; border: 1px solid;">
-#         <tr>
-#         <th style="border: 1px solid;">ID</th>
-#         <th style="border: 1px solid;">Title</th>
-#         <th style="border: 1px solid;">Description</th>
-#         <th style="border: 1px solid;">Deadline</th>
-#         <th style="border: 1px solid;">Status</th>
-#         <th style="border: 1px solid;">Created</th>
-#         <th style="border: 1px solid;">Modified</th>
-#         </tr>
-#         <tr>
-#         <td style="border: 1px solid;">{}</td>
-#         <td style="border: 1px solid;">{}</td>
-#         <td style="border: 1px solid;">{}</td>
-#         <td style="border: 1px solid;">{}</td>
-#         <td style="border: 1px solid;">{}</td>
-#         <td style="border: 1px solid;">{}</td>
-#         <td style="border: 1px solid;">{}</td>
-#         </tr>
-#     </table>""".format(
-#         commitment.id,
-#         commitment.title,
-#         commitment.description,
-#         commitment.deadline,
-#         status_value_to_string(commitment.status),
-#         commitment.created,
-#         commitment.last_updated
-#     )
-#     return HttpResponse(response_table)
-
 def view_commitment(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
 
