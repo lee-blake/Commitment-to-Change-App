@@ -1,5 +1,5 @@
-{% load static %}
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -10,25 +10,21 @@
   <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
-    <div class="w3-container background">
-      <div class="w3-cell-row foreground center">
-          <form action="{% url 'create commitment' %}" method="get">
-            <label for="title">Title:</label><br>
-            <input type="text" id="title" name="title" required><br><br>
+<div class="w3-container background">
+  <div class="w3-cell-row foreground center">
+    <form action="{% url 'create commitment' %}" method="get">
+      <label for="title">Title:</label><br>
+      <input id="title" name="title" required type="text"><br><br>
 
-            <label for="description">Description:</label><br>
-            <textarea id="description" name="description" required></textarea><br><br>
+      <label for="description">Description:</label><br>
+      <textarea id="description" name="description" required></textarea><br><br>
 
-            <label for="deadline">Deadline:</label><br>
-            <input type="date" id="deadline" name="deadline" required><br><br>
+      <label for="deadline">Deadline:</label><br>
+      <input id="deadline" name="deadline" required type="date"><br><br>
 
-            <input type="submit" value="Submit">
+      <input type="submit" value="Submit">
     </form>
   </div>
-  </div>
-</body>
-</html>
-    
-
+</div>
 </body>
 </html>
