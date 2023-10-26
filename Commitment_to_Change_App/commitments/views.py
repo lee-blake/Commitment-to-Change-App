@@ -137,7 +137,11 @@ def view_commitment(request, commitment_id):
     return render(request, "commitments/view_commitment.html", commitment_context)
 
 
-def create_commitment(request):
+def create_commitment_form(request):
+    return render(request, "commitments/create_commitment.html")
+
+
+def create_commitment_target(request):
     title = request.GET.get("title")
     description = request.GET.get("description")
     deadline = datetime.date.fromisoformat(request.GET.get("deadline"))
