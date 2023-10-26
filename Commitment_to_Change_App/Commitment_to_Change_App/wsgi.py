@@ -1,5 +1,5 @@
 """
-WSGI config for Commitment_to_Change_Site project.
+WSGI config for Commitment_to_Change_App project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Commitment_to_Change_Site.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Commitment_to_Change_App.settings')
 
 application = get_wsgi_application()
