@@ -120,9 +120,9 @@ def view_commitment(request, commitment_id):
                 return "Expired"
             case _:
                 return "no number"
+
     status = status_value_to_string(commitment.status)
-    id = commitment.id
-    commitmentContext = {
+    commitment_context = {
         "id": commitment.id,
         "title": commitment.title,
         "description": commitment.description,
@@ -132,10 +132,9 @@ def view_commitment(request, commitment_id):
         # TODO: created_date currently converts our timestamp with timezone to UTC
         # so if you have 22:00:00-5 (-5 being EST), it will add 5 to convert
         # to UTC, so it becomes 03:00:00
-        "last_update":commitment.last_updated}
-    
-    return render(request, "commitments/view_commitment.html", commitmentContext)
-
+        "last_update": commitment.last_updated
+    }
+    return render(request, "commitments/view_commitment.html", commitment_context)
 
 
 def create_commitment(request):
