@@ -9,4 +9,5 @@
 Commitment_to_Change_App/Commitment_to_Change_App/database_authentication.py
 
 # Migrations do not seem necessary to build at this point in time
-Commitment_to_Change_App/*/migrations
+Commitment_to_Change_App/*/migrations/*.py
+!Commitment_to_Change_App/*/migrations/__init__.py
