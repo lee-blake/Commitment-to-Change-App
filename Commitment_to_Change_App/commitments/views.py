@@ -94,9 +94,9 @@ def create_commitment_form(request):
 
 
 def create_commitment_target(request):
-    title = request.GET.get("title")
-    description = request.GET.get("description")
-    deadline = datetime.date.fromisoformat(request.GET.get("deadline"))
+    title = request.POST.get("title")
+    description = request.POST.get("description")
+    deadline = datetime.date.fromisoformat(request.POST.get("deadline"))
     commitment = Commitment.objects.create(
         title=title,
         description=description,
