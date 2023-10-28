@@ -1,6 +1,6 @@
 import datetime
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 
@@ -103,7 +103,4 @@ def create_commitment_target(request):
         deadline=deadline,
         status=Commitment.CommitmentStatus.IN_PROGRESS
     )
-    return HttpResponse(
-        """Successfully created a new commitment with id {0}. 
-        Here is a <a href="/app/commitment/{0}/view">link</a> to it.""".format(commitment.id)
-    )
+    return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
