@@ -1,25 +1,8 @@
-<!DOCTYPE html>
-{% load static %}
-<!-- ----CONTEXT----
-    {{ id }}
-    {{ title }}
-    {{ description }}
-    {{ deadline }}
-    {{ status }}
-    {{ created_date }}
-    {{ modified_date }} -->
-<html lang="en">
+{% extends "commitments/base.html" %}
 
-<head>
-    <meta charset="utf-8">
-    <title>{{ title }} view</title>
-    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
-</head>
+{% block title %} {{ title }} view {% endblock %}
 
-<body>
+{% block page_content %}
 <div class="w3-container">
     <header class="w3-panel primary-accent">
         <h1>{{ title }}</h1>
@@ -37,7 +20,4 @@
         </div>
     </div>
 </div>
-
-</body>
-
-</html>
+{% endblock %}

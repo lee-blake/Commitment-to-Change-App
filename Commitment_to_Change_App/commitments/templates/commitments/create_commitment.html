@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Create Commitment</title>
-  <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-  <link rel="stylesheet" href="{% static 'styles.css' %}">
-</head>
-<body>
+{% extends "commitments/base.html" %}
+
+{% block title %} Create Commitment {% endblock %}
+
+{% block page_content %}
 <div class="w3-container background">
   <div class="w3-cell-row foreground center">
     <form action="{% url 'create commitment target' %}" method="get">
@@ -26,5 +19,4 @@
     </form>
   </div>
 </div>
-</body>
-</html>
+{% endblock %}
