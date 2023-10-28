@@ -4,12 +4,14 @@
 <head>
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
-    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-    <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
-    <link href="{% static 'styles.css' %}" rel="stylesheet">
+    {% include "commitments/base_styles.html" %}
 </head>
 <body>
-{% block page_content %}{% endblock %}
+<header>
+    {% include "commitments/navbar.html" %}
+</header>
+<main>
+    {% block page_content %}{% endblock %}
+</main>
 </body>
 </html>
