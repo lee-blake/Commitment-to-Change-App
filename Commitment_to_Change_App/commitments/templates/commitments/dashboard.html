@@ -3,43 +3,58 @@
 {% block title %} Dashboard {% endblock %}
 
 {% block page_content %}
-<div class="w3-container background">
+<div class="w3-container main-container round-corners pad-small">
+    <div class="w3-container commitment-container foreground round-corners pad-small">
+        <div class="w3-row">
+        <div class="primary-accent round-corners center accent-text">
+            <h1>Commitments</h1>
+        </div>
 
-    <div style="color: orange">
-        <p>In Progress commitments:</p>
-        <ul>
-        {% for commitment in commitments %}
-        {% if commitment.status == 0 %}
-        <span style="color: black;"><li>{{ commitment.title }}</li></span>
-            {% endif %}
-        {% endfor %}
-    </ul>
-</div>
+        <div class="w3-cell w3-half pad-small">
+            <div class="background round-corners pad-small-bot">
+                <div class="center secondary-accent round-corners">
+                    <h2>In-progress Commitments:</h2>
+                </div>
 
-    
+                {% for commitment in commitments %}
+                {% if commitment.status == 0 %}
+                
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a></h3>
+                    {% endif %}
+                {% endfor %}
 
-<div style="color: red">
-    <p>Expired commitments:</p>
-    <ul>
-    {% for commitment in commitments %}
-    {% if commitment.status == 2 %}
-    <span style="color: black;"><li>{{ commitment.title }}</li></span>
-        {% endif %}
-    {% endfor %}
-</ul>
-</div>
+            </div>
+        </div>
 
-<div style="color: green">
-    <p>Completed commitments:</p>
-    <ul>
-    {% for commitment in commitments %}
-    {% if commitment.status == 1 %}
-    <span style="color: black;"><li>{{ commitment.title }}</li></span>
-        {% endif %}
-    {% endfor %}
-</ul>
-</div>
-    
-  
+        <div class="w3-cell w3-half pad-small">
+            <div class="background round-corners pad-small-bot">
+                <div class="center secondary-accent round-corners">
+                    <h2>Expired Commitments:</h2>
+                </div>
+                {% for commitment in commitments %}
+                {% if commitment.status == 2 %}
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a></h3>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="w3-row">
+        <div class="background round-corners pad-small-bot">
+        <div class="secondary-accent round-corners center">
+            <h2>Completed commitments:</h2>
+            </div>
+                {% for commitment in commitments %}
+                {% if commitment.status == 1 %}
+                <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a></h3>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        </div>
+
+    </div>
+
 </div>
 {% endblock %}

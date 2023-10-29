@@ -4,49 +4,71 @@
     --primary-accent: #AA1400;
     --primary-select: #e61d02;
     --primary-border: #670000;
-    --secondary-accent: #FFCDCD;
+    --secondary-accent: #ffa2a2;
     --background: #DDE6EC;
     --foreground: #FFFFFF;
     --primary-text: #000000;
     --light-text: #7B7B7B;
-    --opposite-text: #FFFFFF;
+    --accent-text: #FFFFFF;
 }
 
 .primary-accent {
-    background-color: #AA1400;
+    background-color: var(--primary-accent);
+    color: var(--accent-text);
 }
 
 .primary-select {
-    background-color: #e61d02;
+    background-color: var(--primary-select);
 }
 
 .primary-border {
-    background-color: #670000;
+    background-color: var(--primary-border);
 }
 
 .secondary-accent {
-    background-color: #DDE6EC;
+    background-color: var(--secondary-accent);
 }
 
 .background {
-    background-color: #DDE6EC;
+    background-color: var(--background);
 }
 
 .foreground {
-    background-color: #FFFFFF;
+    background-color: var(--foreground);
+}
+
+.accent-text {
+    color: var(--accent-text);
 }
 
 body {
     background-color: var(--background);
 }
 
+.main-container {
+    padding: 30px;
+}
+
 .commitment-title {
     text-align: center;
     color: #FFFFFF;
-    border-width: 6px;
-    border-radius: 17px;
+}
 
+.round-corners {
+    border-radius: 15px;
+}
 
+.pad-small {
+    padding: 15px;
+}
+
+.pad-small-side {
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+.pad-small-bot {
+    padding-bottom: 15px;
 }
 
 .center {
@@ -68,12 +90,8 @@ form {
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
-#commitment_title {
+.commitment_header {
     background-color: var(--primary_accent);
     color: white;
-    border-radius: 30px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    position: absolute;
-    left: 0px;
-    top: 0px;
 }
