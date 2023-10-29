@@ -13,40 +13,40 @@
 }
 
 .primary-accent {
-    background-color: var(--primary-accent);
+    background-color: #AA1400;
+}
+
+.primary-select {
+    background-color: #e61d02;
+}
+
+.primary-border {
+    background-color: #670000;
 }
 
 .secondary-accent {
-    background-color: var(--secondary-accent);
+    background-color: #DDE6EC;
 }
 
 .background {
-    background-color: var(--background);
+    background-color: #DDE6EC;
 }
 
 .foreground {
-    background-color: var(--foreground);
+    background-color: #FFFFFF;
 }
 
 body {
     background-color: var(--background);
 }
 
-header {
+.commitment-title {
     text-align: center;
     color: #FFFFFF;
-    background-color: var(--primary-accent);
     border-width: 6px;
-    border-color: var(--primary-border);
     border-radius: 17px;
-    -webkit-transition: all .5s ease-in 0s;
-    -o-transition: all .5s ease-in 0s;
-    transition: all .5s ease-in 0s;
 
-}
 
-header:hover {
-    background-color: var(--primary-select);
 }
 
 .center {
@@ -59,6 +59,13 @@ form {
     margin-left: auto;
     margin-right: auto;
     text-align: left;
+}
+
+.title_header {
+    background-color: var(--primary_accent);
+    color: white;
+    border-radius: 30px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 #commitment_title {
