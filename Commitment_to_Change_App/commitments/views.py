@@ -117,3 +117,14 @@ def create_commitment_target(request):
         status=Commitment.CommitmentStatus.IN_PROGRESS
     )
     return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
+
+
+def complete_commitment_target(request, commitment_id):
+    commitment = get_object_or_404(Commitment, id=commitment_id)
+    # TODO a dedicated method would be better for this
+    if request.GET.get("complete") == "true":
+        commitment.status = Commitment.CommitmentStatus.COMPLETE
+        commitment.save()
+        return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+    else:
+        return HttpResponse("Complete key must be set to 'true' to mark as complete.")
