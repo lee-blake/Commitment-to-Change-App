@@ -1,3 +1,8 @@
 <nav>
-    The navbar will live in this file
+    <div class="w3-bar foreground">
+        <div class="w3-bar-item w3-button w3-mobile"><a href="{% url 'show all commitments' %}">Dashboard</a></div>
+        <div class="w3-bar-item w3-button w3-mobile"><a href="{% url 'create commitment form' %}">Create Commitment</a></div>
+        <!-- Need to get user data imported -->
+        <div class="w3-bar-item w3-mobile w3-right"><a href="">Logged in as { user }</a></div>
+    </div>
 </nav>
