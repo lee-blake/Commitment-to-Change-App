@@ -10,18 +10,24 @@ from .models import Commitment
 def index(request):
     return HttpResponse("This is the index route.")
 
+
 def dashboard(request):
     commitments = Commitment.objects.all()
+    for commitment in commitments:
+        commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
     context = {
         'commitments': commitments,
     }
     return render(request, "commitments/dashboard.html", context)
+
 
 def show_all_commitments(request):
     # NOTE: The HTML in this route is particularly bad because there incredible duplication of styling. Better would
     # be to make this into a template. However, we will go with this mess right now because that template is part
     # of the frontend development, and it will be easy to integrate later.
     commitments = Commitment.objects.all()
+    for commitment in commitments:
+        commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
     response_table = '<table style="border-collapse: collapse; border: 1px solid;">'
     response_table += """<tr>
     <th style="border: 1px solid;">ID</th>
@@ -67,6 +73,7 @@ def show_all_commitments(request):
 
 def view_commitment(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
+    commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
 
     def status_value_to_string(num):
         match num:

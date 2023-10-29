@@ -23,3 +23,9 @@ class Commitment(models.Model, CommitmentParent):
     description = models.TextField("Detailed description", max_length=2000)
     status = models.IntegerField(choices=CommitmentStatus.choices)
     deadline = models.DateField("Deadline of the commitment")
+
+    # TODO This needs to go away once we have an expiration daemon.
+    def mark_expired_if_deadline_has_passed(self, today):
+        if self.deadline < today and self.status == Commitment.CommitmentStatus.IN_PROGRESS:
+            self.status = Commitment.CommitmentStatus.EXPIRED
+            self.save()
