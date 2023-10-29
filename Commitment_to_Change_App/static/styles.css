@@ -49,6 +49,25 @@ body {
     padding: 30px;
 }
 
+.flex-box {
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.button {
+    background-color: var(--primary-accent);
+    border: none;
+    color: var(--accent-text);
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px 2px;
+    font-size: 16px;
+    cursor: pointer;
+    float: right;
+}
+
 .commitment-title {
     text-align: center;
     color: #FFFFFF;

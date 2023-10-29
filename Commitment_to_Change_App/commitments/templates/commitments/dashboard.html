@@ -18,8 +18,10 @@
 
                 {% for commitment in commitments %}
                 {% if commitment.status == 0 %}
-                
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a></h3>
+                <div class="flex-box">
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a>.</h3>
+                        <a href="{% url 'complete commitment target' commitment_id=commitment.id %}" class="button round-corners">Mark as complete.</a>
+                    </div>
                     {% endif %}
                 {% endfor %}
 
@@ -33,7 +35,10 @@
                 </div>
                 {% for commitment in commitments %}
                 {% if commitment.status == 2 %}
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a></h3>
+                <div class="flex-box">
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a>.</h3>
+                        <a href="{% url 'complete commitment target' commitment_id=commitment.id %}" class="button round-corners">Mark as complete.</a>
+                    </div>
                 {% endif %}
                 {% endfor %}
             </div>
