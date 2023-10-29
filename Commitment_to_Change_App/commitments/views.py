@@ -10,6 +10,12 @@ from .models import Commitment
 def index(request):
     return HttpResponse("This is the index route.")
 
+def dashboard(request):
+    commitments = Commitment.objects.all()
+    context = {
+        'commitments': commitments,
+    }
+    return render(request, "commitments/dashboard.html", context)
 
 def show_all_commitments(request):
     # NOTE: The HTML in this route is particularly bad because there incredible duplication of styling. Better would

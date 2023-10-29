@@ -1,0 +1,45 @@
+{% extends "commitments/base.html" %}
+
+{% block title %} Dashboard {% endblock %}
+
+{% block page_content %}
+<div class="w3-container background">
+
+    <div style="color: orange">
+        <p>In Progress commitments:</p>
+        <ul>
+        {% for commitment in commitments %}
+        {% if commitment.status == 0 %}
+        <span style="color: black;"><li>{{ commitment.title }}</li></span>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+
+    
+
+<div style="color: red">
+    <p>Expired commitments:</p>
+    <ul>
+    {% for commitment in commitments %}
+    {% if commitment.status == 2 %}
+    <span style="color: black;"><li>{{ commitment.title }}</li></span>
+        {% endif %}
+    {% endfor %}
+</ul>
+</div>
+
+<div style="color: green">
+    <p>Completed commitments:</p>
+    <ul>
+    {% for commitment in commitments %}
+    {% if commitment.status == 1 %}
+    <span style="color: black;"><li>{{ commitment.title }}</li></span>
+        {% endif %}
+    {% endfor %}
+</ul>
+</div>
+    
+  
+</div>
+{% endblock %}
