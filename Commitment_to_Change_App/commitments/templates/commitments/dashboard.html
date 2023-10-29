@@ -36,7 +36,7 @@
                 {% for commitment in commitments %}
                 {% if commitment.status == 2 %}
                 <div class="flex-box">
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id}">{{ commitment.title }}</a>.</h3>
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a>.</h3>
                         <a href="commitment/{{ commitment.id }}/complete?complete=true" class="button round-corners">Mark as complete.</a>
                     </div>
                 {% endif %}
