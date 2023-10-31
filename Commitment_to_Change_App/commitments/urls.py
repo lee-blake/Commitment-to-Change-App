@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views, demo_views
+from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -14,6 +14,4 @@ urlpatterns = [
         views.complete_commitment_target,
         name="complete commitment target"
     ),
-
-    path("demo/template_demo", demo_views.template_demo, name="template demo"),
 ]
