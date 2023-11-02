@@ -1,4 +1,3 @@
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponse
 
@@ -30,22 +29,3 @@ def create_user_target(request):
         email=email
     )
     return HttpResponse("User {} created.".format(username))
-
-
-def do_login(request):
-    username = request.GET.get("username")
-    password = request.GET.get("password")
-    user = authenticate(username=username, password=password)
-    if user:
-        login(request, user)
-        return HttpResponse("Login successful")
-    else:
-        return HttpResponse("Login failed")
-
-
-def do_logout(request):
-    if request.user.is_authenticated:
-        logout(request)
-        return HttpResponse("Logout successful")
-    else:
-        return HttpResponse("Nobody was logged in")

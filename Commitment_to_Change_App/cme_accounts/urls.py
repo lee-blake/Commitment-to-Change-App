@@ -14,9 +14,4 @@ urlpatterns = [
     # before we can switch to POST.
     path("create", views.create_user_target, name="create user target"),
     path("display_logged_in_user", views.display_logged_in_user, name="index"),
-    # do_login and do_logout are 'testing' login and logout views. They use GET and are not suitable for production
-    # but are currently useful for basic testing.
-    path("do_login", views.do_login, name="do_login"),
-    path("do_logout", views.do_logout, name="do_logout"),
-
 ]
