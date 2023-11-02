@@ -1,8 +1,16 @@
-# Create your views here.
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponse
 
 from .models import User
+
+
+class SignInView(LoginView):
+    template_name = "accounts/login.html"
+
+
+class SignOutView(LogoutView):
+    template_name = "accounts/logged_out.html"
 
 
 def display_logged_in_user(request):
