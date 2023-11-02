@@ -13,5 +13,4 @@ urlpatterns = [
     # create currently uses GET to create users and is not suitable for production. It needs a form to be created
     # before we can switch to POST.
     path("create", views.create_user_target, name="create user target"),
-    path("display_logged_in_user", views.display_logged_in_user, name="index"),
 ]

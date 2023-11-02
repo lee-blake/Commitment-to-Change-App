@@ -12,13 +12,6 @@ class SignOutView(LogoutView):
     template_name = "accounts/logged_out.html"
 
 
-def display_logged_in_user(request):
-    if request.user.is_authenticated:
-        return HttpResponse("Logged in as {}".format(request.user.username))
-    else:
-        return HttpResponse("Not logged in")
-
-
 def create_user_target(request):
     username = request.GET.get("username")
     password = request.GET.get("password")
