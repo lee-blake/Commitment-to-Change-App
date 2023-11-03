@@ -29,9 +29,9 @@ class Commitment(models.Model, CommitmentParent):
     last_updated = models.DateTimeField("Datetime of last modification", auto_now=True)
     owner = models.ForeignKey(ClinicianProfile, on_delete=models.CASCADE)
     title = models.CharField("Title", max_length=200)
-    description = models.TextField("Detailed description", max_length=2000)
+    description = models.TextField("Description", max_length=2000)
     status = models.IntegerField(choices=CommitmentStatus.choices)
-    deadline = models.DateField("Deadline of the commitment")
+    deadline = models.DateField("Deadline")
 
     # TODO This needs to go away once we have an expiration daemon.
     def mark_expired_if_deadline_has_passed(self, today):

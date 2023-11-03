@@ -2,10 +2,13 @@ import datetime
 
 import cme_accounts.models
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
+from django.views import View
 
+from .forms import CommitmentForm
 from .models import Commitment, ClinicianProfile
 
 
@@ -96,3 +99,21 @@ def register_clinician(request):
         user=user
     )
     return HttpResponse("User {} created with profile {}.".format(username, profile))
+
+
+class MakeCommitmentView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        form = CommitmentForm()
+        return render(request, "commitments/make_commitment.html", context={"form": form})
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        form = CommitmentForm(request.POST)
+        if form.is_valid():
+            form.instance.owner = ClinicianProfile.objects.get(user=request.user)
+            form.instance.status = Commitment.CommitmentStatus.IN_PROGRESS
+            commitment = form.save()
+            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
+        else:
+            return render(request, "commitments/make_commitment.html", context={"form": form})
