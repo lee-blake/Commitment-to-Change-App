@@ -1,10 +1,11 @@
 import datetime
 
+import cme_accounts.models
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 
-from .models import Commitment
+from .models import Commitment, ClinicianProfile
 
 
 def dashboard(request):
@@ -74,3 +75,18 @@ def complete_commitment_target(request, commitment_id):
         return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
     else:
         return HttpResponse("Complete key must be set to 'true' to mark as complete.")
+
+
+def register_clinician(request):
+    username = request.GET.get("username")
+    password = request.GET.get("password")
+    email = request.GET.get("email")
+    user = cme_accounts.models.User.objects.create_user(
+        username=username,
+        password=password,
+        email=email
+    )
+    profile = ClinicianProfile.objects.create(
+        user=user
+    )
+    return HttpResponse("User {} created with profile {}.".format(username, profile))
