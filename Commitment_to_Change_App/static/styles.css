@@ -115,7 +115,7 @@ form {
 }
 
 .logout-button {
-    background-color: red;
+    background-color: var(--primary-accent);
     color: var(--accent-text);
     border-width: 0px;
     border-radius: 10px;
