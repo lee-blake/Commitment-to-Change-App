@@ -1,8 +1,15 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import validate_slug, RegexValidator
 from django.db import models
 
 
-# Create your models here.
 class User(AbstractUser):
-    # TODO Create a validator to prevent the username from being an email and register here
+    username = models.CharField(max_length=150, unique=True, validators=[
+        validate_slug,
+        RegexValidator(
+            regex="^[a-zA-Z]",
+            code="invalid_username",
+            message="Username must start with a letter."
+        )
+    ])
     email = models.EmailField(max_length=254, unique=True)
