@@ -105,7 +105,6 @@ form {
 .title_header {
     background-color: var(--primary_accent);
     color: white;
-    border-radius: 30px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
@@ -113,4 +112,12 @@ form {
     background-color: var(--primary_accent);
     color: white;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.logout-button {
+    background-color: red;
+    color: var(--accent-text);
+    border-width: 0px;
+    border-radius: 10px;
+
 }
