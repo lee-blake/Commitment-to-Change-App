@@ -1,6 +1,7 @@
 import datetime
 
 import cme_accounts.models
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
@@ -8,8 +9,10 @@ from django.shortcuts import render
 from .models import Commitment, ClinicianProfile
 
 
+@login_required
 def dashboard(request):
-    commitments = Commitment.objects.all()
+    profile = ClinicianProfile.objects.get(user=request.user)
+    commitments = Commitment.objects.filter(owner=profile)
     for commitment in commitments:
         commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
     context = {
@@ -53,7 +56,9 @@ def create_commitment_form(request):
     return render(request, "commitments/create_commitment.html")
 
 
+@login_required
 def create_commitment_target(request):
+    owner = ClinicianProfile.objects.get(user=request.user)
     title = request.POST.get("title")
     description = request.POST.get("description")
     deadline = datetime.date.fromisoformat(request.POST.get("deadline"))
@@ -61,7 +66,8 @@ def create_commitment_target(request):
         title=title,
         description=description,
         deadline=deadline,
-        status=Commitment.CommitmentStatus.IN_PROGRESS
+        status=Commitment.CommitmentStatus.IN_PROGRESS,
+        owner=owner
     )
     return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
 
