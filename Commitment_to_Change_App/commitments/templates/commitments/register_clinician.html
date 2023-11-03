@@ -1,0 +1,15 @@
+{% extends "commitments/base.html" %}
+
+{% block title %} Create Commitment {% endblock %}
+
+{% block page_content %}
+<div class="w3-container background">
+    <div class="w3-cell-row foreground center">
+        <form action="{% url 'register clinician' %}" method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,5 +1,6 @@
 import datetime
 
+import cme_accounts.forms
 import cme_accounts.models
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -95,21 +96,6 @@ def complete_commitment_target(request, commitment_id):
         return HttpResponse("Complete key must be set to 'true' to mark as complete.")
 
 
-def register_clinician(request):
-    username = request.GET.get("username")
-    password = request.GET.get("password")
-    email = request.GET.get("email")
-    user = cme_accounts.models.User.objects.create_user(
-        username=username,
-        password=password,
-        email=email
-    )
-    profile = ClinicianProfile.objects.create(
-        user=user
-    )
-    return HttpResponse("User {} created with profile {}.".format(username, profile))
-
-
 class MakeCommitmentView(LoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
@@ -126,3 +112,20 @@ class MakeCommitmentView(LoginRequiredMixin, View):
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
         else:
             return render(request, "commitments/make_commitment.html", context={"form": form})
+
+
+class RegisterClinicianView(View):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        form = cme_accounts.forms.UserForm()
+        return render(request, "commitments/register_clinician.html", context={"form": form})
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        form = cme_accounts.forms.UserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            ClinicianProfile.objects.create(user=user)
+            return HttpResponse("User creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
+        else:
+            return render(request, "commitments/register_clinician.html", context={"form": form})

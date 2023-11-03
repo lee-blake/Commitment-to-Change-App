@@ -1,6 +1,6 @@
-from django.db import models
+import cme_accounts.models
 
-from Commitment_to_Change_App import settings
+from django.db import models
 
 
 # TODO this is just for demonstrating that inherited methods work. When we
@@ -16,7 +16,7 @@ class CommitmentParent:
 class ClinicianProfile(models.Model):
     created = models.DateTimeField("Datetime of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Datetime of last modification", auto_now=True)
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.OneToOneField(cme_accounts.models.User, on_delete=models.CASCADE)
 
 
 class Commitment(models.Model, CommitmentParent):
