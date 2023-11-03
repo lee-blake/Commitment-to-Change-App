@@ -14,13 +14,22 @@ from .models import Commitment, ClinicianProfile
 
 @login_required
 def dashboard(request):
-    profile = ClinicianProfile.objects.get(user=request.user)
-    commitments = Commitment.objects.filter(owner=profile)
+    commitments = Commitment.objects.all()
+    # for commitment in commitments:
+    #     commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
     for commitment in commitments:
         commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+        
+    in_progress = list(filter(lambda x: x.status == 0, commitments))
+    completed = list(filter(lambda x: x.status == 1, commitments))
+    expired = list(filter(lambda x: x.status == 2, commitments))
+
     context = {
-        'commitments': commitments,
+        'in_progress_commitments': in_progress,
+        'expired_commitments': expired,
+        'completed_commitments': completed,
     }
+    
     return render(request, "commitments/dashboard.html", context)
 
 

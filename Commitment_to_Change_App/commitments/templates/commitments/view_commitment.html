@@ -4,18 +4,18 @@
 
 {% block page_content %}
 <div class="w3-container">
-    <div class="w3-panel commitment-title primary-accent">
+    <div class="w3-panel commitment-title round-corners primary-accent">
         <h1>{{ title }}</h1>
     </div>
-    <div class="w3-container w3-round-large foreground">
+    <div class="w3-container round-corners foreground">
 
 
-        <div class="w3-panel w3-round-xlarge secondary-accent center">
+        <div class="w3-panel round-corners secondary-accent center">
             <p>Started: {{ created_date.date }}</p>
             <p>Due: {{ deadline }}</p>
             <p>Status: {{ status }}</p>
         </div>
-        <div class="w3-panel w3-round-xlarge secondary-accent center">
+        <div class="w3-panel round-corners secondary-accent center">
             <p>{{ description }}</p>
         </div>
     </div>
