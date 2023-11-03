@@ -16,15 +16,11 @@
                     <h2>In-progress Commitments:</h2>
                 </div>
 
-                {% for commitment in commitments %}
-                {% if commitment.status == 0 %}
+                {% for commitment in in_progress_commitments %}
                 <div class="flex-box">
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">
-                        {{ commitment.title }}</a>.</h3>
-                    <a class="button round-corners"
-                       href="{% url 'complete commitment target' commitment_id=commitment.id %}?complete=true">Mark as complete.</a>
-                </div>
-                    {% endif %}
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a>.</h3>
+                        <a href="commitment/{{ commitment.id }}/complete?complete=true" class="button round-corners">Mark as complete.</a>
+                    </div>
                 {% endfor %}
 
             </div>
@@ -35,15 +31,11 @@
                 <div class="center secondary-accent round-corners">
                     <h2>Expired Commitments:</h2>
                 </div>
-                {% for commitment in commitments %}
-                {% if commitment.status == 2 %}
+                {% for commitment in expired_commitments %}
                 <div class="flex-box">
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">
-                        {{ commitment.title }}</a>.</h3>
-                    <a class="button round-corners"
-                       href="{% url 'complete commitment target' commitment_id=commitment.id %}?complete=true">Mark as complete.</a>
-                </div>
-                {% endif %}
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a>.</h3>
+                        <a href="commitment/{{ commitment.id }}/complete?complete=true" class="button round-corners">Mark as complete.</a>
+                    </div>
                 {% endfor %}
             </div>
         </div>
@@ -51,17 +43,17 @@
 
     <div class="w3-row">
         <div class="background round-corners pad-small-bot">
-            <div class="secondary-accent round-corners center">
-                <h2>Completed commitments:</h2>
+        <div class="secondary-accent round-corners center">
+            <h2>Completed commitments:</h2>
             </div>
-            {% for commitment in commitments %}
-            {% if commitment.status == 1 %}
-            <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">
-                {{ commitment.title }}</a></h3>
-            {% endif %}
-            {% endfor %}
+                {% for commitment in completed_commitments %}
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a></h3>
+                {% endfor %}
+            </div>
         </div>
         </div>
+
     </div>
+
 </div>
 {% endblock %}
