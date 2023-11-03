@@ -1,6 +1,6 @@
 <!-- The reason this is a form is that Django has deprecated logging out with GET requests. We therefore need to
 submit a POST request to the logout URL via a form. -->
-<form action="/account/logout/" id="logout-form" method="POST">
+<form action="/accounts/logout/" id="logout-form" method="POST">
     {% csrf_token %}
     <button type="submit">Log Out</button>
 </form>
