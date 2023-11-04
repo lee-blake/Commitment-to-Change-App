@@ -123,6 +123,9 @@ class RegisterClinicianView(View):
     def post(request, *args, **kwargs):
         form = cme_accounts.forms.UserForm(request.POST)
         if form.is_valid():
+            # If this isn't executed before saving, the raw password will be saved and NOT a pbkdf2 hash used in
+            # authentication. In that case the password will always fail.
+            form.instance.set_password(form.instance.password)
             user = form.save()
             ClinicianProfile.objects.create(user=user)
             return HttpResponse("User creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
