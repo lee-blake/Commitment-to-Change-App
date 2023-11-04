@@ -54,6 +54,8 @@ def view_commitment(request, commitment_id):
         "title": commitment.title,
         "description": commitment.description,
         "deadline": commitment.deadline,
+        # TODO change this to accept commitment.status_text.
+        #  This will require dropping the if statements in the template.
         "status": status,
         "created_date": commitment.created,
         # TODO: created_date currently converts our timestamp with timezone to UTC
