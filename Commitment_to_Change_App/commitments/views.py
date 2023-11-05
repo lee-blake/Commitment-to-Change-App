@@ -29,7 +29,7 @@ def dashboard(request):
         'expired_commitments': expired,
         'completed_commitments': completed,
     }
-    
+
     return render(request, "commitments/dashboard.html", context)
 
 
@@ -113,6 +113,40 @@ class MakeCommitmentView(LoginRequiredMixin, View):
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
         else:
             return render(request, "commitments/make_commitment.html", context={"form": form})
+
+
+class EditCommitmentView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, commitment_id):
+        profile = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        form = CommitmentForm(instance=commitment)
+        return render(
+            request,
+            "commitments/edit_commitment.html",
+            context={
+                "commitment": commitment,
+                "form": form
+            }
+        )
+
+    @staticmethod
+    def post(request, commitment_id):
+        profile = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        form = CommitmentForm(request.POST, instance=commitment)
+        if form.is_valid():
+            commitment = form.save()
+            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
+        else:
+            return render(
+                request,
+                "commitments/edit_commitment.html",
+                context={
+                    "commitment": commitment,
+                    "form": form
+                }
+            )
 
 
 class RegisterClinicianView(View):
