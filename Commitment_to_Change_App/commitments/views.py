@@ -120,6 +120,7 @@ class EditCommitmentView(LoginRequiredMixin, View):
     def get(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
         form = CommitmentForm(instance=commitment)
         return render(
             request,
@@ -134,6 +135,7 @@ class EditCommitmentView(LoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
         form = CommitmentForm(request.POST, instance=commitment)
         if form.is_valid():
             commitment = form.save()
