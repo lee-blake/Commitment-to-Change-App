@@ -23,11 +23,13 @@ def dashboard(request):
     in_progress = list(filter(lambda x: x.status == 0, commitments))
     completed = list(filter(lambda x: x.status == 1, commitments))
     expired = list(filter(lambda x: x.status == 2, commitments))
+    discontinued = list(filter(lambda x: x.status == 3, commitments))
 
     context = {
         'in_progress_commitments': in_progress,
         'expired_commitments': expired,
         'completed_commitments': completed,
+        'discontinued_commitments': discontinued,
     }
 
     return render(request, "commitments/dashboard.html", context)
@@ -45,6 +47,8 @@ def view_commitment(request, commitment_id):
                 return "Complete"
             case 2:
                 return "Expired"
+            case 3:
+                return "Discontinued"
             case _:
                 return "no number"
 
@@ -95,6 +99,16 @@ def complete_commitment_target(request, commitment_id):
         return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
     else:
         return HttpResponse("Complete key must be set to 'true' to mark as complete.")
+
+
+def discontinued_commitment_target(request, commitment_id):
+    commitment = get_object_or_404(Commitment, id=commitment_id)
+    if request.GET.get("discontinued") == "true":
+        commitment.status = Commitment.CommitmentStatus.DISCONTINUED
+        commitment.save()
+        return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+    else:
+        return HttpResponse("Discontinued key must be set to 'true' to mark as discontinued.")
 
 
 class MakeCommitmentView(LoginRequiredMixin, View):
