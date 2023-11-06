@@ -1,16 +1,9 @@
-from django.forms import ModelForm, TextInput
+from django.contrib.auth.forms import UserCreationForm
 
 from .models import User
 
 
-class UserForm(ModelForm):
-    class Meta:
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = [
-            "username",
-            "email",
-            "password"
-        ]
-        widgets = {
-            "password": TextInput(attrs={"type": "password"})
-        }
+        fields = UserCreationForm.Meta.fields + ("email",)

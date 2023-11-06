@@ -154,16 +154,13 @@ class EditCommitmentView(LoginRequiredMixin, View):
 class RegisterClinicianView(View):
     @staticmethod
     def get(request, *args, **kwargs):
-        form = cme_accounts.forms.UserForm()
+        form = cme_accounts.forms.CustomUserCreationForm()
         return render(request, "commitments/register_clinician.html", context={"form": form})
 
     @staticmethod
     def post(request, *args, **kwargs):
-        form = cme_accounts.forms.UserForm(request.POST)
+        form = cme_accounts.forms.CustomUserCreationForm(request.POST)
         if form.is_valid():
-            # If this isn't executed before saving, the raw password will be saved and NOT a pbkdf2 hash used in
-            # authentication. In that case the password will always fail.
-            form.instance.set_password(form.instance.password)
             user = form.save()
             ClinicianProfile.objects.create(user=user)
             return HttpResponse("User creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
