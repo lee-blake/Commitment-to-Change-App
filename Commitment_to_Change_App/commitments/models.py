@@ -24,6 +24,7 @@ class Commitment(models.Model, CommitmentParent):
         IN_PROGRESS = 0
         COMPLETE = 1
         EXPIRED = 2
+        DISCONTINUED = 3
 
         def __str__(self):
             match self:
@@ -33,6 +34,8 @@ class Commitment(models.Model, CommitmentParent):
                     return "Complete"
                 case 2:
                     return "Expired"
+                case 3:
+                    return "Discontinued"
                 case _:
                     return "no number"
 
