@@ -38,36 +38,8 @@ def dashboard(request):
 def view_commitment(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
     commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
-
-    def status_value_to_string(num):
-        match num:
-            case 0:
-                return "In progress"
-            case 1:
-                return "Complete"
-            case 2:
-                return "Expired"
-            case 3:
-                return "Discontinued"
-            case _:
-                return "no number"
-
-    status = status_value_to_string(commitment.status)
-    commitment_context = {
-        "id": commitment.id,
-        "title": commitment.title,
-        "description": commitment.description,
-        "deadline": commitment.deadline,
-        # TODO change this to accept commitment.status_text.
-        #  This will require dropping the if statements in the template.
-        "status": status,
-        "created_date": commitment.created,
-        # TODO: created_date currently converts our timestamp with timezone to UTC
-        # so if you have 22:00:00-5 (-5 being EST), it will add 5 to convert
-        # to UTC, so it becomes 03:00:00
-        "last_update": commitment.last_updated
-    }
-    return render(request, "commitments/view_commitment.html", commitment_context)
+    context = {"commitment": commitment}
+    return render(request, "commitments/view_commitment.html", context)
 
 
 def create_commitment_form(request):

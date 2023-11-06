@@ -1,22 +1,22 @@
 {% extends "commitments/base.html" %}
 
-{% block title %} {{ title }} view {% endblock %}
+{% block title %} {{ commitment.title }} view {% endblock %}
 
 {% block page_content %}
 <div class="w3-container">
     <div class="w3-panel commitment-title round-corners primary-accent">
-        <h1>{{ title }}</h1>
+        <h1>{{ commitment.title }}</h1>
     </div>
     <div class="w3-container round-corners foreground">
 
 
         <div class="w3-panel round-corners secondary-accent center">
-            <p>Started: {{ created_date.date }}</p>
-            <p>Due: {{ deadline }}</p>
-            <p>Status: {{ status }}</p>
+            <p>Started: {{ commitment.created.date }}</p>
+            <p>Due: {{ commitment.deadline }}</p>
+            <p>Status: {{ commitment.status_text }}</p>
         </div>
         <div class="w3-panel round-corners secondary-accent center">
-            <p>{{ description }}</p>
+            <p>{{ commitment.description }}</p>
         </div>
     </div>
 </div>
