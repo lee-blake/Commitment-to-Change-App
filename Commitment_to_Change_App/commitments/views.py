@@ -41,11 +41,6 @@ def view_commitment(request, commitment_id):
     context = {"commitment": commitment}
     return render(request, "commitments/view_commitment.html", context)
 
-
-def create_commitment_form(request):
-    return render(request, "commitments/create_commitment.html")
-
-
 @login_required
 def create_commitment_target(request):
     owner = ClinicianProfile.objects.get(user=request.user)

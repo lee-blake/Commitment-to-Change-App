@@ -1,7 +1,7 @@
 <nav>
     <div class="w3-bar foreground">
         <div class="w3-bar-item w3-button w3-mobile"><a href="{% url 'dashboard' %}">Dashboard</a></div>
-        <div class="w3-bar-item w3-button w3-mobile"><a href="{% url 'create commitment form' %}">Create Commitment</a>
+        <div class="w3-bar-item w3-button w3-mobile"><a href="{% url 'make commitment' %}">Make a Commitment</a>
         </div>
         {% if request.user.is_authenticated %}
         <div class="w3-bar-item w3-mobile w3-right">
