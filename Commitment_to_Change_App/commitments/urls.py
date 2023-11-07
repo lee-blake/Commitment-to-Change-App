@@ -14,8 +14,8 @@ urlpatterns = [
     ),
     path(
         "commitment/<int:commitment_id>/discontinued/",
-         views.discontinued_commitment_target,
-         name="discontinued commitment target"
+        views.discontinued_commitment_target,
+        name="discontinued commitment target"
     ),
 
     path(
