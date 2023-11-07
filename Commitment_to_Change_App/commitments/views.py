@@ -67,7 +67,6 @@ def complete_commitment_target(request, commitment_id):
     else:
         return HttpResponse("Complete key must be set to 'true' to mark as complete.")
 
-
 def discontinued_commitment_target(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
     if request.GET.get("discontinued") == "true":
@@ -77,6 +76,14 @@ def discontinued_commitment_target(request, commitment_id):
     else:
         return HttpResponse("Discontinued key must be set to 'true' to mark as discontinued.")
 
+def delete_commitment_target(request, commitement_id):
+    commitment = get_object_or_404(Commitment, id=commitement_id)
+    if request.GET.get("del") == "true":
+        commitment.status = Commitment.CommitmentStatus.DELETE
+        commitment.delete()
+        return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+    else:
+        return HttpResponse("Delete key must be set 'true' to be deleted")
 
 class MakeCommitmentView(LoginRequiredMixin, View):
     @staticmethod
