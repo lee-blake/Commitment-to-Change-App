@@ -42,33 +42,6 @@ def view_commitment(request, commitment_id):
     return render(request, "commitments/view_commitment.html", context)
 
 
-@login_required
-def create_commitment_target(request):
-    owner = ClinicianProfile.objects.get(user=request.user)
-    title = request.POST.get("title")
-    description = request.POST.get("description")
-    deadline = datetime.date.fromisoformat(request.POST.get("deadline"))
-    commitment = Commitment.objects.create(
-        title=title,
-        description=description,
-        deadline=deadline,
-        status=Commitment.CommitmentStatus.IN_PROGRESS,
-        owner=owner
-    )
-    return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
-
-
-def complete_commitment_target(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
-    # TODO a dedicated method would be better for this
-    if request.GET.get("complete") == "true":
-        commitment.status = Commitment.CommitmentStatus.COMPLETE
-        commitment.save()
-        return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
-    else:
-        return HttpResponse("Complete key must be set to 'true' to mark as complete.")
-
-
 def discontinued_commitment_target(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
     if request.GET.get("discontinued") == "true":

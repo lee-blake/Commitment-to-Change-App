@@ -6,7 +6,6 @@ urlpatterns = [
     path("register/clinician/", views.RegisterClinicianView.as_view(), name="register clinician"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("commitment/<int:commitment_id>/view/", views.view_commitment, name="view commitment"),
-    path("commitment/create/", views.create_commitment_target, name="create commitment target"),
     path(
         "commitment/<int:commitment_id>/complete/",
         views.CompleteCommitmentView.as_view(),
