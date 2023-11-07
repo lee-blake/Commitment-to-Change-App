@@ -43,7 +43,8 @@ def view_commitment(request, commitment_id):
 
 
 def discontinued_commitment_target(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
+    profile = ClinicianProfile.objects.get(user=request.user)
+    commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
     if request.GET.get("discontinued") == "true":
         commitment.status = Commitment.CommitmentStatus.DISCONTINUED
         commitment.save()
@@ -53,7 +54,8 @@ def discontinued_commitment_target(request, commitment_id):
 
 
 def delete_commitment_target(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
+    profile = ClinicianProfile.objects.get(user=request.user)
+    commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
     if request.GET.get("del") == "true":
         commitment.delete()
         return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
