@@ -4,7 +4,7 @@ import cme_accounts.forms
 import cme_accounts.models
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
@@ -41,6 +41,7 @@ def view_commitment(request, commitment_id):
     context = {"commitment": commitment}
     return render(request, "commitments/view_commitment.html", context)
 
+
 @login_required
 def create_commitment_target(request):
     owner = ClinicianProfile.objects.get(user=request.user)
@@ -67,6 +68,7 @@ def complete_commitment_target(request, commitment_id):
     else:
         return HttpResponse("Complete key must be set to 'true' to mark as complete.")
 
+
 def discontinued_commitment_target(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
     if request.GET.get("discontinued") == "true":
@@ -76,6 +78,7 @@ def discontinued_commitment_target(request, commitment_id):
     else:
         return HttpResponse("Discontinued key must be set to 'true' to mark as discontinued.")
 
+
 def delete_commitment_target(request, commitement_id):
     commitment = get_object_or_404(Commitment, id=commitement_id)
     if request.GET.get("del") == "true":
@@ -84,6 +87,7 @@ def delete_commitment_target(request, commitement_id):
         return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
     else:
         return HttpResponse("Delete key must be set 'true' to be deleted")
+
 
 class MakeCommitmentView(LoginRequiredMixin, View):
     @staticmethod
@@ -137,6 +141,23 @@ class EditCommitmentView(LoginRequiredMixin, View):
                     "form": form
                 }
             )
+
+
+class CompleteCommitmentView(LoginRequiredMixin, View):
+    @staticmethod
+    def post(request, commitment_id):
+        profile = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        if request.POST.get("complete") == "true":
+            commitment.status = Commitment.CommitmentStatus.COMPLETE
+            commitment.save()
+            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+        else:
+            return HttpResponseBadRequest("Complete key must be set to true to complete a commitment")
+
+    @staticmethod
+    def get(request, commitment_id):
+        return HttpResponseNotAllowed(['POST'])
 
 
 class RegisterClinicianView(View):

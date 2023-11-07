@@ -1,0 +1,5 @@
+<form action="{% url 'complete commitment' commitment_id=commitment.id %}" id="complete-commitment-form" method="POST">
+    {% csrf_token %}
+    <input name="complete" type="hidden" value="true">
+    <button type="submit">Complete</button>
+</form>

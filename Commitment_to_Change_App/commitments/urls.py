@@ -9,8 +9,8 @@ urlpatterns = [
     path("commitment/create/", views.create_commitment_target, name="create commitment target"),
     path(
         "commitment/<int:commitment_id>/complete/",
-        views.complete_commitment_target,
-        name="complete commitment target"
+        views.CompleteCommitmentView.as_view(),
+        name="complete commitment"
     ),
     path(
         "commitment/<int:commitment_id>/discontinued/",
