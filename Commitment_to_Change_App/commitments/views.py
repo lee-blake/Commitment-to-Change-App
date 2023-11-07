@@ -79,10 +79,9 @@ def discontinued_commitment_target(request, commitment_id):
         return HttpResponse("Discontinued key must be set to 'true' to mark as discontinued.")
 
 
-def delete_commitment_target(request, commitement_id):
-    commitment = get_object_or_404(Commitment, id=commitement_id)
+def delete_commitment_target(request, commitment_id):
+    commitment = get_object_or_404(Commitment, id=commitment_id)
     if request.GET.get("del") == "true":
-        commitment.status = Commitment.CommitmentStatus.DELETE
         commitment.delete()
         return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
     else:
