@@ -71,6 +71,7 @@ class DeleteCommitmentView(LoginRequiredMixin, View):
             context={
                 "commitment": commitment,
                 "form": form})
+
     @staticmethod
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
@@ -79,7 +80,7 @@ class DeleteCommitmentView(LoginRequiredMixin, View):
             commitment.delete()
             return HttpResponseRedirect("/app/dashboard")
         else:
-            return HttpResponse("Delete key must be set 'true' to be deleted")
+            return HttpResponseBadRequest("Delete key must be set 'true' to be deleted")
 
 
 class EditCommitmentView(LoginRequiredMixin, View):
