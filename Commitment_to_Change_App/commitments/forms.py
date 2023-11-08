@@ -14,3 +14,15 @@ class CommitmentForm(ModelForm):
         widgets = {
             "deadline": DateInput(attrs={"type": "date"})
         }
+
+
+class DeleteCommitmentForm(ModelForm):
+    class Meta:
+        model = Commitment
+        fields = [
+            "title",
+            "deadline"
+        ]
+        widgets = {
+            "deadline": DateInput(attrs={"type": "date"})
+        }
