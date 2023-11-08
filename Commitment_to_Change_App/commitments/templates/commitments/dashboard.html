@@ -18,8 +18,7 @@
 
                 {% for commitment in in_progress_commitments %}
                 <div class="flex-box">
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{
-                        commitment.title }}</a>.</h3>
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a>.</h3>
                     {% include "commitments/complete_commitment_button.html" %}
                 </div>
                 {% endfor %}
@@ -34,8 +33,7 @@
                 </div>
                 {% for commitment in expired_commitments %}
                 <div class="flex-box">
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{
-                        commitment.title }}</a>.</h3>
+                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a>.</h3>
                     {% include "commitments/complete_commitment_button.html" %}
                 </div>
                 {% endfor %}
