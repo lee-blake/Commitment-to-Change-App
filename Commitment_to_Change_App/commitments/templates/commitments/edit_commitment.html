@@ -10,6 +10,7 @@
             {{ form.as_p }}
             <input type="submit" value="Submit">
         </form>
+        <a href="{% url 'delete commitment' commitment_id=commitment.id %}">Delete</a>
     </div>
 </div>
 {% endblock %}
