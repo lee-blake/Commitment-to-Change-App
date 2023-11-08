@@ -153,6 +153,26 @@ class DiscontinueCommitmentView(LoginRequiredMixin, View):
         return HttpResponseNotAllowed(['POST'])
 
 
+class ReopenCommitmentView(LoginRequiredMixin, View):
+    @staticmethod
+    def post(request, commitment_id):
+        profile = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        if request.POST.get("reopen") == "true":
+            if commitment.deadline < datetime.date.today():
+                commitment.status = Commitment.CommitmentStatus.EXPIRED
+            else:
+                commitment.status = Commitment.CommitmentStatus.IN_PROGRESS
+            commitment.save()
+            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+        else:
+            return HttpResponseBadRequest("reopen key must be set to true to reopen a commitment")
+
+    @staticmethod
+    def get(request, commitment_id):
+        return HttpResponseNotAllowed(['POST'])
+
+
 class RegisterClinicianView(View):
     @staticmethod
     def get(request, *args, **kwargs):
