@@ -39,7 +39,10 @@ def view_commitment(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
     commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
     context = {"commitment": commitment}
-    return render(request, "commitments/view_commitment.html", context)
+    if request.user.is_authenticated and request.user == commitment.owner.user:
+        return render(request, "commitments/view_commitment.html", context)
+    else:
+        return render(request, "commitments/share_commitment.html", context)
 
 
 class MakeCommitmentView(LoginRequiredMixin, View):

@@ -2,7 +2,7 @@
 view {% endblock %} {% block page_content %}
 <div class="w3-container">
   <div class="w3-panel commitment-title round-corners primary-accent">
-    <h1>{{ commitment.title }}</h1>
+    <h1>{{ commitment.title }} THIS IS PUBLIC</h1>
   </div>
   <div class="w3-container round-corners foreground">
     <div class="w3-panel round-corners secondary-accent center">
@@ -12,18 +12,6 @@ view {% endblock %} {% block page_content %}
     </div>
     <div class="w3-panel round-corners secondary-accent center">
       <p>{{ commitment.description }}</p>
-    </div>
-    <div class="w3-panel center">
-      <form action="{% url 'edit commitment' commitment_id=commitment.id %}">
-        <button type="submit" class="standard-button primary-accent">
-          Edit Commitment
-        </button>
-      </form>
-      <form action="{% url 'delete commitment' commitment_id=commitment.id %}">
-        <button type="submit" class="standard-button primary-accent">
-          Delete Commitment
-        </button>
-      </form>
     </div>
   </div>
 </div>
