@@ -1,0 +1,18 @@
+{% extends "commitments/base.html" %}
+
+{% block title %} {{ commitment.title }} view {% endblock %}
+
+{% block page_content %}
+<div class="w3-container">
+    <div class="w3-panel commitment-title round-corners primary-accent">
+        <h1>{{ commitment.title }}</h1>
+    </div>
+    <div class="w3-panel round-corners secondary-accent center">
+        <div class="w3-panel round-corners secondary-accent center">
+            <p>Are you sure you want to delete {{ commitment.title }}
+            that finishes on {{ commitment.deadline }}?</p>
+        </div>
+        {% include "commitments/delete_commitment_button.html" %}
+    </div>
+</div>
+{% endblock %}
