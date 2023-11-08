@@ -156,11 +156,15 @@ class DiscontinueCommitmentView(LoginRequiredMixin, View):
 class RegisterClinicianView(View):
     @staticmethod
     def get(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return render(request, "commitments/must_log_out.html")
         form = cme_accounts.forms.CustomUserCreationForm()
         return render(request, "commitments/register_clinician.html", context={"form": form})
 
     @staticmethod
     def post(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return render(request, "commitments/must_log_out.html")
         form = cme_accounts.forms.CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()

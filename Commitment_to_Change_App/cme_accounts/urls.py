@@ -4,7 +4,7 @@ from . import views
 
 urlpatterns = [
 
-    path("login/", views.SignInView.as_view(), name="login"),
+    path("login/", views.SignInView.as_view(redirect_authenticated_user=True), name="login"),
     path("logout/", views.SignOutView.as_view(), name="logout"),
     # This imports all the default Django auth urls. See
     # https://docs.djangoproject.com/en/4.2/topics/auth/default/#module-django.contrib.auth.views
