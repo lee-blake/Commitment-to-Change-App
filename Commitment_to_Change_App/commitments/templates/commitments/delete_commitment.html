@@ -12,6 +12,7 @@
             <p>Are you sure you want to delete {{ commitment.title }}
             that finishes on {{ commitment.deadline }}?</p>
         </div>
+        <a href="{% url 'view commitment' commitment_id=commitment.id %}">Cancel</a>
         {% include "commitments/delete_commitment_button.html" %}
     </div>
 </div>
