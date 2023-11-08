@@ -22,9 +22,10 @@
               <a href="{% url 'view commitment' commitment_id=commitment.id %}"
                 >{{ commitment.title }}</a
               >.
-            </h3>
-            {% include "commitments/complete_commitment_button.html" %}
+              {% include "commitments/complete_commitment_button.html" %}
             {% include "commitments/discontinue_commitment_button.html" %}
+            </h3>
+            
           </div>
           {% endfor %}
         </div>
@@ -42,10 +43,11 @@
               <a href="{% url 'view commitment' commitment_id=commitment.id %}"
                 >{{ commitment.title }}</a
               >.
+              {% include "commitments/complete_commitment_button.html" %}
+            {% include "commitments/discontinue_commitment_button.html" %}
             </h3>
 
-            {% include "commitments/complete_commitment_button.html" %}
-            {% include "commitments/discontinue_commitment_button.html" %}
+            
             
           </div>
           {% endfor %}
