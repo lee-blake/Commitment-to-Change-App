@@ -121,3 +121,11 @@ form {
     border-radius: 10px;
 
 }
+
+.standard-button {
+    background-color: var(--primary-accent);
+    color: var(--accent-text);
+    border-width: 0px;
+    border-radius: 10px;
+
+}
