@@ -19,7 +19,7 @@ urlpatterns = [
     ),
     path(
         "commitment/<int:commitment_id>/reopen/",
-        views.DiscontinueCommitmentView.as_view(),
+        views.ReopenCommitmentView.as_view(),
         name="reopen commitment"
     ),
     path(

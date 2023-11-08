@@ -1,58 +1,90 @@
-{% extends "commitments/base.html" %}
-
-{% block title %} Dashboard {% endblock %}
-
+{% extends "commitments/base.html" %} {% block title %} Dashboard {% endblock %}
 {% block page_content %}
 <div class="w3-container main-container round-corners pad-small">
-    <div class="w3-container commitment-container foreground round-corners pad-small">
-        <div class="w3-row">
-        <div class="primary-accent round-corners center accent-text">
-            <h1>Commitments</h1>
-        </div>
+  <div
+    class="w3-container commitment-container foreground round-corners pad-small"
+  >
+    <div class="w3-row">
+      <div class="primary-accent round-corners center accent-text">
+        <h1>Commitments</h1>
+      </div>
 
-        <div class="w3-cell w3-half pad-small">
-            <div class="background round-corners pad-small-bot">
-                <div class="center secondary-accent round-corners">
-                    <h2>In-progress Commitments:</h2>
-                </div>
-
-                {% for commitment in in_progress_commitments %}
-                <div class="flex-box">
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a>.</h3>
-                    {% include "commitments/complete_commitment_button.html" %}
-                </div>
-                {% endfor %}
-
+      <div class="w3-cell w3-half pad-small">
+        <div class="background round-corners pad-small-bot">
+          <div class="center secondary-accent round-corners">
+            <h2>In-progress Commitments:</h2>
             </div>
-        </div>
 
-        <div class="w3-cell w3-half pad-small">
-            <div class="background round-corners pad-small-bot">
-                <div class="center secondary-accent round-corners">
-                    <h2>Expired Commitments:</h2>
-                </div>
-                {% for commitment in expired_commitments %}
-                <div class="flex-box">
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a>.</h3>
-                    {% include "commitments/complete_commitment_button.html" %}
-                </div>
-                {% endfor %}
-            </div>
+          {% for commitment in in_progress_commitments %}
+          <div class="flex-box">
+            <h3 class="pad-small-side">
+              -
+              <a href="{% url 'view commitment' commitment_id=commitment.id %}"
+                >{{ commitment.title }}</a
+              >.
+            </h3>
+            {% include "commitments/complete_commitment_button.html" %}
+            {% include "commitments/discontinue_commitment_button.html" %}
+          </div>
+          {% endfor %}
         </div>
+      </div>
+
+      <div class="w3-cell w3-half pad-small">
+        <div class="background round-corners pad-small-bot">
+          <div class="center secondary-accent round-corners">
+            <h2>Expired Commitments:</h2>
+          </div>
+          {% for commitment in expired_commitments %}
+          <div class="flex-box">
+            <h3 class="pad-small-side">
+              -
+              <a href="{% url 'view commitment' commitment_id=commitment.id %}"
+                >{{ commitment.title }}</a
+              >.
+            </h3>
+
+            {% include "commitments/complete_commitment_button.html" %}
+            {% include "commitments/discontinue_commitment_button.html" %}
+            
+          </div>
+          {% endfor %}
+        </div>
+      </div>
     </div>
 
     <div class="w3-row">
-        <div class="background round-corners pad-small-bot">
+      <div class="background round-corners pad-small-bot">
         <div class="secondary-accent round-corners center">
-            <h2>Completed commitments:</h2>
-            </div>
-                {% for commitment in completed_commitments %}
-                    <h3 class="pad-small-side">- <a href="{% url 'view commitment' commitment_id=commitment.id %}">{{ commitment.title }}</a></h3>
-                {% endfor %}
-            </div>
+          <h2>Completed commitments:</h2>
         </div>
-        </div>
-
+        {% for commitment in completed_commitments %}
+        <h3 class="pad-small-side">
+          -
+          <a href="{% url 'view commitment' commitment_id=commitment.id %}"
+            >{{ commitment.title }}</a>
+          {% include "commitments/reopen_commitment_button.html" %}
+        </h3>
+        {% endfor %}
+      </div>
     </div>
+
+    <div class="w3-row">
+      <div class="background round-corners pad-small-bot">
+        <div class="secondary-accent round-corners center">
+          <h2>Discontinued Commitments:</h2>
+        </div>
+        {% for commitment in discontinued_commitments %}
+        <h3 class="pad-small-side">
+          -
+          <a href="{% url 'view commitment' commitment_id=commitment.id %}"
+            >{{ commitment.title }}</a>
+          {% include "commitments/reopen_commitment_button.html" %}
+        </h3>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}
