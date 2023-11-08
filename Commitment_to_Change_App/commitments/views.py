@@ -42,17 +42,6 @@ def view_commitment(request, commitment_id):
     return render(request, "commitments/view_commitment.html", context)
 
 
-def discontinued_commitment_target(request, commitment_id):
-    profile = ClinicianProfile.objects.get(user=request.user)
-    commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-    if request.GET.get("discontinued") == "true":
-        commitment.status = Commitment.CommitmentStatus.DISCONTINUED
-        commitment.save()
-        return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
-    else:
-        return HttpResponse("Discontinued key must be set to 'true' to mark as discontinued.")
-
-
 class MakeCommitmentView(LoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
@@ -140,6 +129,23 @@ class CompleteCommitmentView(LoginRequiredMixin, View):
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
             return HttpResponseBadRequest("Complete key must be set to true to complete a commitment")
+
+    @staticmethod
+    def get(request, commitment_id):
+        return HttpResponseNotAllowed(['POST'])
+
+
+class DiscontinueCommitmentView(LoginRequiredMixin, View):
+    @staticmethod
+    def post(request, commitment_id):
+        profile = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        if request.POST.get("discontinue") == "true":
+            commitment.status = Commitment.CommitmentStatus.DISCONTINUED
+            commitment.save()
+            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+        else:
+            return HttpResponseBadRequest("Discontinue key must be set to true to discontinue a commitment")
 
     @staticmethod
     def get(request, commitment_id):
