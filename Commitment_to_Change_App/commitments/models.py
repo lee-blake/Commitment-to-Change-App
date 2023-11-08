@@ -1,6 +1,7 @@
 import cme_accounts.models
-
 from django.db import models
+
+from . import validators
 
 
 # TODO this is just for demonstrating that inherited methods work. When we
@@ -45,7 +46,9 @@ class Commitment(models.Model, CommitmentParent):
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
     status = models.IntegerField(choices=CommitmentStatus.choices)
-    deadline = models.DateField("Deadline")
+    deadline = models.DateField("Deadline", validators=[
+        validators.date_is_not_in_past
+    ])
 
     @property
     def status_text(self):
