@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 
-from .forms import CommitmentForm
+from .forms import CommitmentForm, DeleteCommitmentForm
 from .models import Commitment, ClinicianProfile
 
 
@@ -58,7 +58,7 @@ def delete_commitment_target(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
     if request.GET.get("del") == "true":
         commitment.delete()
-        return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+        return HttpResponseRedirect("/app/dashboard")
     else:
         return HttpResponse("Delete key must be set 'true' to be deleted")
 
@@ -79,6 +79,28 @@ class MakeCommitmentView(LoginRequiredMixin, View):
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
         else:
             return render(request, "commitments/make_commitment.html", context={"form": form})
+
+
+class DeleteCommitmentView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, commitment_id):
+        commitment = get_object_or_404(Commitment, id=commitment_id)
+        form = DeleteCommitmentForm(instance=commitment)
+        return render(
+            request,
+            "commitments/delete_commitment.html",
+            context={
+                "commitment": commitment,
+                "form": form})
+    @staticmethod
+    def post(request, commitment_id):
+        profile = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        if request.POST.get("delete") == "true":
+            commitment.delete()
+            return HttpResponseRedirect("/app/dashboard")
+        else:
+            return HttpResponse("Delete key must be set 'true' to be deleted")
 
 
 class EditCommitmentView(LoginRequiredMixin, View):
