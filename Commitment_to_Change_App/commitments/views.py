@@ -132,7 +132,7 @@ class CompleteCommitmentView(LoginRequiredMixin, View):
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
-            return HttpResponseBadRequest("Complete key must be set to true to complete a commitment")
+            return HttpResponseBadRequest("Complete key must be set to 'true' to complete a commitment")
 
     @staticmethod
     def get(request, commitment_id):
@@ -149,7 +149,7 @@ class DiscontinueCommitmentView(LoginRequiredMixin, View):
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
-            return HttpResponseBadRequest("Discontinue key must be set to true to discontinue a commitment")
+            return HttpResponseBadRequest("Discontinue key must be set to 'true' to discontinue a commitment")
 
     @staticmethod
     def get(request, commitment_id):
@@ -169,7 +169,7 @@ class ReopenCommitmentView(LoginRequiredMixin, View):
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
-            return HttpResponseBadRequest("reopen key must be set to true to reopen a commitment")
+            return HttpResponseBadRequest("Reopen key must be set to 'true' to reopen a commitment")
 
     @staticmethod
     def get(request, commitment_id):
