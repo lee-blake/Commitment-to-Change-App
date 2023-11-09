@@ -14,16 +14,8 @@ view {% endblock %} {% block page_content %}
       <p>{{ commitment.description }}</p>
     </div>
     <div class="w3-panel center">
-      <form action="{% url 'edit commitment' commitment_id=commitment.id %}">
-        <button type="submit" class="standard-button primary-accent">
-          Edit Commitment
-        </button>
-      </form>
-      <form action="{% url 'delete commitment' commitment_id=commitment.id %}">
-        <button type="submit" class="standard-button primary-accent">
-          Delete Commitment
-        </button>
-      </form>
+      {% block edit_button %} {% endblock %}
+      {% block delete_button %} {% endblock %}
     </div>
   </div>
 </div>
