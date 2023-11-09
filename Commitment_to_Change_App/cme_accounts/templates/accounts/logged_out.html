@@ -1,11 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Logout</title>
-</head>
-<body>
-<p>You have been successfully logged out.</p>
-<a href="/accounts/login">Log in again</a>
-</body>
-</html>
+{% extends "commitments/base.html" %}
+
+{% block title %} Log In Page {% endblock %}
+
+{% block page_content %}
+<div class="w3-container background">
+    <div class="w3-small-box-container center">
+        <h2>You have successfully logged out</h2>
+    </div>
+    <div class="w3-container">
+        <div class="small-box-container secondary-accent center">
+            <h3>Log In Again</h3>
+            <a href="/accounts/login/"><button  type="submit" class="standard-button primary-accent">Log In</button></a>
+        </div>
+    </div>
+</div>
+{% endblock %}
