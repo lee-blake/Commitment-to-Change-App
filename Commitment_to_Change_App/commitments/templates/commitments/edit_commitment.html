@@ -5,11 +5,7 @@
 {% block page_content %}
 <div class="w3-container background">
     <div class="w3-cell-row foreground center">
-        <form action="{% url 'edit commitment' commitment_id=commitment.id %}" method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Submit">
-        </form>
+        {% include "commitments/post_buttons/edit_commitment_confirm_button.html" %}
         <a href="{% url 'delete commitment' commitment_id=commitment.id %}">Delete</a>
     </div>
 </div>

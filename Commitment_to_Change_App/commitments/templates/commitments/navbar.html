@@ -30,15 +30,16 @@
 
         {% if request.user.is_authenticated %}
         <li class="nav-item">
-            <a class="nav-link" href="#"
-              >Logged in as {{ request.user.username }} {% include "commitments/logout_button.html" %}</a
-            > 
+            <a class="nav-link" href="#">
+              Logged in as {{ request.user.username }} {% include "commitments/post_buttons/logout_button.html" %}
+            </a>
         </li>
         {% else %}
         <li class="nav-item">
             <a href="/accounts/login">Log In</a>
         </li>
         {% endif %}
+      </ul>
     </div>
   </div>
 </nav>
