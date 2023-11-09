@@ -129,3 +129,8 @@ form {
     border-radius: 10px;
 
 }
+
+ul.errorlist > li {
+    color: red;
+    font-weight: bold;
+}
