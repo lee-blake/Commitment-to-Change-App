@@ -1,0 +1,10 @@
+<div class="flex-box">
+  <h3 class="pad-small-side">
+    -
+    <a href="{% url 'view commitment' commitment_id=commitment.id %}">
+      {{ commitment.title }}
+    </a>.
+    {% include "commitments/post_buttons/complete_commitment_button.html" %}
+    {% include "commitments/post_buttons/discontinue_commitment_button.html" %}
+  </h3>
+</div>

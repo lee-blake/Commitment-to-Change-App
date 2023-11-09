@@ -16,17 +16,7 @@
             </div>
 
           {% for commitment in in_progress_commitments %}
-          <div class="flex-box">
-            <h3 class="pad-small-side">
-              -
-              <a href="{% url 'view commitment' commitment_id=commitment.id %}"
-                >{{ commitment.title }}</a
-              >.
-              {% include "commitments/post_buttons/complete_commitment_button.html" %}
-            {% include "commitments/post_buttons/discontinue_commitment_button.html" %}
-            </h3>
-            
-          </div>
+            {% include "commitments/dashboard_active_commitment.html" %}
           {% endfor %}
         </div>
       </div>
@@ -37,19 +27,7 @@
             <h2>Expired Commitments:</h2>
           </div>
           {% for commitment in expired_commitments %}
-          <div class="flex-box">
-            <h3 class="pad-small-side">
-              -
-              <a href="{% url 'view commitment' commitment_id=commitment.id %}"
-                >{{ commitment.title }}</a
-              >.
-              {% include "commitments/post_buttons/complete_commitment_button.html" %}
-            {% include "commitments/post_buttons/discontinue_commitment_button.html" %}
-            </h3>
-
-            
-            
-          </div>
+            {% include "commitments/dashboard_active_commitment.html" %}
           {% endfor %}
         </div>
       </div>
@@ -61,12 +39,7 @@
           <h2>Completed commitments:</h2>
         </div>
         {% for commitment in completed_commitments %}
-        <h3 class="pad-small-side">
-          -
-          <a href="{% url 'view commitment' commitment_id=commitment.id %}"
-            >{{ commitment.title }}</a>
-          {% include "commitments/post_buttons/reopen_commitment_button.html" %}
-        </h3>
+          {% include "commitments/dashboard_inactive_commitment.html" %}
         {% endfor %}
       </div>
     </div>
@@ -77,12 +50,7 @@
           <h2>Discontinued Commitments:</h2>
         </div>
         {% for commitment in discontinued_commitments %}
-        <h3 class="pad-small-side">
-          -
-          <a href="{% url 'view commitment' commitment_id=commitment.id %}"
-            >{{ commitment.title }}</a>
-          {% include "commitments/post_buttons/reopen_commitment_button.html" %}
-        </h3>
+          {% include "commitments/dashboard_inactive_commitment.html" %}
         {% endfor %}
       </div>
     </div>
