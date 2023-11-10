@@ -29,3 +29,5 @@ class User(AbstractUser):
     email = models.EmailField(max_length=254, validators=[
         EmailValidator()
     ])
+    is_clinician = models.BooleanField(default=False)
+    is_provider = models.BooleanField(default=False)

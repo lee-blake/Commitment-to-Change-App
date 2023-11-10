@@ -190,6 +190,7 @@ class RegisterClinicianView(View):
             return render(request, "commitments/must_log_out.html")
         form = cme_accounts.forms.CustomUserCreationForm(request.POST)
         if form.is_valid():
+            form.instance.is_clinician = True
             user = form.save()
             ClinicianProfile.objects.create(user=user)
             return HttpResponse("Clinician user creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
@@ -211,6 +212,7 @@ class RegisterProviderView(View):
             return render(request, "commitments/must_log_out.html")
         form = cme_accounts.forms.CustomUserCreationForm(request.POST)
         if form.is_valid():
+            form.instance.is_provider = True
             user = form.save()
             ProviderProfile.objects.create(user=user)
             return HttpResponse("Provider user creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
