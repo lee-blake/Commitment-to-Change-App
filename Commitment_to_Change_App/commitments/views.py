@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.views import View
 
 from .forms import CommitmentForm, DeleteCommitmentForm
-from .models import Commitment, ClinicianProfile
+from .models import Commitment, ClinicianProfile, ProviderProfile
 
 
 @login_required
@@ -192,6 +192,27 @@ class RegisterClinicianView(View):
         if form.is_valid():
             user = form.save()
             ClinicianProfile.objects.create(user=user)
-            return HttpResponse("User creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
+            return HttpResponse("Clinician user creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
         else:
             return render(request, "commitments/register_clinician.html", context={"form": form})
+
+
+class RegisterProviderView(View):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return render(request, "commitments/must_log_out.html")
+        form = cme_accounts.forms.CustomUserCreationForm()
+        return render(request, "commitments/register_provider.html", context={"form": form})
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return render(request, "commitments/must_log_out.html")
+        form = cme_accounts.forms.CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            ProviderProfile.objects.create(user=user)
+            return HttpResponse("Provider user creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
+        else:
+            return render(request, "commitments/register_provider.html", context={"form": form})
