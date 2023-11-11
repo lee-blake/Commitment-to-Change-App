@@ -51,11 +51,14 @@ class ClinicianDashboardView(LoginRequiredMixin, View):
         expired = list(filter(lambda x: x.status == 2, commitments))
         discontinued = list(filter(lambda x: x.status == 3, commitments))
 
+        enrolled_courses = profile.course_set.all()
+
         context = {
             'in_progress_commitments': in_progress,
             'expired_commitments': expired,
             'completed_commitments': completed,
             'discontinued_commitments': discontinued,
+            'enrolled_courses': enrolled_courses
         }
 
         return render(request, "commitments/dashboard_clinician.html", context)
