@@ -197,6 +197,12 @@ class ReopenCommitmentView(LoginRequiredMixin, View):
         return HttpResponseNotAllowed(['POST'])
 
 
+class RegisterTypeChoiceView(View):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        return render(request, "commitments/register_choice.html")
+
+
 class RegisterClinicianView(View):
     @staticmethod
     def get(request, *args, **kwargs):
