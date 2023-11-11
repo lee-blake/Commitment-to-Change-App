@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 
-from .forms import CommitmentForm, DeleteCommitmentForm
+from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm
 from .models import Commitment, ClinicianProfile, ProviderProfile
 
 
@@ -245,3 +245,20 @@ class RegisterProviderView(View):
             return HttpResponse("Provider user creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
         else:
             return render(request, "commitments/register_provider.html", context={"form": form})
+
+
+class CreateCourseView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        form = CourseForm()
+        return render(request, "commitments/create_course.html", context={"form": form})
+
+    @staticmethod
+    def post(request, *args, **kwargs):
+        form = CourseForm(request.POST)
+        if form.is_valid():
+            form.instance.owner = ProviderProfile.objects.get(user=request.user)
+            course = form.save()
+            return HttpResponseRedirect("/app/course/{}/view".format(course.id))
+        else:
+            return render(request, "commitments/create_course.html", context={"form": form})

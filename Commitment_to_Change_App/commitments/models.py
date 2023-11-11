@@ -65,3 +65,11 @@ class Commitment(models.Model, CommitmentParent):
         if self.deadline < today and self.status == Commitment.CommitmentStatus.IN_PROGRESS:
             self.status = Commitment.CommitmentStatus.EXPIRED
             self.save()
+
+
+class Course(models.Model):
+    created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
+    last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
+    title = models.CharField("Title", max_length=200)
+    description = models.TextField("Description", max_length=2000)

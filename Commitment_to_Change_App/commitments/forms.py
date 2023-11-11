@@ -1,6 +1,6 @@
 from django.forms import ModelForm, DateInput
 
-from .models import Commitment
+from .models import Commitment, Course
 
 
 class CommitmentForm(ModelForm):
@@ -26,3 +26,12 @@ class DeleteCommitmentForm(ModelForm):
         widgets = {
             "deadline": DateInput(attrs={"type": "date"})
         }
+
+
+class CourseForm(ModelForm):
+    class Meta:
+        model = Course
+        fields = [
+            "title",
+            "description"
+        ]
