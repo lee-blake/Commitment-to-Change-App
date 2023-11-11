@@ -5,7 +5,9 @@ from . import views
 urlpatterns = [
     path("register/clinician/", views.RegisterClinicianView.as_view(), name="register clinician"),
     path("register/provider/", views.RegisterProviderView.as_view(), name="register provider"),
-    path("dashboard/", views.dashboard, name="dashboard"),
+    path("dashboard/", views.DashboardRedirectingView.as_view(), name="dashboard"),
+    path("dashboard/clinician/", views.ClinicianDashboardView.as_view(), name="clinician dashboard"),
+    path("dashboard/provider/", views.ProviderDashboardView.as_view(), name="provider dashboard"),
     path("commitment/<int:commitment_id>/view/", views.view_commitment, name="view commitment"),
     path("commitment/<int:commitment_id>/share/", views.view_commitment, name="share commitment"),
     path("commitment/<int:commitment_id>/complete/", views.CompleteCommitmentView.as_view(),

@@ -2,37 +2,15 @@ import datetime
 
 import cme_accounts.forms
 import cme_accounts.models
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
+    HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 
 from .forms import CommitmentForm, DeleteCommitmentForm
 from .models import Commitment, ClinicianProfile, ProviderProfile
-
-
-@login_required
-def dashboard(request):
-    profile = ClinicianProfile.objects.get(user=request.user)
-    commitments = Commitment.objects.filter(owner=profile)
-    for commitment in commitments:
-        commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
-
-    in_progress = list(filter(lambda x: x.status == 0, commitments))
-    completed = list(filter(lambda x: x.status == 1, commitments))
-    expired = list(filter(lambda x: x.status == 2, commitments))
-    discontinued = list(filter(lambda x: x.status == 3, commitments))
-
-    context = {
-        'in_progress_commitments': in_progress,
-        'expired_commitments': expired,
-        'completed_commitments': completed,
-        'discontinued_commitments': discontinued,
-    }
-
-    return render(request, "commitments/dashboard.html", context)
 
 
 def view_commitment(request, commitment_id):
@@ -43,6 +21,49 @@ def view_commitment(request, commitment_id):
         return render(request, "commitments/view_owned_commitment.html", context)
     else:
         return render(request, "commitments/view_commitment.html", context)
+
+
+class DashboardRedirectingView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        if request.user.is_clinician:
+            return HttpResponseRedirect("/app/dashboard/clinician/")
+        elif request.user.is_provider:
+            return HttpResponseRedirect("/app/dashboard/provider/")
+        else:
+            return HttpResponseServerError(
+                "This user is neither a clinician nor a provider and therefore no dashboard exists!"
+            )
+
+
+class ClinicianDashboardView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        profile = ClinicianProfile.objects.get(user=request.user)
+        commitments = Commitment.objects.filter(owner=profile)
+        for commitment in commitments:
+            commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+
+        in_progress = list(filter(lambda x: x.status == 0, commitments))
+        completed = list(filter(lambda x: x.status == 1, commitments))
+        expired = list(filter(lambda x: x.status == 2, commitments))
+        discontinued = list(filter(lambda x: x.status == 3, commitments))
+
+        context = {
+            'in_progress_commitments': in_progress,
+            'expired_commitments': expired,
+            'completed_commitments': completed,
+            'discontinued_commitments': discontinued,
+        }
+
+        return render(request, "commitments/dashboard.html", context)
+
+
+class ProviderDashboardView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        # TODO This needs its own template later.
+        return render(request, "commitments/base.html")
 
 
 class MakeCommitmentView(LoginRequiredMixin, View):
