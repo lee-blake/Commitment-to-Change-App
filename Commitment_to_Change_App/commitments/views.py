@@ -281,10 +281,13 @@ class ViewCourseView(LoginRequiredMixin, View):
     @staticmethod
     def get(request, course_id):
         course = get_object_or_404(Course, id=course_id)
+        associated_commitments = Commitment.objects.filter(associated_course=course)
+        context = {"course": course, "associated_commitments": associated_commitments}
         if request.user.is_provider and course.owner == ProviderProfile.objects.get(user=request.user):
-            return render(request, "commitments/view_owned_course.html", {"course": course})
+            return render(request, "commitments/view_owned_course.html", context)
         elif request.user.is_clinician and course.students.contains(ClinicianProfile.objects.get(user=request.user)):
-            return render(request, "commitments/view_course.html", {"course": course})
+            return render(
+                request, "commitments/view_course.html", context)
         else:
             return HttpResponseNotFound("<h1>404</h1")
 

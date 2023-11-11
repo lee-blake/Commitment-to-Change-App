@@ -2,7 +2,13 @@
 {% block title %} {{ course.title }} {% endblock %}
 
 {% block page_content %}
+
 <h1>{{ course.title }}</h1>
 <p>{{ course.description }}</p>
 {% block join_link %} {% endblock %}
+<h2>Associated Commitments</h2>
+{% for commitment in associated_commitments %}
+{% include "commitments/dashboard_unowned_commitment.html" %}
+{% endfor %}
+
 {% endblock %}
