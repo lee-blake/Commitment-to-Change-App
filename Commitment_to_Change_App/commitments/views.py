@@ -4,13 +4,13 @@ import cme_accounts.forms
 import cme_accounts.models
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
-    HttpResponseServerError
+    HttpResponseServerError, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 
 from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm
-from .models import Commitment, ClinicianProfile, ProviderProfile
+from .models import Commitment, ClinicianProfile, ProviderProfile, Course
 
 
 def view_commitment(request, commitment_id):
@@ -262,3 +262,13 @@ class CreateCourseView(LoginRequiredMixin, View):
             return HttpResponseRedirect("/app/course/{}/view".format(course.id))
         else:
             return render(request, "commitments/create_course.html", context={"form": form})
+
+
+class ViewCourseView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, course_id):
+        course = get_object_or_404(Course, id=course_id)
+        if request.user.is_provider and course.owner == ProviderProfile.objects.get(user=request.user):
+            return render(request, "commitments/view_owned_course.html", {"course": course})
+        else:
+            return HttpResponseNotFound("<h1>404</h1")
