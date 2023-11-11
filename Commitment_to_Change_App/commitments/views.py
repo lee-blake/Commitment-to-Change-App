@@ -1,4 +1,6 @@
 import datetime
+import random
+import string
 
 import cme_accounts.forms
 import cme_accounts.models
@@ -259,10 +261,15 @@ class CreateCourseView(LoginRequiredMixin, View):
         form = CourseForm(request.POST)
         if form.is_valid():
             form.instance.owner = ProviderProfile.objects.get(user=request.user)
+            form.instance.join_code = CreateCourseView.generate_random_join_code(8)
             course = form.save()
             return HttpResponseRedirect("/app/course/{}/view".format(course.id))
         else:
             return render(request, "commitments/create_course.html", context={"form": form})
+
+    @staticmethod
+    def generate_random_join_code(length):
+        return ''.join(random.choice(string.ascii_uppercase) for i in range(0, length))
 
 
 class ViewCourseView(LoginRequiredMixin, View):
@@ -271,5 +278,20 @@ class ViewCourseView(LoginRequiredMixin, View):
         course = get_object_or_404(Course, id=course_id)
         if request.user.is_provider and course.owner == ProviderProfile.objects.get(user=request.user):
             return render(request, "commitments/view_owned_course.html", {"course": course})
+        elif request.user.is_clinician and course.students.contains(ClinicianProfile.objects.get(user=request.user)):
+            return render(request, "commitments/view_course.html", {"course": course})
         else:
             return HttpResponseNotFound("<h1>404</h1")
+
+
+class JoinCourseView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, course_id, join_code):
+        course = get_object_or_404(Course, id=course_id, join_code=join_code)
+        if request.user.is_clinician:
+            profile = ClinicianProfile.objects.get(user=request.user)
+            if not course.students.contains(profile):
+                course.students.add(profile)
+            return HttpResponseRedirect("/app/course/{}/view".format(course.id))
+        elif request.user.is_provider:
+            return HttpResponseRedirect("/app/course/{}/view".format(course.id))

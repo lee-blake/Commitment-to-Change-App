@@ -73,3 +73,5 @@ class Course(models.Model):
     owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
+    join_code = models.CharField("Join code", max_length=100)
+    students = models.ManyToManyField(ClinicianProfile)
