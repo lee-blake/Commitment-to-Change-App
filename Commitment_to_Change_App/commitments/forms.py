@@ -1,4 +1,4 @@
-from django.forms import ModelForm, DateInput
+from django.forms import ModelForm, DateInput, ModelChoiceField
 
 from .models import Commitment, Course
 
@@ -9,11 +9,22 @@ class CommitmentForm(ModelForm):
         fields = [
             "title",
             "description",
-            "deadline"
+            "deadline",
+            "associated_course"
         ]
         widgets = {
             "deadline": DateInput(attrs={"type": "date"})
         }
+
+    associated_course = ModelChoiceField(
+        queryset=Course.objects.none(),
+        required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        profile = kwargs.pop("profile")
+        super(ModelForm, self).__init__(*args, **kwargs)
+        self.fields['associated_course'].queryset = profile.course_set.all()
 
 
 class DeleteCommitmentForm(ModelForm):

@@ -75,14 +75,16 @@ class ProviderDashboardView(LoginRequiredMixin, View):
 class MakeCommitmentView(LoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
-        form = CommitmentForm()
+        profile = ClinicianProfile.objects.get(user=request.user)
+        form = CommitmentForm(profile=profile)
         return render(request, "commitments/make_commitment.html", context={"form": form})
 
     @staticmethod
     def post(request, *args, **kwargs):
-        form = CommitmentForm(request.POST)
+        profile = ClinicianProfile.objects.get(user=request.user)
+        form = CommitmentForm(request.POST, profile=profile)
         if form.is_valid():
-            form.instance.owner = ClinicianProfile.objects.get(user=request.user)
+            form.instance.owner = profile
             form.instance.status = Commitment.CommitmentStatus.IN_PROGRESS
             commitment = form.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
@@ -119,7 +121,7 @@ class EditCommitmentView(LoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
-        form = CommitmentForm(instance=commitment)
+        form = CommitmentForm(instance=commitment, profile=profile)
         return render(
             request,
             "commitments/edit_commitment.html",
@@ -134,7 +136,7 @@ class EditCommitmentView(LoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
-        form = CommitmentForm(request.POST, instance=commitment)
+        form = CommitmentForm(request.POST, instance=commitment, profile=profile)
         if form.is_valid():
             commitment = form.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
