@@ -7,6 +7,13 @@
 <p>{{ course.description }}</p>
 {% block join_link %} {% endblock %}
 <h2>Associated Commitments</h2>
+<h3>Status Breakdown</h3>
+<div>Total commitments: {{ status_breakdown.total }}</div>
+<div>In progress: {{ status_breakdown.in_progress }}</div>
+<div>Completed: {{ status_breakdown.completed }}</div>
+<div>Past due: {{  status_breakdown.past_due }}</div>
+<div>Discontinued: {{ status_breakdown.discontinued }}</div>
+<h3>Details</h3>
 {% for commitment in associated_commitments %}
 {% include "commitments/dashboard_unowned_commitment.html" %}
 {% endfor %}
