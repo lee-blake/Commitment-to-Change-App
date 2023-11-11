@@ -1,0 +1,10 @@
+{% extends "commitments/base.html" %}
+{% block title %} Provider Dashboard {% endblock %}
+
+{% block page_content %}
+  <h1>Provider Dashboard</h1>
+  <h2>Courses</h2>
+{% for course in courses %}
+    <p><a href="{% url 'view course' course_id=course.id %}">{{ course.title }}</a></p>
+{% endfor %}
+{% endblock %}

@@ -56,14 +56,15 @@ class ClinicianDashboardView(LoginRequiredMixin, View):
             'discontinued_commitments': discontinued,
         }
 
-        return render(request, "commitments/dashboard.html", context)
+        return render(request, "commitments/dashboard_clinician.html", context)
 
 
 class ProviderDashboardView(LoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
-        # TODO This needs its own template later.
-        return render(request, "commitments/base.html")
+        profile = ProviderProfile.objects.get(user=request.user)
+        courses = Course.objects.filter(owner=profile)
+        return render(request, "commitments/dashboard_provider.html", {"courses": courses})
 
 
 class MakeCommitmentView(LoginRequiredMixin, View):
