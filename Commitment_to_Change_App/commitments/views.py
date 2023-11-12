@@ -20,7 +20,7 @@ def commitment_remaining_time(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
     commitment.show = commitment.deadline
     context = {"commitment": commitment}
-    if commitment.deadline > datetime.today():
+    if commitment.deadline > datetime.date.today():
         return render(request, "commitments/view_commitment.html", context)
     else:
         commitment.status = Commitment.CommitmentStatus.EXPIRED
