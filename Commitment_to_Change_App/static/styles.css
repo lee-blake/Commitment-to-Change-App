@@ -142,3 +142,15 @@ ul.errorlist > li {
     color: red;
     font-weight: bold;
 }
+
+table.commitment-status-breakdown-table, 
+table.commitment-status-breakdown-table th,
+table.commitment-status-breakdown-table td {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+table.commitment-status-breakdown-table tr > td:nth-child(2),
+table.commitment-status-breakdown-table tr > th:nth-child(2) {
+    text-align: right;
+}

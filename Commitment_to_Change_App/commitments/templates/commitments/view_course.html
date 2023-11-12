@@ -1,5 +1,5 @@
 {% extends "commitments/base.html" %}
-{% block title %} {{ course.title }} {% endblock %}
+{% block title %} {{ course.title }} {% endblock title %}
 
 {% block page_content %}
 <div class="w3-container main-container round-corners pad-small ">
@@ -20,7 +20,7 @@
 					<div class="center secondary-accent round-corners">
 						<h2>Students</h2>
 					</div>
-					{% block join_link %} {% endblock %}
+					{% block join_link %} {% endblock join_link %}
 					<div class="center secondary-accent round-corners">
 						<h3>List of Students Enrolled</h3>
 					</div>
@@ -39,11 +39,28 @@
 					<div class="center secondary-accent round-corners">
 						<h3>Status Breakdown</h3>
 					</div>
-					<div>Total commitments: {{ status_breakdown.total }}</div>
-					<div>In progress: {{ status_breakdown.in_progress }}</div>
-					<div>Completed: {{ status_breakdown.completed }}</div>
-					<div>Past due: {{  status_breakdown.past_due }}</div>
-					<div>Discontinued: {{ status_breakdown.discontinued }}</div>
+					<div>
+					<table class="commitment-status-breakdown-table">
+						<tr>
+							<th>Status</th><th>Count</th>
+						</tr>
+						<tr>
+							<td>In progress</td><td>{{ status_breakdown.in_progress }}</td>
+						</tr>
+						<tr>
+							<td>Completed</td><td>{{ status_breakdown.complete }}</td>
+						</tr>
+						<tr>
+							<td>Past Due</td><td>{{ status_breakdown.past_due }}</td>
+						</tr>
+						<tr>
+							<td>Discontinued</td><td>{{ status_breakdown.discontinued }}</td>
+						</tr>
+						<tr>
+							<th>Total</th><th>{{ status_breakdown.total }}</th>
+						</tr>
+					</table>
+					</div>
 					<div class="center secondary-accent round-corners">
 						<h3>List of Commitments</h3>
 					</div>
@@ -55,8 +72,8 @@
 		</div>
 	</div>
 	<div class="w3-panel center">
-		{% block edit_button %} {% endblock %}
-		{% block delete_button %} {% endblock %}
+		{% block edit_button %} {% endblock edit_button %}
+		{% block delete_button %} {% endblock delete_button %}
 	  </div>
 </div>
-{% endblock %}
+{% endblock page_content %}
