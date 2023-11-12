@@ -22,7 +22,7 @@
 					</div>
 					{% block join_link %} {% endblock join_link %}
 					<div class="center secondary-accent round-corners">
-						<h3>List of Students Enrolled</h3>
+						<h3>List of Students Enrolled:</h3>
 					</div>
 					<ul>
 					{% for student in course.students.all %}
@@ -62,7 +62,7 @@
 					</table>
 					</div>
 					<div class="center secondary-accent round-corners">
-						<h3>List of Commitments</h3>
+						<h3>List of Commitments:</h3>
 					</div>
 					{% for commitment in associated_commitments %}
 						{% include "commitments/dashboard_unowned_commitment.html" %}
