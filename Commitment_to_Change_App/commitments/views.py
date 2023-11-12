@@ -229,7 +229,7 @@ class RegisterClinicianView(View):
             form.instance.is_clinician = True
             user = form.save()
             ClinicianProfile.objects.create(user=user)
-            return HttpResponse("Clinician user creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
+            return render(request, "commitments/register_success.html")
         else:
             return render(request, "commitments/register_clinician.html", context={"form": form})
 
@@ -251,7 +251,7 @@ class RegisterProviderView(View):
             form.instance.is_provider = True
             user = form.save()
             ProviderProfile.objects.create(user=user)
-            return HttpResponse("Provider user creation successful.<br><a href=\"/accounts/login/\">Log In</a>")
+            return render(request, "commitments/register_success.html")
         else:
             return render(request, "commitments/register_provider.html", context={"form": form})
 
