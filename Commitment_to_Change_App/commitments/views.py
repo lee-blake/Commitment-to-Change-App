@@ -18,7 +18,7 @@ from .models import Commitment, ClinicianProfile, ProviderProfile, Course
 
 def view_commitment(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+    commitment.mark_past_due_if_deadline_has_passed(datetime.date.today())
     context = {"commitment": commitment}
     if request.user.is_authenticated and request.user == commitment.owner.user:
         return render(request, "commitments/view_owned_commitment.html", context)
@@ -45,7 +45,7 @@ class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitments = Commitment.objects.filter(owner=profile)
         for commitment in commitments:
-            commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+            commitment.mark_past_due_if_deadline_has_passed(datetime.date.today())
 
         in_progress = list(filter(lambda x: x.status == 0, commitments))
         completed = list(filter(lambda x: x.status == 1, commitments))
@@ -121,7 +121,7 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, View):
     def get(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+        commitment.mark_past_due_if_deadline_has_passed(datetime.date.today())
         form = CommitmentForm(instance=commitment, profile=profile)
         return render(
             request,
@@ -136,7 +136,7 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+        commitment.mark_past_due_if_deadline_has_passed(datetime.date.today())
         form = CommitmentForm(request.POST, instance=commitment, profile=profile)
         if form.is_valid():
             commitment = form.save()
@@ -193,7 +193,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         if request.POST.get("reopen") == "true":
             if commitment.deadline < datetime.date.today():
-                commitment.status = Commitment.CommitmentStatus.EXPIRED
+                commitment.status = Commitment.CommitmentStatus.PAST_DUE
             else:
                 commitment.status = Commitment.CommitmentStatus.IN_PROGRESS
             commitment.save()
@@ -295,7 +295,7 @@ class ViewCourseView(LoginRequiredMixin, View):
                     in_progress += 1
                 case Commitment.CommitmentStatus.COMPLETE:
                     complete += 1
-                case Commitment.CommitmentStatus.EXPIRED:
+                case Commitment.CommitmentStatus.PAST_DUE:
                     past_due += 1
                 case Commitment.CommitmentStatus.DISCONTINUED:
                     discontinued += 1

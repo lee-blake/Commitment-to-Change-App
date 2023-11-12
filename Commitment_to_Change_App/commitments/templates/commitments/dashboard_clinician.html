@@ -25,11 +25,12 @@
       <div class="w3-cell w3-half pad-small">
         <div class="background round-corners pad-small-bot">
           <div class="center secondary-accent round-corners">
-            <h2>Expired Commitments:</h2>
+            <h2>Past Due Commitments:</h2>
           </div>
-          {% for commitment in expired_commitments %}
-            {% include "commitments/dashboard_active_commitment.html" %}
-          {% endfor %}
+
+            {% for commitment in past_due_commitments %}
+                {% include "commitments/dashboard_active_commitment.html" %}
+            {% endfor %}
         </div>
       </div>
     </div>

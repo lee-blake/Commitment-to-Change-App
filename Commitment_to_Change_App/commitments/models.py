@@ -47,7 +47,7 @@ class Commitment(models.Model, CommitmentParent):
     class CommitmentStatus(models.IntegerChoices):
         IN_PROGRESS = 0
         COMPLETE = 1
-        EXPIRED = 2
+        PAST_DUE = 2
         DISCONTINUED = 3
 
         def __str__(self):
@@ -57,7 +57,7 @@ class Commitment(models.Model, CommitmentParent):
                 case 1:
                     return "Complete"
                 case 2:
-                    return "Expired"
+                    return "Past Due"
                 case 3:
                     return "Discontinued"
                 case _:
@@ -79,7 +79,7 @@ class Commitment(models.Model, CommitmentParent):
         return Commitment.CommitmentStatus.__str__(self.status)
 
     # TODO This needs to go away once we have an expiration daemon.
-    def mark_expired_if_deadline_has_passed(self, today):
+    def mark_past_due_if_deadline_has_passed(self, today):
         if self.deadline < today and self.status == Commitment.CommitmentStatus.IN_PROGRESS:
-            self.status = Commitment.CommitmentStatus.EXPIRED
+            self.status = Commitment.CommitmentStatus.PAST_DUE
             self.save()
