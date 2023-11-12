@@ -2,26 +2,57 @@
 {% block title %} {{ course.title }} {% endblock %}
 
 {% block page_content %}
+<div class="w3-container main-container round-corners pad-small ">
+	<div class="foreground">
+		<div class="primary-accent round-corners center accent-text">
+			<h1>{{ course.title }}</h1>
+		</div>
 
-<h1>{{ course.title }}</h1>
-<p>{{ course.description }}</p>
-{% block join_link %} {% endblock %}
-<h2>Students</h2>
-<ul>
-	{% for student in course.students.all %}
-	<li>{{ student.username }}</li>
-	{% endfor %}
-</ul>
-<h2>Associated Commitments</h2>
-<h3>Status Breakdown</h3>
-<div>Total commitments: {{ status_breakdown.total }}</div>
-<div>In progress: {{ status_breakdown.in_progress }}</div>
-<div>Completed: {{ status_breakdown.completed }}</div>
-<div>Past due: {{  status_breakdown.past_due }}</div>
-<div>Discontinued: {{ status_breakdown.discontinued }}</div>
-<h3>Details</h3>
-{% for commitment in associated_commitments %}
-{% include "commitments/dashboard_unowned_commitment.html" %}
-{% endfor %}
-
+		<div class="w3-row">
+			<div class="w3-cell w3-half pad-small">
+				<div class="background round-corners pad-small-bot">
+					<div class="center secondary-accent round-corners">
+						<h2>Description</h2>
+					</div>
+					<div class="center pad-small">
+						<p>{{ course.description }}</p>
+					</div>
+					<div class="center secondary-accent round-corners">
+						<h2>Students</h2>
+					</div>
+					{% block join_link %} {% endblock %}
+					<div class="center secondary-accent round-corners">
+						<h3>List of Students Enrolled</h3>
+					</div>
+					<ul>
+					{% for student in course.students.all %}
+						<li>{{ student.username }}</li>
+					{% endfor %}
+					</ul>
+				</div>
+			</div>
+			<div class="w3-cell w3-half pad-small">
+				<div class="background round-corners pad-small-bot">
+					<div class="center secondary-accent round-corners">
+						<h2>Associated Commitments</h2>
+					</div>
+					<div class="center secondary-accent round-corners">
+						<h3>Status Breakdown</h3>
+					</div>
+					<div>Total commitments: {{ status_breakdown.total }}</div>
+					<div>In progress: {{ status_breakdown.in_progress }}</div>
+					<div>Completed: {{ status_breakdown.completed }}</div>
+					<div>Past due: {{  status_breakdown.past_due }}</div>
+					<div>Discontinued: {{ status_breakdown.discontinued }}</div>
+					<div class="center secondary-accent round-corners">
+						<h3>List of Commitments</h3>
+					</div>
+					{% for commitment in associated_commitments %}
+						{% include "commitments/dashboard_unowned_commitment.html" %}
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 {% endblock %}
