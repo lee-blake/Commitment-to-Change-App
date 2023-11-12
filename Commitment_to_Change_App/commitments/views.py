@@ -12,6 +12,7 @@ from django.shortcuts import render
 from django.views import View
 
 from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm
+from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course
 
 
@@ -38,7 +39,7 @@ class DashboardRedirectingView(LoginRequiredMixin, View):
             )
 
 
-class ClinicianDashboardView(LoginRequiredMixin, View):
+class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
         profile = ClinicianProfile.objects.get(user=request.user)
@@ -64,7 +65,7 @@ class ClinicianDashboardView(LoginRequiredMixin, View):
         return render(request, "commitments/dashboard_clinician.html", context)
 
 
-class ProviderDashboardView(LoginRequiredMixin, View):
+class ProviderDashboardView(ProviderLoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
         profile = ProviderProfile.objects.get(user=request.user)
@@ -72,7 +73,7 @@ class ProviderDashboardView(LoginRequiredMixin, View):
         return render(request, "commitments/dashboard_provider.html", {"courses": courses})
 
 
-class MakeCommitmentView(LoginRequiredMixin, View):
+class MakeCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
         profile = ClinicianProfile.objects.get(user=request.user)
@@ -92,7 +93,7 @@ class MakeCommitmentView(LoginRequiredMixin, View):
             return render(request, "commitments/make_commitment.html", context={"form": form})
 
 
-class DeleteCommitmentView(LoginRequiredMixin, View):
+class DeleteCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def get(request, commitment_id):
         commitment = get_object_or_404(Commitment, id=commitment_id)
@@ -115,7 +116,7 @@ class DeleteCommitmentView(LoginRequiredMixin, View):
             return HttpResponseBadRequest("'delete' key must be set 'true' to be deleted")
 
 
-class EditCommitmentView(LoginRequiredMixin, View):
+class EditCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def get(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
@@ -151,7 +152,7 @@ class EditCommitmentView(LoginRequiredMixin, View):
             )
 
 
-class CompleteCommitmentView(LoginRequiredMixin, View):
+class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
@@ -168,7 +169,7 @@ class CompleteCommitmentView(LoginRequiredMixin, View):
         return HttpResponseNotAllowed(['POST'])
 
 
-class DiscontinueCommitmentView(LoginRequiredMixin, View):
+class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
@@ -185,7 +186,7 @@ class DiscontinueCommitmentView(LoginRequiredMixin, View):
         return HttpResponseNotAllowed(['POST'])
 
 
-class ReopenCommitmentView(LoginRequiredMixin, View):
+class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
