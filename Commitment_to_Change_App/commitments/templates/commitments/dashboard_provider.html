@@ -2,9 +2,20 @@
 {% block title %} Provider Dashboard {% endblock %}
 
 {% block page_content %}
-  <h1>Provider Dashboard</h1>
-  <h2>Courses</h2>
-{% for course in courses %}
-    <p><a href="{% url 'view course' course_id=course.id %}">{{ course.title }}</a></p>
-{% endfor %}
+
+<div class="w3-container main-container round-corners pad-small">
+  <div class="w3-container commitment-container foreground round-corners pad-small">
+    <div class="w3-row">
+      <div class="primary-accent round-corners center accent-text">
+        <h1>Courses</h1>
+      </div>
+      <div class="background round-corners">
+        {% for course in courses %}
+          {% include "commitments/dashboard_course.html" %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
