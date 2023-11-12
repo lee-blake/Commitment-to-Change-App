@@ -20,6 +20,7 @@ urlpatterns = [
     path("commitment/<int:commitment_id>/delete/", views.DeleteCommitmentView.as_view(), name="delete commitment"),
     path("commitment/<int:commitment_id>/edit/", views.EditCommitmentView.as_view(), name="edit commitment"),
     path("course/create/", views.CreateCourseView.as_view(), name="create course"),
+    path("course/<int:course_id>/edit/", views.EditCourseView.as_view(), name="edit course"),
     path("course/<int:course_id>/view/", views.ViewCourseView.as_view(), name="view course"),
     path("course/<int:course_id>/join/<str:join_code>/", views.JoinCourseView.as_view(), name="join course"),
 ]

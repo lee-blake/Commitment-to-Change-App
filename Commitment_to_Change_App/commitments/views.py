@@ -278,6 +278,40 @@ class CreateCourseView(LoginRequiredMixin, View):
         return ''.join(random.choice(string.ascii_uppercase) for i in range(0, length))
 
 
+class EditCourseView(ProviderLoginRequiredMixin, View):
+    @staticmethod
+    def get(request, course_id):
+        profile = ProviderProfile.objects.get(user=request.user)
+        course = get_object_or_404(Course, id=course_id, owner=profile)
+        form = CourseForm(instance=course)
+        return render(
+            request, 
+            "commitments/edit_course.html", 
+            context= {
+                "course": course,
+                "form": form
+            }    
+        )
+
+    @staticmethod
+    def post(request, course_id):
+        profile = ProviderProfile.objects.get(user=request.user)
+        course = get_object_or_404(Course, id=course_id, owner=profile)
+        form = CourseForm(request.POST, instance=course)
+        if form.is_valid():
+            course = form.save()
+            return HttpResponseRedirect("/app/course/{}/view".format(course.id))
+        else:
+            return render(
+                request, 
+                "commitments/edit_course.html", 
+                context= {
+                    "course": course,
+                    "form": form
+                }    
+            )
+
+
 class ViewCourseView(LoginRequiredMixin, View):
     @staticmethod
     def get(request, course_id):
