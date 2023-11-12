@@ -57,7 +57,7 @@ class Commitment(models.Model, CommitmentParent):
                 case 1:
                     return "Complete"
                 case 2:
-                    return "Expired"
+                    return "Past Due"
                 case 3:
                     return "Discontinued"
                 case _:
