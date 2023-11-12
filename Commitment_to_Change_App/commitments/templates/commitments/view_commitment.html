@@ -9,6 +9,7 @@ view {% endblock %} {% block page_content %}
       <p>Started: {{ commitment.created.date }}</p>
       <p>Due: {{ commitment.deadline }}</p>
       <p>Status: {{ commitment.status_text }}</p>
+      <p>Time Remaining: {{ commitment.remaining_time }}</p>
     </div>
     <div class="w3-panel round-corners secondary-accent center">
       <p>{{ commitment.description }}</p>
