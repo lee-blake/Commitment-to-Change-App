@@ -1,6 +1,6 @@
 {% extends "commitments/base.html" %}
 
-{% block title %} Log In Page {% endblock %}
+{% block title %} Login Page {% endblock %}
 
 {% block page_content %}
 <div class="w3-container background">
@@ -10,7 +10,7 @@
             <form method="POST">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="standard-button primary-accent">Log In</button>
+                <button type="submit" class="standard-button primary-accent">Login</button>
             </form>
         </div>
         <div class="w3-container">
