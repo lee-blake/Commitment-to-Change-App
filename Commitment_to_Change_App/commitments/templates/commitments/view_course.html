@@ -6,6 +6,12 @@
 <h1>{{ course.title }}</h1>
 <p>{{ course.description }}</p>
 {% block join_link %} {% endblock %}
+<h2>Students</h2>
+<ul>
+	{% for student in course.students.all %}
+	<li>{{ student.username }}</li>
+	{% endfor %}
+</ul>
 <h2>Associated Commitments</h2>
 <h3>Status Breakdown</h3>
 <div>Total commitments: {{ status_breakdown.total }}</div>
