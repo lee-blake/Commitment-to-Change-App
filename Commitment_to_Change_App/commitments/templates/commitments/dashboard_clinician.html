@@ -56,6 +56,18 @@
       </div>
     </div>
   </div>
-</div>
 
+  <div class="w3-container commitment-container foreground round-corners pad-small">
+    <div class="w3-row">
+      <div class="primary-accent round-corners center accent-text">
+        <h1>My Courses</h1>
+      </div>
+      <div class="background round-corners">
+        {% for course in enrolled_courses %}
+          {% include "commitments/dashboard_course.html" %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

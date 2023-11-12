@@ -19,6 +19,29 @@ class ClinicianProfile(models.Model):
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
     user = models.OneToOneField(cme_accounts.models.User, on_delete=models.CASCADE)
 
+    @property
+    def username(self):
+        return self.user.username
+
+
+class ProviderProfile(models.Model):
+    created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
+    last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    user = models.OneToOneField(cme_accounts.models.User, on_delete=models.CASCADE)
+
+
+class Course(models.Model):
+    created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
+    last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
+    title = models.CharField("Title", max_length=200)
+    description = models.TextField("Description", max_length=2000)
+    join_code = models.CharField("Join code", max_length=100)
+    students = models.ManyToManyField(ClinicianProfile)
+
+    def __str__(self):
+        return self.title
+
 
 class Commitment(models.Model, CommitmentParent):
     class CommitmentStatus(models.IntegerChoices):
@@ -49,6 +72,7 @@ class Commitment(models.Model, CommitmentParent):
     deadline = models.DateField("Deadline", validators=[
         validators.date_is_not_in_past
     ])
+    associated_course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, default=None)
 
     @property
     def status_text(self):
