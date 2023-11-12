@@ -2,6 +2,7 @@ import os
 
 from .database_authentication import POSTGRESQL_DATABASE_NAME, POSTGRESQL_DATABASE_USERNAME, \
     POSTGRESQL_DATABASE_PASSWORD
+from .secret_keys import SERVER_SECRET_KEY
 
 """
 Django settings for Commitment_to_Change_App project.
@@ -24,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y8*)()a=(_k4ei)aqp%x-gz&9*vb@-e=h%h#gv5^-qtn+@f(=m'
+SECRET_KEY = SERVER_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
