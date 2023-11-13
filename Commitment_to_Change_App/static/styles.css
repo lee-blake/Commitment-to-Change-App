@@ -170,6 +170,30 @@ form {
     border: 1px solid grey;
 }
 
+div.default-form label {
+    display: block;
+}
+
+label {
+    display: block;
+}
+
+div.default-form select, div.default-form input {
+    width: 100%;
+    display: inline-block;
+    border: 1px solid grey;
+    border-radius: 4px;
+    box-sizing: border-box;
+  } 
+
+div.default-form input[type=submit] {
+    background-color: var(--primary-accent);
+    color: var(--accent-text);
+    border-radius: 15px;
+  }
+
+
+
 ul.errorlist > li {
     color: red;
     font-weight: bold;
@@ -186,9 +210,3 @@ table.commitment-status-breakdown-table tr > td:nth-child(2),
 table.commitment-status-breakdown-table tr > th:nth-child(2) {
     text-align: right;
 }
-
-/* TODO: probably want to make this rule more specific */
-label {
-    display: block;
-}
-
