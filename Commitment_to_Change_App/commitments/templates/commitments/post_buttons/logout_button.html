@@ -2,5 +2,5 @@
 submit a POST request to the logout URL via a form. -->
 <form action="{% url 'logout' %}" id="logout-form" method="POST">
     {% csrf_token %}
-    <button type="submit" class="logout-button primary-accent">Log Out</button>
+    <button type="submit" class="standard-button primary-accent">Log Out</button>
 </form>
