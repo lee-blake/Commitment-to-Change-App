@@ -98,6 +98,10 @@ body {
     padding-bottom: 15px;
 }
 
+.margin-small {
+    margin: 15px;
+}
+
 .center {
     display: block;
     text-align: center;
@@ -153,4 +157,9 @@ table.commitment-status-breakdown-table td {
 table.commitment-status-breakdown-table tr > td:nth-child(2),
 table.commitment-status-breakdown-table tr > th:nth-child(2) {
     text-align: right;
+}
+
+/* TODO: probably want to make this rule more specific */
+label {
+    display: block;
 }

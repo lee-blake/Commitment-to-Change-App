@@ -1,6 +1,16 @@
-<h3 class="pad-small-side">
-  -
-  <a href="{% url 'view course' course_id=course.id %}">
-    {{ course.title }}
-  </a>
-</h3>
+<div class="container-fluid">
+  <div class="row foreground p-1 round-corners m-3">
+      <div class="col-md-12">
+          <div class="text-center">
+            <h3>
+              <form action="{% url 'view course' course_id=course.id %}" id="view-course-button" method="GET">
+                  {% csrf_token %}
+                  <button type="submit" class="background round-corners p-2">{{ course.title }}</button>
+              </form>
+              
+              </h3>
+          </div>
+      </div>
+
+  </div>
+</div>

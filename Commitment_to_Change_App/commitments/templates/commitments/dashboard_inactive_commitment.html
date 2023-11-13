@@ -1,7 +1,23 @@
-<h3 class="pad-small-side">
-  -
-  <a href="{% url 'view commitment' commitment_id=commitment.id %}">
-    {{ commitment.title }}
-  </a>
-  {% include "commitments/post_buttons/reopen_commitment_button.html" %}
-</h3>
+<div class="container-fluid">
+  <div class="row foreground p-1 round-corners m-3">
+      <div class="col-md-12">
+          <div class="text-center">
+            <h3>
+              <form action="{% url 'view commitment' commitment_id=commitment.id %}" id="view-commitment-button" method="POST">
+                  {% csrf_token %}
+                  <button type="submit" class="background round-corners p-2">{{ commitment.title }}</button>
+              </form>
+              
+                  <p>Due: {{ commitment.deadline }}</p>
+              </h3>
+          </div>
+      </div>
+
+      <div class="col-md-12">
+          <div class="text-center mb-3">
+            {% include "commitments/post_buttons/reopen_commitment_button.html" %}
+          </div>
+      </div>
+
+  </div>
+</div>
