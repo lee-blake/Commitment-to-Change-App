@@ -1,16 +1,16 @@
 {% extends "commitments/base.html" %}
 
-{% block title %} Register for a Provider Account {% endblock %}
+{% block title %} Register for a Provider Account {% endblock title %}
 
 {% block page_content %}
 <h1>Register for a Provider Account</h1>
 <div class="w3-container background">
     <div class="w3-cell-row foreground center">
-        <form action="{% url 'register provider' %}" method="POST">
+        <form action="{% url 'register provider' %}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Submit">
         </form>
     </div>
 </div>
-{% endblock %}
+{% endblock page_content %}

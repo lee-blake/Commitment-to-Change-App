@@ -1,6 +1,6 @@
 {% extends "commitments/base.html" %}
 
-{% block title %} Edit Commitment {% endblock %}
+{% block title %} Edit Commitment {% endblock title %}
 
 {% block page_content %}
 <div class="w3-container background">
@@ -9,4 +9,4 @@
         <a href="{% url 'delete commitment' commitment_id=commitment.id %}"> Delete </a>
     </div>
 </div>
-{% endblock %}
+{% endblock page_content %}

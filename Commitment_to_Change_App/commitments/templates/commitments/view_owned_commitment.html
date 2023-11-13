@@ -6,7 +6,7 @@
       Edit Commitment
     </button>
   </form>
-{% endblock %}
+{% endblock edit_button %}
 
 {% block delete_button %}
   <form action="{% url 'delete commitment' commitment_id=commitment.id %}">
@@ -14,4 +14,4 @@
       Delete Commitment
     </button>
   </form>
-{% endblock %}
+{% endblock delete_button %}
