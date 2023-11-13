@@ -4,16 +4,18 @@
 
 {% block page_content %}
 <div class="container-fluid px-5 pt-5 text-center background">
-    <div class="p-3 small-box-container round-corners pad-small-bot center default-form foreground">
-        <div class="p-2 center secondary-accent pad-small-bot round-corners">
+    <div class="p-3 small-box-container round-corners pad-small-bot center foreground">
+        <div class="p-2 center secondary-accent pad-small-bot round-corners default-form">
             <h2>Login</h2>
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="standard-button primary-accent">Log In</button>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="standard-button">Log In</button>
+                </div>
             </form>
         </div>
-        <div class="container">
+        <div class="container p-1">
             <div class="w3-small-box-container round-corners pad-small-bot center background">
                 <h4>Need an account?</h4>
                 <a href="{% url 'register type choice' %}">
