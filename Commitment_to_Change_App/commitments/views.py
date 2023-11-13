@@ -5,7 +5,7 @@ import string
 import cme_accounts.forms
 import cme_accounts.models
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
     HttpResponseServerError, HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
@@ -175,7 +175,7 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
             return HttpResponseBadRequest("'complete' key must be set to 'true' to complete a commitment")
 
     @staticmethod
-    def get(request, commitment_id):
+    def get(request):
         return HttpResponseNotAllowed(['POST'])
 
 
@@ -192,7 +192,7 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
             return HttpResponseBadRequest("'discontinue' key must be set to 'true' to discontinue a commitment")
 
     @staticmethod
-    def get(request, commitment_id):
+    def get(request):
         return HttpResponseNotAllowed(['POST'])
 
 
@@ -212,7 +212,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
             return HttpResponseBadRequest("'reopen' key must be set to 'true' to reopen a commitment")
 
     @staticmethod
-    def get(request, commitment_id):
+    def get(request):
         return HttpResponseNotAllowed(['POST'])
 
 
