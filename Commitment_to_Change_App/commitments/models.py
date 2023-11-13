@@ -73,3 +73,8 @@ class Commitment(models.Model):
         if self.deadline < today and self.status == Commitment.CommitmentStatus.IN_PROGRESS:
             self.status = Commitment.CommitmentStatus.EXPIRED
             self.save()
+
+    def mark_complete(self):
+        self.status = Commitment.CommitmentStatus.COMPLETE
+
+    # TODO CLAYTON Add additional methods here

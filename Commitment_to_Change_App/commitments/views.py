@@ -168,7 +168,7 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         if request.POST.get("complete") == "true":
-            commitment.status = Commitment.CommitmentStatus.COMPLETE
+            commitment.mark_complete()
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
@@ -185,6 +185,7 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         if request.POST.get("discontinue") == "true":
+            # TODO CLAYTON This line should be replaced with a call to commitment.mark_discontinued()
             commitment.status = Commitment.CommitmentStatus.DISCONTINUED
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
@@ -202,6 +203,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         if request.POST.get("reopen") == "true":
+            # TODO CLAYTON This if-else logic should be replaced with a call to commitment.reopen()
             if commitment.deadline < datetime.date.today():
                 commitment.status = Commitment.CommitmentStatus.EXPIRED
             else:
