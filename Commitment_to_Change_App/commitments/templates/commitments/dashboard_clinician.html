@@ -1,73 +1,84 @@
-{% extends "commitments/base.html" %} 
+{% extends "commitments/base.html" %}
 {% block title %} Dashboard {% endblock %}
 {% block page_content %}
-<div class="w3-container main-container round-corners pad-small">
-  <div
-    class="w3-container commitment-container foreground round-corners pad-small"
-  >
-    <div class="w3-row">
-      <div class="primary-accent round-corners center accent-text">
-        <h1>Commitments</h1>
-      </div>
-
-      <div class="w3-cell w3-half pad-small">
-        <div class="background round-corners pad-small-bot">
-          <div class="center secondary-accent round-corners">
-            <h2>In-progress Commitments</h2>
+<div class="container-fluid px-5 pt-5 text-center background">
+    <div class="row g-5">
+        <div class="col">
+            <div class="px-4 pb-3 foreground round-corners">
+                <div class="py-1 primary-accent round-corners center accent-text">
+                    <h1>My Courses</h1>
+                </div>
+                <div class="foreground round-corners">
+                    <div class="py-1 background round-corners">
+                        {% for course in enrolled_courses %}
+                        {% include "commitments/dashboard_course.html" %}
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-
-          {% for commitment in in_progress_commitments %}
-            {% include "commitments/dashboard_active_commitment.html" %}
-          {% endfor %}
         </div>
-      </div>
+        <div class="col">
+            <div class="px-4 pb-3 mb-4 foreground round-corners">
+                <div class="py-1 primary-accent round-corners center accent-text">
+                    <h1>In-progress Commitments</h1>
+                </div>
+                <div class="py-1 background round-corners">
 
-      <div class="w3-cell w3-half pad-small">
-        <div class="background round-corners pad-small-bot">
-          <div class="center secondary-accent round-corners">
-            <h2>Past Due Commitments:</h2>
-          </div>
-          {% for commitment in expired_commitments %}
-            {% include "commitments/dashboard_active_commitment.html" %}
-          {% endfor %}
+                    {% for commitment in in_progress_commitments %}
+                    {% include "commitments/dashboard_active_commitment.html" %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-      </div>
+
     </div>
 
-    <div class="w3-row">
-      <div class="background round-corners pad-small-bot">
-        <div class="secondary-accent round-corners center">
-          <h2>Completed commitments</h2>
+    <div class="row g-5">
+        <div class="col">
+            <div class="px-3 pb-3 foreground round-corners">
+                <div class="py-1 primary-accent round-corners center accent-text">
+                    <h1>Completed Commitments</h1>
+                </div>
+                <div class="py-1 background round-corners">
+
+                    {% for commitment in completed_commitments %}
+                    {% include "commitments/dashboard_inactive_commitment.html" %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-        {% for commitment in completed_commitments %}
-          {% include "commitments/dashboard_inactive_commitment.html" %}
-        {% endfor %}
-      </div>
+
+        <div class="col">
+            <div class="px-3 pb-3 foreground round-corners">
+                <div class="py-1 primary-accent round-corners center accent-text">
+                    <h1>Past Due Commitments</h1>
+                </div>
+                <div class="py-1 background round-corners">
+
+                    {% for commitment in expired_commitments %}
+                    {% include "commitments/dashboard_active_commitment.html" %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col">
+            <div class="px-3 pb-3 foreground round-corners">
+                <div class="py-1 primary-accent round-corners center accent-text">
+                    <h1>Discontinued Commitments</h1>
+                </div>
+                <div class="py-1 background round-corners">
+
+                    {% for commitment in discontinued_commitments %}
+                    {% include "commitments/dashboard_inactive_commitment.html" %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
-    <div class="w3-row">
-      <div class="background round-corners pad-small-bot">
-        <div class="secondary-accent round-corners center">
-          <h2>Discontinued Commitments</h2>
-        </div>
-        {% for commitment in discontinued_commitments %}
-          {% include "commitments/dashboard_inactive_commitment.html" %}
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-
-  <div class="w3-container commitment-container foreground round-corners pad-small">
-    <div class="w3-row">
-      <div class="primary-accent round-corners center accent-text">
-        <h1>My Courses</h1>
-      </div>
-      <div class="background round-corners">
-        {% for course in enrolled_courses %}
-          {% include "commitments/dashboard_course.html" %}
-        {% endfor %}
-      </div>
-    </div>
-  </div>
 </div>
 {% endblock %}
