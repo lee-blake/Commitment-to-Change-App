@@ -10,6 +10,7 @@
     --primary-text: #000000;
     --light-text: #7B7B7B;
     --accent-text: #FFFFFF;
+    --standard-round: 15px;
 }
 
 .primary-accent {
@@ -82,7 +83,7 @@ body {
 }
 
 .round-corners {
-    border-radius: 15px;
+    border-radius: var(--standard-round);
 }
 
 .pad-small {
@@ -131,7 +132,7 @@ form {
     color: var(--accent-text);
     border: 2px solid transparent;
     border-radius: 10px;
-    transition: 0.5s ease-in-out;
+    transition: 0.3s ease-in-out;
 }
 .standard-button:hover {
     filter: brightness(130%);
@@ -159,7 +160,7 @@ form {
 
 .border-on-hover {
    border: 1px solid transparent;
-   transition: 0.5s;
+   transition: 0.3s ease-in-out;
 }
 
 .border-on-hover:hover {
@@ -189,7 +190,17 @@ div.default-form input[type=submit] {
     border-radius: 15px;
   }
 
+.view-button {
+    background-color: var(--background);
+    border-radius: var(--standard-round);
+    border: 2px solid grey;
+    transition: 0.3s ease-in-out;
+}
 
+.view-button:hover {
+    border: 2px solid black;
+
+}
 
 ul.errorlist > li {
     color: red;
