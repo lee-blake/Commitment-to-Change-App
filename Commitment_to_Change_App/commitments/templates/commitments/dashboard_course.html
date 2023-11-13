@@ -5,7 +5,7 @@
             <h3>
               <form action="{% url 'view course' course_id=course.id %}" id="view-course-button" method="get">
                   {% csrf_token %}
-                  <button type="submit" class="view-button p-2">{{ course.title }}</button>
+                  <button type="submit" class="btn btn-lg view-button p-2">{{ course.title }}</button>
               </form>
               
               </h3>

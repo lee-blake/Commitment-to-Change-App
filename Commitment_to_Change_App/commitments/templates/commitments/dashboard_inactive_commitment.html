@@ -5,7 +5,7 @@
             <h3>
               <form action="{% url 'view commitment' commitment_id=commitment.id %}" id="view-commitment-button" method="post">
                   {% csrf_token %}
-                  <button type="submit" class="view-button p-2">{{ commitment.title }}</button>
+                  <button type="submit" class="btn btn-lg view-button p-2">{{ commitment.title }}</button>
               </form>
               
                   <p>Due: {{ commitment.deadline }}</p>
