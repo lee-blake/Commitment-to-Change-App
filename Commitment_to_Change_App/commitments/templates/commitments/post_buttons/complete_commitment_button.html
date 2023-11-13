@@ -1,7 +1,7 @@
 <form
   action="{% url 'complete commitment' commitment_id=commitment.id %}"
   id="complete-commitment-form"
-  method="POST"
+  method="post"
 >
   {% csrf_token %}
   <input name="complete" type="hidden" value="true" />

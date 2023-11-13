@@ -3,7 +3,7 @@
       <div class="col-md-12">
           <div class="text-center">
             <h3>
-              <form action="{% url 'view commitment' commitment_id=commitment.id %}" id="view-commitment-button" method="POST">
+              <form action="{% url 'view commitment' commitment_id=commitment.id %}" id="view-commitment-button" method="post">
                   {% csrf_token %}
                   <button type="submit" class="background round-corners p-2">{{ commitment.title }}</button>
               </form>

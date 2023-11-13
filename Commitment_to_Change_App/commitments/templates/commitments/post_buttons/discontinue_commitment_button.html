@@ -1,7 +1,7 @@
 <form
   action="{% url 'discontinue commitment' commitment_id=commitment.id %}"
   id="discontinue-commitment-form"
-  method="POST"
+  method="post"
 >
   {% csrf_token %}
   <input name="discontinue" type="hidden" value="true" />

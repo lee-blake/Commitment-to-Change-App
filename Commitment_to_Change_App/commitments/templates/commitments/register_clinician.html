@@ -6,7 +6,7 @@
 <h1>Register for a Clinician Account</h1>
 <div class="w3-container background">
     <div class="w3-cell-row foreground center">
-        <form action="{% url 'register clinician' %}" method="POST">
+        <form action="{% url 'register clinician' %}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Submit">

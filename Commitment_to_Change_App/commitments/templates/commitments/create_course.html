@@ -5,7 +5,7 @@
 {% block page_content %}
 <div class="w3-container background">
     <div class="w3-cell-row foreground center">
-        <form action="{% url 'create course' %}" method="POST">
+        <form action="{% url 'create course' %}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Submit">
