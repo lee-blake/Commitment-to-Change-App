@@ -4,16 +4,6 @@ from django.db import models
 from . import validators
 
 
-# TODO this is just for demonstrating that inherited methods work. When we
-# create the actual CommitmentLogicProvider* class, we will remove this.
-#   *Name subject to change.
-class CommitmentParent:
-    def double_description(self):
-        self.description += self.description
-
-
-# Create your models here.
-
 class ClinicianProfile(models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
@@ -40,10 +30,10 @@ class Course(models.Model):
     students = models.ManyToManyField(ClinicianProfile)
 
     def __str__(self):
-        return self.title
+        return self.title.__str__()
 
 
-class Commitment(models.Model, CommitmentParent):
+class Commitment(models.Model):
     class CommitmentStatus(models.IntegerChoices):
         IN_PROGRESS = 0
         COMPLETE = 1
