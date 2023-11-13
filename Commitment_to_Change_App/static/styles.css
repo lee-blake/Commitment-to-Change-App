@@ -142,6 +142,34 @@ form {
 
 }
 
+.enlarge-on-hover {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    transition: 0.1s;
+}
+
+.enlarge-on-hover:hover {
+    transform: scale(1.03);
+}
+.brighten-on-hover{
+    filter: brightness(96%);
+    transition:0.3s;
+}
+
+.brighten-on-hover:hover {
+    filter: brightness(100%);
+  }
+
+.border-on-hover {
+   border: 1px solid transparent;
+   transition: 0.5s;
+}
+
+.border-on-hover:hover {
+
+    border: 1px solid grey;
+}
+
 ul.errorlist > li {
     color: red;
     font-weight: bold;
@@ -163,3 +191,4 @@ table.commitment-status-breakdown-table tr > th:nth-child(2) {
 label {
     display: block;
 }
+
