@@ -5,7 +5,7 @@
           <span class="navbar-light navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav">
+          <ul class="navbar-nav mr-auto">
               <li class="nav-item">
                   <a aria-current="page" class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
               </li>
@@ -21,12 +21,19 @@
                   <a class="nav-link" href="{% url 'create course' %}">Create a course</a>
               </li>
               {% endif %}
-
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
               <li class="nav-item">
                   <a class="nav-link" href="#">
-                      Logged in as {{ request.user.username }} {% include "commitments/post_buttons/logout_button.html" %}
+                      Logged in as {{ request.user.username }} 
                   </a>
               </li>
+              <li class="nav-item">
+                <li class="nav-link">
+                  {% include "commitments/post_buttons/logout_button.html" %}
+                </li>
+              </li>
+
               {% else %}
               <li class="nav-item">
                   {% include "commitments/post_buttons/login_button.html" %}
