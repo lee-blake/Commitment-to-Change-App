@@ -1,6 +1,6 @@
 {% extends "commitments/base.html" %}
 
-{% block title %} {{ commitment.title }} view {% endblock %}
+{% block title %} {{ commitment.title }} view {% endblock title %}
 
 {% block page_content %}
 <div class="w3-container">
@@ -16,4 +16,4 @@
         {% include "commitments/post_buttons/delete_commitment_confirm_button.html" %}
     </div>
 </div>
-{% endblock %}
+{% endblock page_content %}

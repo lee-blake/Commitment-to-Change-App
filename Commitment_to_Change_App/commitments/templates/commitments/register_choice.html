@@ -1,9 +1,9 @@
 {% extends "commitments/base.html" %}
 
-{% block title %} Choose an Account Type {% endblock %}
+{% block title %} Choose an Account Type {% endblock title %}
 
 {% block page_content %}
 <h1>Choose an Account Type</h1>
 <a href="{% url 'register clinician' %}"><button>Clinician Account</button></a>
 <a href="{% url 'register provider' %}"><button>Provider Account</button></a>
-{% endblock %}
+{% endblock page_content %}
