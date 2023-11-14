@@ -62,9 +62,23 @@ class CommitmentTestCase(SimpleTestCase):
         # Implement in models.py.
 
     def test_reopen_marks_expired_when_date_is_past(self):
-        pass # TODO CLAYTON Make this, but make sure the deadline is yesterday or earlier.
-        # datetime.timedelta(days=1) can help you here. Implement in models.py.
-        # Change usage in views.py once this and the above test are done
+        today = date.today()
+        past_deadline = today.replace(year=today.year - 1)
+
+        commitment = Commitment(
+            owner=self.commitment_owner,
+            title="Complete",
+            description="Reopen me please",
+            deadline=past_deadline,
+            status=Commitment.CommitmentStatus.COMPLETE
+        )
+
+        commitment.reopen(date.today())
+
+        self.assertEqual(
+            Commitment.CommitmentStatus.EXPIRED,
+            commitment.status
+        )
     
     def test_mark_commitment_expired_if_deadline_has_passed_doesnt_change_complete_status(self):
         pass # TODO CLAYTON If the commitment is complete, its status should remain complete
