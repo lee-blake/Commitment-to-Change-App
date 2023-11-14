@@ -1,5 +1,8 @@
-{% extends "commitments/base.html" %} {% block title %} {{ commitment.title }}
-view {% endblock %} {% block page_content %}
+{% extends "commitments/base.html" %} 
+
+{% block title %} {{ commitment.title }} {% endblock title %} 
+
+{% block page_content %}
 <div class="w3-container">
   <div class="w3-panel commitment-title round-corners primary-accent">
     <h1>{{ commitment.title }}</h1>
@@ -14,9 +17,9 @@ view {% endblock %} {% block page_content %}
       <p>{{ commitment.description }}</p>
     </div>
     <div class="w3-panel center">
-      {% block edit_button %} {% endblock %}
-      {% block delete_button %} {% endblock %}
+      {% block edit_button %} {% endblock edit_button %}
+      {% block delete_button %} {% endblock delete_button %}
     </div>
   </div>
 </div>
-{% endblock %}
+{% endblock page_content %}

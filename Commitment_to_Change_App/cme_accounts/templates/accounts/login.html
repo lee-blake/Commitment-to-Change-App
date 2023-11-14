@@ -1,26 +1,28 @@
 {% extends "commitments/base.html" %}
 
-{% block title %} Log In Page {% endblock %}
+{% block title %} Log In Page {% endblock title %}
 
 {% block page_content %}
-<div class="w3-container background">
-    <div class="small-box-container round-corners pad-small-bot center">
-        <div class="center secondary-accent pad-small-bot round-corners">
-                <h2>Login</h2>
-            <form method="POST">
+<div class="container-fluid px-5 pt-5 text-center background">
+    <div class="p-3 small-box-container round-corners pad-small-bot center foreground">
+        <div class="p-2 center secondary-accent pad-small-bot round-corners default-form">
+            <h2>Login</h2>
+            <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="standard-button primary-accent">Log In</button>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="standard-button">Log In</button>
+                </div>
             </form>
         </div>
-        <div class="w3-container">
-            <div class="w3-small-box-container round-corners pad-small-bot center primary-accent">
+        <div class="container p-1">
+            <div class="w3-small-box-container round-corners pad-small-bot center background">
                 <h4>Need an account?</h4>
                 <a href="{% url 'register type choice' %}">
-                    <button type="submit" class="standard-button primary-accent">Click here to register</button>
+                    <button type="submit" class="standard-button">Click here to register</button>
                 </a>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+{% endblock page_content %}

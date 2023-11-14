@@ -1,15 +1,19 @@
 {% extends "commitments/base.html" %}
 
-{% block title %} Create Commitment {% endblock %}
+{% block title %} Create Commitment {% endblock title %}
 
 {% block page_content %}
-<div class="w3-container background">
-    <div class="w3-cell-row foreground center">
-        <form action="{% url 'make commitment' %}" method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Submit">
-        </form>
+<div class="container-fluid px-5 pt-5 text-center background">
+    <div class="row g-5">
+        <div class="col" align="center">
+            <div class="px-4 py-3 foreground round-corners default-form">
+                <form action="{% url 'make commitment' %}" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+        </div>
     </div>
 </div>
-{% endblock %}
+{% endblock page_content %}

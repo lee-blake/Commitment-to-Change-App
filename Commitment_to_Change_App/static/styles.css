@@ -3,13 +3,14 @@
 :root {
     --primary-accent: #AA1400;
     --primary-select: #e61d02;
-    --primary-border: #670000;
+    --primary-border: #630000;
     --secondary-accent: #ffa2a2;
     --background: #DDE6EC;
     --foreground: #FFFFFF;
     --primary-text: #000000;
     --light-text: #7B7B7B;
     --accent-text: #FFFFFF;
+    --standard-round: 15px;
 }
 
 .primary-accent {
@@ -82,7 +83,7 @@ body {
 }
 
 .round-corners {
-    border-radius: 15px;
+    border-radius: var(--standard-round);
 }
 
 .pad-small {
@@ -115,30 +116,105 @@ form {
 }
 
 .title_header {
-    background-color: var(--primary_accent);
+    background-color: var(--primary-accent);
     color: white;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .commitment_header {
-    background-color: var(--primary_accent);
+    background-color: var(--primary-accent);
     color: white;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-}
-
-.logout-button {
-    background-color: var(--primary-accent);
-    color: var(--accent-text);
-    border-width: 0px;
-    border-radius: 10px;
-
 }
 
 .standard-button {
     background-color: var(--primary-accent);
     color: var(--accent-text);
-    border-width: 0px;
+    border: 2px solid transparent;
     border-radius: 10px;
+    transition: 0.3s ease-in-out;
+}
+.standard-button:hover {
+    filter: brightness(130%);
+    border: 2px solid var(--primary-border);
+    
+}
+
+.enlarge-on-hover {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    transition: 0.1s ease-in-out;
+}
+
+.enlarge-on-hover:hover {
+    transform: scale(1.03);
+}
+.brighten-on-hover{
+    filter: brightness(96%);
+    transition:0.3s;
+}
+
+.brighten-on-hover:hover {
+    filter: brightness(100%);
+  }
+
+.border-on-hover {
+   border: 1px solid transparent;
+   transition: 0.3s ease-in-out;
+}
+
+.border-on-hover:hover {
+
+    border: 1px solid grey;
+}
+
+div.default-form label {
+    display: block;
+}
+
+div.default-form select, div.default-form input {
+    width: 100%;
+    display: inline-block;
+    border: 1px solid grey;
+    border-radius: 4px;
+    box-sizing: border-box;
+  } 
+
+div.default-form input[type=submit] {
+    background-color: var(--primary-accent);
+    color: var(--accent-text);
+    border-radius: 15px;
+  }
+
+
+  div.edit-form label {
+    display: block;
+}
+
+div.edit-form select, div.edit-form input {
+    width: 100%;
+    display: inline-block;
+    border: 1px solid grey;
+    border-radius: 4px;
+    box-sizing: border-box;
+  } 
+
+div.edit-form input[type=submit] {
+    width:50%;
+    background-color: var(--primary-accent);
+    color: var(--accent-text);
+    border-radius: 15px;
+  }
+
+.view-button {
+    background-color: var(--background);
+    border-radius: var(--standard-round);
+    border: 2px solid grey;
+    transition: 0.3s ease-in-out;
+}
+
+.view-button:hover {
+    border: 2px solid black;
 
 }
 
@@ -157,9 +233,4 @@ table.commitment-status-breakdown-table td {
 table.commitment-status-breakdown-table tr > td:nth-child(2),
 table.commitment-status-breakdown-table tr > th:nth-child(2) {
     text-align: right;
-}
-
-/* TODO: probably want to make this rule more specific */
-label {
-    display: block;
 }
