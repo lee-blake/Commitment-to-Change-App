@@ -40,7 +40,24 @@ class CommitmentTestCase(SimpleTestCase):
         # change things in views.py to use your new method.
 
     def test_reopen_marks_in_progress_when_date_is_not_past(self):
-        pass # TODO CLAYTON Make this test like the ones above, but make sure the deadline is not
+        today = date.today()
+        future_deadline = today.replace(year=today.year + 1)
+
+        commitment = Commitment.objects.create(
+            owner=self.commitment_owner,
+            title="Complete",
+            description="Reopen me please",
+            deadline=future_deadline,
+            status=Commitment.CommitmentStatus.COMPLETE
+        )
+
+        commitment.reopen()
+
+        self.assertEqual(
+            Commitment.CommitmentStatus.IN_PROGRESS,
+            commitment.status
+        )
+        # Make this test like the ones above, but make sure the deadline is not
         # a past date. Also make sure the initial status is COMPLETE or DISCONTINUED. 
         # Implement in models.py.
 
