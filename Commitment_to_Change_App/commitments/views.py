@@ -185,8 +185,8 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         if request.POST.get("discontinue") == "true":
-            # TODO CLAYTON This line should be replaced with a call to commitment.mark_discontinued()
-            commitment.status = Commitment.CommitmentStatus.DISCONTINUED
+            # TODO CLAYTON This line should be replaced with a call to commitment.mark_discontinued() (completed)
+            commitment.mark_discontinued()
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
