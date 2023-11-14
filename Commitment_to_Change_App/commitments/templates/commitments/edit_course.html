@@ -3,13 +3,17 @@
 {% block title %} Create Course {% endblock title %}
 
 {% block page_content %}
-<div class="w3-container background">
-    <div class="w3-cell-row foreground center">
-        <form action="{% url 'edit course' course_id=course.id %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Submit">
-        </form>
+<div class="container-fluid px-5 pt-5 text-center background">
+    <div class="row g-5">
+        <div class="col" align="center">
+            <div class="px-4 py-3 foreground round-corners default-form">
+                <form action="{% url 'edit course' course_id=course.id %}" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock page_content %}
