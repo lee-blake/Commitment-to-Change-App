@@ -203,11 +203,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         if request.POST.get("reopen") == "true":
-            # TODO CLAYTON This if-else logic should be replaced with a call to commitment.reopen()
-            if commitment.deadline < datetime.date.today():
-                commitment.status = Commitment.CommitmentStatus.EXPIRED
-            else:
-                commitment.status = Commitment.CommitmentStatus.IN_PROGRESS
+            commitment.reopen()
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
