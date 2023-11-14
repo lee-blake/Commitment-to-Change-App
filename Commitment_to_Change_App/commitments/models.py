@@ -79,7 +79,6 @@ class Commitment(models.Model):
     def mark_complete(self):
         self.status = Commitment.CommitmentStatus.COMPLETE
 
-    # TODO CLAYTON Add additional methods here
     def mark_discontinued(self):
         self.status = Commitment.CommitmentStatus.DISCONTINUED
 
