@@ -1,6 +1,5 @@
 from datetime import date
 from django.test import SimpleTestCase
-
 from cme_accounts.models import User
 from .models import Commitment, ClinicianProfile
 
@@ -25,7 +24,19 @@ class CommitmentTestCase(SimpleTestCase):
         )
 
     def test_mark_discontinued_marks_discontinued(self):
-        pass # TODO CLAYTON Make this test like the one above, then implement in models.py and
+        commitment = Commitment(
+            owner=self.commitment_owner,
+            title="In Progress",
+            description="Mark me discontinued please",
+            deadline=date.today(),
+            status=Commitment.CommitmentStatus.IN_PROGRESS
+        )
+        commitment.mark_discontinued()
+        self.assertEqual(
+            Commitment.CommitmentStatus.DISCONTINUED,
+            commitment.status
+        )
+        # TODO CLAYTON Make this test like the one above, then implement in models.py and
         # change things in views.py to use your new method.
 
     def test_reopen_marks_in_progress_when_date_is_not_past(self):
@@ -55,7 +66,7 @@ class CommitmentTestCase(SimpleTestCase):
         pass # TODO CLAYTON If the deadline is in the future, don't change the status. Should
         # not require changing method.
 
-    def test_mark_commitment_expried_if_deadline_has_passed_expires_if_deadline_in_past(self):
+    def test_mark_commitment_expired_if_deadline_has_passed_expires_if_deadline_in_past(self):
         pass # TODO CLAYTON If the status is IN_PROGRESS and the deadline is in the past (not
         # today), it should be EXPIRED after calling the function. Should not require changing 
         # method.
