@@ -3,14 +3,23 @@
 {% block title %} Register for a Clinician Account {% endblock title %}
 
 {% block page_content %}
-<h1>Register for a Clinician Account</h1>
-<div class="w3-container background">
-    <div class="w3-cell-row foreground center">
-        <form action="{% url 'register clinician' %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Submit">
-        </form>
+
+<div class="container-fluid px-5 pt-5 text-center background">
+    <div class="row g-5">
+        <div class="col">
+            <div class="px-4 pb-3 foreground round-corners">
+                <div class="py-1 primary-accent round-corners center accent-text">
+                    <h1>Register for a Clinician Account</h1>
+                </div>
+                <div class="py-5 foreground center default-form">
+                    <form action="{% url 'register clinician' %}" method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type="submit" value="Create Account">
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock page_content %}

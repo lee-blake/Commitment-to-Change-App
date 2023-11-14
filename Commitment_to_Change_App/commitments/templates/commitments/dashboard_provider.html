@@ -2,20 +2,22 @@
 {% block title %} Provider Dashboard {% endblock title %}
 
 {% block page_content %}
-
-<div class="w3-container main-container round-corners pad-small">
-  <div class="w3-container commitment-container foreground round-corners pad-small">
-    <div class="w3-row">
-      <div class="primary-accent round-corners center accent-text">
-        <h1>Courses</h1>
-      </div>
-      <div class="background round-corners">
-        {% for course in courses %}
-          {% include "commitments/dashboard_course.html" %}
-        {% endfor %}
-      </div>
+<div class="container-fluid px-5 pt-5 text-center background">
+    <div class="row g-5">
+        <div class="col">
+            <div class="px-4 pb-3 foreground round-corners">
+                <div class="py-1 primary-accent round-corners center accent-text">
+                    <h1>Courses</h1>
+                </div>
+                <div class="foreground round-corners">
+                    <div class="py-1 background round-corners">
+                        {% for course in courses %}
+                        {% include "commitments/dashboard_course.html" %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-
 {% endblock page_content %}
