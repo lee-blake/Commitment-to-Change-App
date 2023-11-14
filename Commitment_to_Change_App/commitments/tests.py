@@ -80,24 +80,3 @@ class CommitmentTestCase(SimpleTestCase):
             commitment.status
         )
     
-    def test_mark_commitment_expired_if_deadline_has_passed_doesnt_change_complete_status(self):
-        pass # TODO CLAYTON If the commitment is complete, its status should remain complete
-        # after the method call. Should not require changing method.
-
-    def test_mark_commitment_expired_if_deadline_has_passed_doesnt_change_discontinued_status(self):
-        pass # TODO CLAYTON If the commitment is discontinued, its status should remain discontinued
-        # after the method call. Should not require changing method.
-
-    def test_mark_commitment_expired_if_deadline_has_passed_doesnt_change_expired_status(self):
-        pass # TODO CLAYTON If the commitment is expired, its status should remain expired
-        # after the method call, EVEN IF THE DEADLINE IS IN THE FUTURE. Should not require 
-        # changing method.
-
-    def test_mark_commitment_expired_if_deadline_has_passed_doesnt_change_future_deadline(self):
-        pass # TODO CLAYTON If the deadline is in the future, don't change the status. Should
-        # not require changing method.
-
-    def test_mark_commitment_expired_if_deadline_has_passed_expires_if_deadline_in_past(self):
-        pass # TODO CLAYTON If the status is IN_PROGRESS and the deadline is in the past (not
-        # today), it should be EXPIRED after calling the function. Should not require changing 
-        # method.
