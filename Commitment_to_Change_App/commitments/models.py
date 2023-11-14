@@ -87,4 +87,3 @@ class Commitment(models.Model):
                 self.status = Commitment.CommitmentStatus.IN_PROGRESS
             else:
                 self.status = Commitment.CommitmentStatus.EXPIRED
-            self.save()

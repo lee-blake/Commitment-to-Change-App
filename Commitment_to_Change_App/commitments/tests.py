@@ -43,7 +43,7 @@ class CommitmentTestCase(SimpleTestCase):
         today = date.today()
         future_deadline = today.replace(year=today.year + 1)
 
-        commitment = Commitment.objects.create(
+        commitment = Commitment(
             owner=self.commitment_owner,
             title="Complete",
             description="Reopen me please",
@@ -51,7 +51,7 @@ class CommitmentTestCase(SimpleTestCase):
             status=Commitment.CommitmentStatus.COMPLETE
         )
 
-        commitment.reopen()
+        commitment.reopen(date.today())
 
         self.assertEqual(
             Commitment.CommitmentStatus.IN_PROGRESS,
