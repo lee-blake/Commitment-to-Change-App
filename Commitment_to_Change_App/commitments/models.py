@@ -1,3 +1,5 @@
+import datetime
+
 import cme_accounts.models
 from django.db import models
 
@@ -81,8 +83,12 @@ class Commitment(models.Model):
     def mark_discontinued(self):
         self.status = Commitment.CommitmentStatus.DISCONTINUED
 
-    def reopen(self, today):
-        if self.status in {Commitment.CommitmentStatus.COMPLETE, Commitment.CommitmentStatus.DISCONTINUED}:
+    def reopen(self):
+        if self.status in {
+            Commitment.CommitmentStatus.COMPLETE, 
+            Commitment.CommitmentStatus.DISCONTINUED
+            }:
+            today = datetime.date.today()
             if self.deadline >= today:
                 self.status = Commitment.CommitmentStatus.IN_PROGRESS
             else:

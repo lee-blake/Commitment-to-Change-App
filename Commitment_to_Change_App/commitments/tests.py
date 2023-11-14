@@ -51,7 +51,7 @@ class CommitmentTestCase(SimpleTestCase):
             status=Commitment.CommitmentStatus.COMPLETE
         )
 
-        commitment.reopen(date.today())
+        commitment.reopen()
 
         self.assertEqual(
             Commitment.CommitmentStatus.IN_PROGRESS,
@@ -73,7 +73,7 @@ class CommitmentTestCase(SimpleTestCase):
             status=Commitment.CommitmentStatus.COMPLETE
         )
 
-        commitment.reopen(date.today())
+        commitment.reopen()
 
         self.assertEqual(
             Commitment.CommitmentStatus.EXPIRED,
