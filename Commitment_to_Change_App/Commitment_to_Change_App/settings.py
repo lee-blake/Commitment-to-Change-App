@@ -1,8 +1,6 @@
 import os
 
-from .database_authentication import POSTGRESQL_DATABASE_NAME, POSTGRESQL_DATABASE_USERNAME, \
-    POSTGRESQL_DATABASE_PASSWORD
-from .secret_keys import SERVER_SECRET_KEY
+from . import custom_settings
 
 """
 Django settings for Commitment_to_Change_App project.
@@ -25,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = SERVER_SECRET_KEY
+SECRET_KEY = custom_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -78,16 +76,7 @@ WSGI_APPLICATION = 'Commitment_to_Change_App.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': POSTGRESQL_DATABASE_NAME,
-        'USER': POSTGRESQL_DATABASE_USERNAME,
-        'PASSWORD': POSTGRESQL_DATABASE_PASSWORD,
-        'HOST': 'localhost',
-        'PORT': '',
-    }
-}
+DATABASES = custom_settings.DATABASES
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

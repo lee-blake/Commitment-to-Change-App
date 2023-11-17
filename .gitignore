@@ -6,8 +6,7 @@
 *__pycache__*
 
 # Do NOT remove this! We do not want database passwords or secret keys to be public!
-Commitment_to_Change_App/Commitment_to_Change_App/database_authentication.py
-Commitment_to_Change_App/Commitment_to_Change_App/secret_keys.py
+Commitment_to_Change_App/Commitment_to_Change_App/custom_settings.py
 
 # Migrations do not seem necessary to build at this point in time
 Commitment_to_Change_App/*/migrations/*.py
