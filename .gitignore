@@ -11,3 +11,8 @@ Commitment_to_Change_App/Commitment_to_Change_App/custom_settings.py
 # Migrations do not seem necessary to build at this point in time
 Commitment_to_Change_App/*/migrations/*.py
 !Commitment_to_Change_App/*/migrations/__init__.py
+
+# This directory will hold scripts that a team member uses personally to make
+# their life easier, but does not want committed to the repo.
+dev_scripts/*
+!dev_scripts/README.txt
