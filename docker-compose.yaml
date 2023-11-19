@@ -1,0 +1,25 @@
+version: '3'
+services:
+  cme-ctc-web:
+    build: Commitment_to_Change_App/
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+      #stop_signal: SIGINT
+    ports:
+      - "8000:8000"
+    volumes:
+      # General policy: unless the app SHOULD write to a dir, it should be RO.
+      # For Django, only migrations dirs should have write permissions.
+      # Since we presently don't commit them or really care what's in them,
+      # but do need them to persist with the container, they are volumes.
+      - ./Commitment_to_Change_App:/app:ro
+      - cme-ctc-web-migrations-cme_accounts:/app/cme_accounts/migrations
+      - cme-ctc-web-migrations-commitments:/app/commitments/migrations
+    depends_on:
+      - cme-ctc-db
+  cme-ctc-db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: Insecure7
+volumes:
+  cme-ctc-web-migrations-cme_accounts:
+  cme-ctc-web-migrations-commitments:
