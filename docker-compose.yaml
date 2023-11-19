@@ -11,9 +11,13 @@ services:
       # For Django, only migrations dirs should have write permissions.
       # Since we presently don't commit them or really care what's in them,
       # but do need them to persist with the container, they are volumes.
+      # For testing, pytest and coverage both need to write somewhere, but since we 
+      # currently don't use those files directly, make them volumes too.
       - ./Commitment_to_Change_App:/app:ro
       - cme-ctc-web-migrations-cme_accounts:/app/cme_accounts/migrations
       - cme-ctc-web-migrations-commitments:/app/commitments/migrations
+      - cme-ctc-web-pytest-cache:/app/.pytest_cache
+      - cme-ctc-web-coverage-cache:/app/.coverage_cache
     depends_on:
       - cme-ctc-db
   cme-ctc-db:
@@ -23,3 +27,5 @@ services:
 volumes:
   cme-ctc-web-migrations-cme_accounts:
   cme-ctc-web-migrations-commitments:
+  cme-ctc-web-pytest-cache:
+  cme-ctc-web-coverage-cache:
