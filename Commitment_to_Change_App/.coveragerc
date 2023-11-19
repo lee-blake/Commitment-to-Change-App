@@ -1,0 +1,19 @@
+[run]
+data_file = .coverage_cache/.coverage
+omit = 
+	# Tests
+	*/test_*
+	*/*_test.py
+	*/tests.py
+	# Main settings files
+	Commitment_to_Change_App/*settings.py
+	# Django modules for running and deploying the server
+	manage.py
+	Commitment_to_Change_App/asgi.py
+	Commitment_to_Change_App/wsgi.py
+	# Migrations files
+	*/migrations/*
+source = .
+
+[report]
+show_missing = True
