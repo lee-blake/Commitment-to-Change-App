@@ -7,6 +7,17 @@ on:
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -24,6 +35,10 @@ jobs:
       - name: Create custom_settings.py
         working-directory: ./Commitment_to_Change_App/Commitment_to_Change_App
         run: cat custom_settings_default.py | sed "s/''/'$(python -c "import secrets; print(secrets.token_urlsafe())")'/" > custom_settings.py
+
+      - name: Migrate
+        working-directory: ./Commitment_to_Change_App
+        run: python manage.py migrate
 
       - name: Run pytest
         working-directory: ./Commitment_to_Change_App
