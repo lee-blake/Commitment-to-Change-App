@@ -38,7 +38,9 @@ jobs:
 
       - name: Migrate
         working-directory: ./Commitment_to_Change_App
-        run: python manage.py migrate
+        run: |
+          python manage.py makemigrations 
+          python manage.py migrate
 
       - name: Run pytest
         working-directory: ./Commitment_to_Change_App
