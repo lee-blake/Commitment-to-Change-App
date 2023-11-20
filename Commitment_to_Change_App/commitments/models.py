@@ -70,12 +70,6 @@ class Commitment(models.Model):
     def status_text(self):
         return Commitment.CommitmentStatus.__str__(self.status)
 
-    # TODO This needs to go away once we have an expiration daemon.
-    def mark_expired_if_deadline_has_passed(self, today):
-        if self.deadline < today and self.status == Commitment.CommitmentStatus.IN_PROGRESS:
-            self.status = Commitment.CommitmentStatus.EXPIRED
-            self.save()
-
     def save_expired_if_past_deadline(self):
         self.mark_expired_if_past_deadline()
         self.save()
@@ -101,4 +95,3 @@ class Commitment(models.Model):
                 self.status = Commitment.CommitmentStatus.IN_PROGRESS
             else:
                 self.status = Commitment.CommitmentStatus.EXPIRED
-                
