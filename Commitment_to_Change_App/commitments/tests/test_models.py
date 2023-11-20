@@ -8,23 +8,25 @@ from commitments.models import ClinicianProfile, Commitment
 
 class TestCommitment:
 
-    @pytest.fixture
-    def commitment_owner(self):
+    @pytest.fixture(name="commitment_owner")
+    def fixture_commitment_owner(self):
         user = User(
             username="testuser", 
             password="password", 
-            email="test@email.me"
+            email="test@email.me",
+            is_clinician=True
         )
         return ClinicianProfile(
             user=user
         )
 
-    @pytest.fixture
-    def saved_commitment_owner(self):
+    @pytest.fixture(name="saved_commitment_owner")
+    def fixture_saved_commitment_owner(self):
         user = User.objects.create(
             username="testuser", 
             password="password", 
-            email="test@email.me"
+            email="test@email.me",
+            is_clinician=True
         )
         return ClinicianProfile.objects.create(
             user=user
