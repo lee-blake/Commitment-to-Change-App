@@ -76,6 +76,10 @@ class Commitment(models.Model):
             self.status = Commitment.CommitmentStatus.EXPIRED
             self.save()
 
+    def save_expired_if_past_deadline(self):
+        self.mark_expired_if_past_deadline()
+        self.save()
+
     def mark_expired_if_past_deadline(self):
         today = datetime.date.today()
         if self.deadline < today and self.status == Commitment.CommitmentStatus.IN_PROGRESS:
@@ -97,3 +101,4 @@ class Commitment(models.Model):
                 self.status = Commitment.CommitmentStatus.IN_PROGRESS
             else:
                 self.status = Commitment.CommitmentStatus.EXPIRED
+                
