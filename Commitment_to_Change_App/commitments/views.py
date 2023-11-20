@@ -174,10 +174,6 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
         else:
             return HttpResponseBadRequest("'complete' key must be set to 'true' to complete a commitment")
 
-    @staticmethod
-    def get(request):
-        return HttpResponseNotAllowed(['POST'])
-
 
 class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
