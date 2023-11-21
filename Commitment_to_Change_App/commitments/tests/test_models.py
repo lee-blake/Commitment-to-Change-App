@@ -21,8 +21,8 @@ class TestCommitmentStatus:
         def test_expired_gives_correct_string(self):
             """Test that EXPIRED converts to string correctly.
             
-            While we may use 'expired' in the code, it is a little force for users
-            and so we should display 'past due' instead."""
+            While we may use 'expired' in the code, such language is forceful enough that it may
+            discourage users. We should display 'past due' instead."""
 
             assert str(Commitment.CommitmentStatus.EXPIRED) == "Past Due"
 
@@ -188,7 +188,7 @@ class TestCommitmentTemplate:
             commitment_owner,
             commitment_template_owner
         ):
-            """Test that other mandatory keyword arguments to commitments are set on the instance
+            """Test that other mandatory keyword arguments to Commitments are set on the Commitment
             created by into_commitment"""
 
             template = CommitmentTemplate(
