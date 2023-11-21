@@ -116,3 +116,18 @@ class TestCommitment:
             commitment.save_expired_if_past_deadline()
             reloaded_commitment = Commitment.objects.get(id=commitment.id)
             assert reloaded_commitment.status == Commitment.CommitmentStatus.COMPLETE
+
+        def test_no_database_touch_if_not_changed(self, saved_commitment_owner):
+            today = date.today()
+            past_deadline = today.replace(year=today.year - 1)
+            commitment = Commitment.objects.create(
+                owner=saved_commitment_owner,
+                title="Test title",
+                description="Test description",
+                deadline=past_deadline,
+                status=Commitment.CommitmentStatus.COMPLETE
+            )
+            last_modification_before_method_call = commitment.last_updated
+            commitment.save_expired_if_past_deadline()
+            reloaded_commitment = Commitment.objects.get(id=commitment.id)
+            assert reloaded_commitment.last_updated == last_modification_before_method_call
