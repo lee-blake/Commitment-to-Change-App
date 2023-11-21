@@ -45,15 +45,14 @@ class Commitment(models.Model):
         def __str__(self):
             match self:
                 case 0:
-                    return "In progress"
+                    return "In Progress"
                 case 1:
                     return "Complete"
                 case 2:
                     return "Past Due"
                 case 3:
                     return "Discontinued"
-                case _:
-                    return "no number"
+
 
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
