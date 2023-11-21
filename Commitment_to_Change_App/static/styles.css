@@ -1,5 +1,11 @@
 @charset "utf-8";
 
+/* 
+-------------------------------------------------------------------
+    --- Variables --- 
+------------------------------------------------------------------- 
+ */
+
 :root {
     --primary-accent: #AA1400;
     --primary-select: #e61d02;
@@ -13,38 +19,55 @@
     --standard-round: 15px;
 }
 
-.primary-accent {
-    background-color: var(--primary-accent);
-    color: var(--accent-text);
+/* 
+-------------------------------------------------------------------
+    --- Website defaults --- 
+------------------------------------------------------------------- 
+ */
+
+ body {background-color: var(--background);}
+
+ ul.errorlist > li {
+    color: red;
+    font-weight: bold;
 }
 
-.primary-select {
-    background-color: var(--primary-select);
+form {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
 }
 
-.primary-border {
-    background-color: var(--primary-border);
-}
+/* 
+-------------------------------------------------------------------
+    --- Colors --- 
+------------------------------------------------------------------- 
+ */
 
-.secondary-accent {
-    background-color: var(--secondary-accent);
-}
+.primary-accent {background-color: var(--primary-accent); color: var(--accent-text);}
+.primary-select {background-color: var(--primary-select);}
+.primary-border {background-color: var(--primary-border);}
+.secondary-accent {background-color: var(--secondary-accent);}
+.background {background-color: var(--background);}
+.foreground {background-color: var(--foreground);}
+.accent-text {color: var(--accent-text);}
 
-.background {
-    background-color: var(--background);
-}
+/* 
+-------------------------------------------------------------------
+    --- Modifiers --- 
+------------------------------------------------------------------- 
+ */
+ .round-corners
+ {
+     border-radius: var(--standard-round);
+ }
 
-.foreground {
-    background-color: var(--foreground);
-}
-
-.accent-text {
-    color: var(--accent-text);
-}
-
-body {
-    background-color: var(--background);
-}
+/* 
+-------------------------------------------------------------------
+    --- Containers --- 
+------------------------------------------------------------------- 
+ */
 
 .main-container {
     padding: 30px;
@@ -63,165 +86,152 @@ body {
     justify-content: space-between;
 }
 
+/* 
+-------------------------------------------------------------------
+    --- Generic Transitions --- 
+------------------------------------------------------------------- 
+ */
 
-.button {
-    background-color: var(--primary-accent);
-    border: none;
-    color: var(--accent-text);
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    margin: 4px 2px;
-    font-size: 16px;
-    cursor: pointer;
-    float: right;
-}
+ .border-on-hover
+ {
+     border: 1px solid transparent;
+     transition: 0.3s ease-in-out;
+ }
+ .border-on-hover:hover
+ {
+     border: 1px solid grey;
+ }
+ .brighten-on-hover
+ {
+     filter: brightness(96%);
+     transition: 0.3s;
+ }
+ .brighten-on-hover:hover
+ {
+     filter: brightness(100%);
+ }
+ .enlarge-on-hover
+ {
+     transform: translateZ(0);
+     transition: 0.1s ease-in-out;
+     webkit-transform: translateZ(0);
+ }
+ .enlarge-on-hover:hover
+ {
+     transform: scale(1.03);
+ }
 
-.commitment-title {
-    text-align: center;
-    color: #FFFFFF;
-}
+/* 
+-------------------------------------------------------------------
+    --- Component Styling --- 
+------------------------------------------------------------------- 
+ */
 
-.round-corners {
-    border-radius: var(--standard-round);
-}
+ .button
+ {
+     background-color: var(--primary-accent);
+     border: none;
+     color: var(--accent-text);
+     cursor: pointer;
+     float: right;
+     font-size: 16px;
+     margin: 4px 2px;
+     padding: 15px 32px;
+     text-align: center;
+     text-decoration: none;
+ }
+ .commitment_header
+ {
+     background-color: var(--primary-accent);
+     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+     color: white;
+ }
+ .commitment-title
+ {
+     color: #FFFFFF;
+     text-align: center;
+ }
+ .standard-button
+ {
+     background-color: var(--primary-accent);
+     border: 2px solid transparent;
+     border-radius: 10px;
+     color: var(--accent-text);
+     transition: 0.3s ease-in-out;
+ }
+ .standard-button:hover
+ {
+     border: 2px solid var(--primary-border);
+     filter: brightness(130%);
+ }
+ .title_header
+ {
+     background-color: var(--primary-accent);
+     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+     color: white;
+ }
+ .view-button
+ {
+     background-color: var(--background);
+     border: 2px solid grey;
+     border-radius: var(--standard-round);
+     transition: 0.3s ease-in-out;
+ }
+ .view-button:hover
+ {
+     border: 2px solid black;
+ }
 
-.pad-small {
-    padding: 15px;
-}
+/* 
+-------------------------------------------------------------------
+    --- Form Styling ---
+------------------------------------------------------------------- 
+ */
 
-.pad-small-side {
-    padding-right: 15px;
-    padding-left: 15px;
-}
+ div.default-form input[type=submit]
+ {
+     background-color: var(--primary-accent);
+     border-radius: 15px;
+     color: var(--accent-text);
+ }
+ div.default-form label
+ {
+     display: block;
+ }
+ div.default-form select, div.default-form input
+ {
+     border: 1px solid grey;
+     border-radius: 4px;
+     box-sizing: border-box;
+     display: inline-block;
+     width: 100%;
+ }
+ div.edit-form input[type=submit]
+ {
+     background-color: var(--primary-accent);
+     border-radius: 15px;
+     color: var(--accent-text);
+     width: 50%;
+ }
+ div.edit-form label
+ {
+     display: block;
+ }
+ div.edit-form select, div.edit-form input
+ {
+     border: 1px solid grey;
+     border-radius: 4px;
+     box-sizing: border-box;
+     display: inline-block;
+     width: 100%;
+ }
 
-.pad-small-bot {
-    padding-bottom: 15px;
-}
-
-.margin-small {
-    margin: 15px;
-}
-
-.center {
-    display: block;
-    text-align: center;
-}
-
-form {
-    display: inline-block;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: left;
-}
-
-.title_header {
-    background-color: var(--primary-accent);
-    color: white;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-}
-
-.commitment_header {
-    background-color: var(--primary-accent);
-    color: white;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-}
-
-.standard-button {
-    background-color: var(--primary-accent);
-    color: var(--accent-text);
-    border: 2px solid transparent;
-    border-radius: 10px;
-    transition: 0.3s ease-in-out;
-}
-.standard-button:hover {
-    filter: brightness(130%);
-    border: 2px solid var(--primary-border);
-    
-}
-
-.enlarge-on-hover {
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
-    transition: 0.1s ease-in-out;
-}
-
-.enlarge-on-hover:hover {
-    transform: scale(1.03);
-}
-.brighten-on-hover{
-    filter: brightness(96%);
-    transition:0.3s;
-}
-
-.brighten-on-hover:hover {
-    filter: brightness(100%);
-  }
-
-.border-on-hover {
-   border: 1px solid transparent;
-   transition: 0.3s ease-in-out;
-}
-
-.border-on-hover:hover {
-
-    border: 1px solid grey;
-}
-
-div.default-form label {
-    display: block;
-}
-
-div.default-form select, div.default-form input {
-    width: 100%;
-    display: inline-block;
-    border: 1px solid grey;
-    border-radius: 4px;
-    box-sizing: border-box;
-  } 
-
-div.default-form input[type=submit] {
-    background-color: var(--primary-accent);
-    color: var(--accent-text);
-    border-radius: 15px;
-  }
-
-
-  div.edit-form label {
-    display: block;
-}
-
-div.edit-form select, div.edit-form input {
-    width: 100%;
-    display: inline-block;
-    border: 1px solid grey;
-    border-radius: 4px;
-    box-sizing: border-box;
-  } 
-
-div.edit-form input[type=submit] {
-    width:50%;
-    background-color: var(--primary-accent);
-    color: var(--accent-text);
-    border-radius: 15px;
-  }
-
-.view-button {
-    background-color: var(--background);
-    border-radius: var(--standard-round);
-    border: 2px solid grey;
-    transition: 0.3s ease-in-out;
-}
-
-.view-button:hover {
-    border: 2px solid black;
-
-}
-
-ul.errorlist > li {
-    color: red;
-    font-weight: bold;
-}
+/* 
+-------------------------------------------------------------------
+    --- Table styling ---
+(TODO: Remove once tables are removed) 
+------------------------------------------------------------------- 
+ */
 
 table.commitment-status-breakdown-table, 
 table.commitment-status-breakdown-table th,
