@@ -59,45 +59,6 @@ class TestCompleteCommitmentView:
                 deadline=date.today(),
                 status=Commitment.CommitmentStatus.IN_PROGRESS
             )
-        
-        def test_rejects_non_owner_with_404(
-            self, 
-            client,
-            saved_completable_commitment, 
-            other_clinician_account
-        ):
-            target_url = reverse(
-                "complete commitment", 
-                kwargs={
-                    "commitment_id": saved_completable_commitment.id
-                }
-            )
-            client.force_login(other_clinician_account.user)
-            response = client.post(
-                target_url,
-                {"complete": "true"}
-            )
-            assert response.status_code == 404
-
-        def test_rejects_bad_request_body_with_400(
-            self, 
-            client,
-            saved_completable_commitment, 
-            saved_commitment_owner
-        ):
-            target_url = reverse(
-                "complete commitment", 
-                kwargs={
-                    "commitment_id": saved_completable_commitment.id
-                }
-            )
-            client.force_login(saved_commitment_owner.user)
-            response = client.post(
-                target_url,
-                {"complete": "blah blah nonsense"}
-            )
-            print(response)
-            assert response.status_code == 400
 
         def test_good_request_marks_complete(
             self, 
@@ -118,3 +79,82 @@ class TestCompleteCommitmentView:
             )
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
             assert reloaded_commitment.status == Commitment.CommitmentStatus.COMPLETE
+        
+        def test_rejects_non_owner_with_no_changes(
+            self, 
+            client,
+            saved_completable_commitment, 
+            other_clinician_account
+        ):
+            target_url = reverse(
+                "complete commitment", 
+                kwargs={
+                    "commitment_id": saved_completable_commitment.id
+                }
+            )
+            client.force_login(other_clinician_account.user)
+            client.post(
+                target_url,
+                {"complete": "true"}
+            )
+            reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
+            assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
+
+        def test_rejects_non_owner_with_404(
+            self, 
+            client,
+            saved_completable_commitment, 
+            other_clinician_account
+        ):
+            target_url = reverse(
+                "complete commitment", 
+                kwargs={
+                    "commitment_id": saved_completable_commitment.id
+                }
+            )
+            client.force_login(other_clinician_account.user)
+            response = client.post(
+                target_url,
+                {"complete": "true"}
+            )
+            assert response.status_code == 404
+
+        def test_rejects_bad_request_body_with_no_changes(
+            self, 
+            client,
+            saved_completable_commitment, 
+            saved_commitment_owner
+        ):
+            target_url = reverse(
+                "complete commitment", 
+                kwargs={
+                    "commitment_id": saved_completable_commitment.id
+                }
+            )
+            client.force_login(saved_commitment_owner.user)
+            client.post(
+                target_url,
+                {"complete": "blah blah nonsense"}
+            )
+            reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
+            assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
+
+        def test_rejects_bad_request_body_with_400(
+            self, 
+            client,
+            saved_completable_commitment, 
+            saved_commitment_owner
+        ):
+            target_url = reverse(
+                "complete commitment", 
+                kwargs={
+                    "commitment_id": saved_completable_commitment.id
+                }
+            )
+            client.force_login(saved_commitment_owner.user)
+            response = client.post(
+                target_url,
+                {"complete": "blah blah nonsense"}
+            )
+            assert response.status_code == 400
+
