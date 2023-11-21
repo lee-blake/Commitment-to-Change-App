@@ -7,10 +7,10 @@
     <div class="row g-5">
         <div class="col">
             <div class="px-4 pb-3 foreground round-corners">
-                <div class="py-1 primary-accent round-corners center accent-text">
+                <div class="py-1 primary-accent round-corners text-center accent-text">
                     <h1>Register for a Provider Account</h1>
                 </div>
-                <div class="py-5 foreground center default-form">
+                <div class="py-5 foreground text-center default-form">
                     <form action="{% url 'register provider' %}" method="post">
                         {% csrf_token %}
                         {{ form.as_p }}

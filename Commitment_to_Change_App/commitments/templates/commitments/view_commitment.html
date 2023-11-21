@@ -8,15 +8,15 @@
     <h1>{{ commitment.title }}</h1>
   </div>
   <div class="w3-container round-corners foreground">
-    <div class="w3-panel round-corners secondary-accent center">
+    <div class="w3-panel round-corners secondary-accent text-center">
       <p>Started: {{ commitment.created.date }}</p>
       <p>Due: {{ commitment.deadline }}</p>
       <p>Status: {{ commitment.status_text }}</p>
     </div>
-    <div class="w3-panel round-corners secondary-accent center">
+    <div class="w3-panel round-corners secondary-accent text-center">
       <p>{{ commitment.description }}</p>
     </div>
-    <div class="w3-panel center">
+    <div class="w3-panel text-center">
       {% block edit_button %} {% endblock edit_button %}
       {% block delete_button %} {% endblock delete_button %}
     </div>
