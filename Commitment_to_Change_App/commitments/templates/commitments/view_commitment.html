@@ -3,20 +3,20 @@
 {% block title %} {{ commitment.title }} {% endblock title %} 
 
 {% block page_content %}
-<div class="w3-container">
-  <div class="w3-panel commitment-title round-corners primary-accent">
+<div class="container-fluid">
+  <div class="container-fluid p-2 my-3 commitment-title round-corners primary-accent">
     <h1>{{ commitment.title }}</h1>
   </div>
-  <div class="w3-container round-corners foreground">
-    <div class="w3-panel round-corners secondary-accent text-center">
+  <div class="container-fluid p-3 round-corners foreground">
+    <div class="container-fluid p-1 my-1 round-corners secondary-accent text-center">
       <p>Started: {{ commitment.created.date }}</p>
       <p>Due: {{ commitment.deadline }}</p>
       <p>Status: {{ commitment.status_text }}</p>
     </div>
-    <div class="w3-panel round-corners secondary-accent text-center">
+    <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
       <p>{{ commitment.description }}</p>
     </div>
-    <div class="w3-panel text-center">
+    <div class="container-fluid text-center">
       {% block edit_button %} {% endblock edit_button %}
       {% block delete_button %} {% endblock delete_button %}
     </div>

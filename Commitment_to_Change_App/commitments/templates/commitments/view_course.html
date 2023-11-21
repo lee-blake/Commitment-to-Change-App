@@ -2,14 +2,14 @@
 {% block title %} {{ course.title }} {% endblock title %}
 
 {% block page_content %}
-<div class="w3-container main-container round-corners p-3 ">
-	<div class="foreground">
-		<div class="primary-accent round-corners text-center accent-text">
+<div class="container-fluid main-container p-4 ">
+	<div class="container-xxl px-5 round-corners foreground">
+		<div class="py-1 primary-accent round-corners text-center accent-text">
 			<h1>{{ course.title }}</h1>
 		</div>
 
-		<div class="w3-row">
-			<div class="w3-cell w3-half p-3">
+		<div class="row py-3 g-5">
+			<div class="col-md-6 p-3">
 				<div class="background round-corners pb-3">
 					<div class="text-center secondary-accent round-corners">
 						<h2>Description</h2>
@@ -31,7 +31,7 @@
 					</ul>
 				</div>
 			</div>
-			<div class="w3-cell w3-half p-3">
+			<div class="col-md-6 p-3">
 				<div class="background round-corners pb-3">
 					<div class="text-center secondary-accent round-corners">
 						<h2>Associated Commitments</h2>
@@ -70,10 +70,10 @@
 				</div>
 			</div>
 		</div>
+		<div class="container-fluid py-3 text-center">
+			{% block edit_button %} {% endblock edit_button %}
+			{% block delete_button %} {% endblock delete_button %}
+		  </div>
 	</div>
-	<div class="w3-panel text-center">
-		{% block edit_button %} {% endblock edit_button %}
-		{% block delete_button %} {% endblock delete_button %}
-	  </div>
 </div>
 {% endblock page_content %}

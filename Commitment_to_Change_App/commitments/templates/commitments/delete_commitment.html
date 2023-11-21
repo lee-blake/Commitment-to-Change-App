@@ -3,12 +3,12 @@
 {% block title %} {{ commitment.title }} view {% endblock title %}
 
 {% block page_content %}
-<div class="w3-container">
-    <div class="w3-panel commitment-title round-corners primary-accent">
+<div class="container-fluid">
+    <div class="container-fluid p-1 my-3 commitment-title round-corners primary-accent">
         <h1>{{ commitment.title }}</h1>
     </div>
-    <div class="w3-panel round-corners secondary-accent text-center">
-        <div class="w3-panel round-corners secondary-accent text-center">
+    <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
+        <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
             <p>Are you sure you want to delete {{ commitment.title }}
             that finishes on {{ commitment.deadline }}?</p>
         </div>
