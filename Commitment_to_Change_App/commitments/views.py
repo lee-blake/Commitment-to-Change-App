@@ -28,7 +28,7 @@ def commitment_remaining_time(request, commitment_id):
 
 def view_commitment(request, commitment_id):
     commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+    commitment.save_expired_if_past_deadline()
     context = {"commitment": commitment}
     if request.user.is_authenticated and request.user == commitment.owner.user:
         return render(request, "commitments/view_owned_commitment.html", context)
@@ -55,7 +55,7 @@ class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitments = Commitment.objects.filter(owner=profile)
         for commitment in commitments:
-            commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+            commitment.save_expired_if_past_deadline()
 
         in_progress = list(filter(lambda x: x.status == 0, commitments))
         completed = list(filter(lambda x: x.status == 1, commitments))
@@ -131,7 +131,7 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, View):
     def get(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+        commitment.save_expired_if_past_deadline()
         form = CommitmentForm(instance=commitment, profile=profile)
         return render(
             request,
@@ -146,7 +146,7 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        commitment.mark_expired_if_deadline_has_passed(datetime.date.today())
+        commitment.save_expired_if_past_deadline()
         form = CommitmentForm(request.POST, instance=commitment, profile=profile)
         if form.is_valid():
             commitment = form.save()
@@ -173,10 +173,6 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
             return HttpResponseBadRequest("'complete' key must be set to 'true' to complete a commitment")
-
-    @staticmethod
-    def get(request):
-        return HttpResponseNotAllowed(['POST'])
 
 
 class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
