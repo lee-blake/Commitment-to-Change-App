@@ -1,7 +1,8 @@
 import datetime
 
-import cme_accounts.models
 from django.db import models
+
+import cme_accounts.models
 
 from . import validators
 
@@ -82,7 +83,12 @@ class Commitment(models.Model):
     deadline = models.DateField("Deadline", validators=[
         validators.date_is_not_in_past
     ])
-    associated_course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, default=None)
+    associated_course = models.ForeignKey(
+        Course,
+        on_delete=models.SET_NULL,
+        null=True,
+        default=None
+    )
 
     @property
     def status_text(self):
@@ -102,7 +108,7 @@ class Commitment(models.Model):
 
     def reopen(self):
         if self.status in {
-            Commitment.CommitmentStatus.COMPLETE, 
+            Commitment.CommitmentStatus.COMPLETE,
             Commitment.CommitmentStatus.DISCONTINUED
             }:
             today = datetime.date.today()

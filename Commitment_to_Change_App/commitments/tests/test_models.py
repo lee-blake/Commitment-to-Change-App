@@ -1,6 +1,6 @@
-import pytest
-
 from datetime import date
+
+import pytest
 
 from cme_accounts.models import User
 from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, ProviderProfile
@@ -17,7 +17,7 @@ class TestCommitmentStatus:
 
         def test_complete_gives_correct_string(self):
             assert str(Commitment.CommitmentStatus.COMPLETE) == "Complete"
-        
+
         def test_expired_gives_correct_string(self):
             """Test that EXPIRED converts to string correctly.
             
@@ -36,8 +36,8 @@ class TestCommitment:
     @pytest.fixture(name="commitment_owner")
     def fixture_commitment_owner(self):
         user = User(
-            username="testuser", 
-            password="password", 
+            username="testuser",
+            password="password",
             email="test@email.me",
             is_clinician=True
         )
@@ -48,8 +48,8 @@ class TestCommitment:
     @pytest.fixture(name="saved_commitment_owner")
     def fixture_saved_commitment_owner(self):
         user = User.objects.create(
-            username="testuser", 
-            password="password", 
+            username="testuser",
+            password="password",
             email="test@email.me",
             is_clinician=True
         )
