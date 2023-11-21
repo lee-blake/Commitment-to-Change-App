@@ -22,6 +22,22 @@ class ProviderProfile(models.Model):
     user = models.OneToOneField(cme_accounts.models.User, on_delete=models.CASCADE)
 
 
+class CommitmentTemplate(models.Model):
+    created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
+    last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
+    title = models.CharField("Title", max_length=200)
+    description = models.TextField("Description", max_length=2000)
+
+    def into_commitment(self, **kwargs):
+        return Commitment(
+            title=self.title,
+            description=self.description,
+            source_template=self,
+            **kwargs
+        )
+
+
 class Course(models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
@@ -56,6 +72,9 @@ class Commitment(models.Model):
 
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    source_template = models.ForeignKey(
+        CommitmentTemplate, on_delete=models.SET_NULL, null=True, default=None
+    )
     owner = models.ForeignKey(ClinicianProfile, on_delete=models.CASCADE)
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
