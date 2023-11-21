@@ -75,3 +75,6 @@ class CommitmentTestCase(SimpleTestCase):
             commitment.status
         )
     
+    def test_failure(self):
+        self.assertTrue(False)
+        
