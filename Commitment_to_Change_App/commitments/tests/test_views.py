@@ -32,13 +32,20 @@ def fixture_other_clinician_account():
 
 @pytest.mark.django_db
 class TestCompleteCommitmentView:
+    """Tests for CompleteCommitmentView"""
+
     class TestGet:
-        """Tests for CompleteCommitmentView.get"""
+        """Tests for CompleteCommitmentView.get
+        
+        get does not exist. The only test here verifies that it returns an appropriate error.
+        """
+
         def test_get_returns_405(self, client, saved_commitment_owner):
             target_url = reverse("complete commitment", kwargs={"commitment_id": 1})
             client.force_login(saved_commitment_owner.user)
             response = client.get(target_url)
             assert response.status_code == 405
+
 
     class TestPost:
         """Tests for CompletCommitmentView.post"""
@@ -72,7 +79,7 @@ class TestCompleteCommitmentView:
             )
             assert response.status_code == 404
 
-        def test_rejects_bad_request_body(
+        def test_rejects_bad_request_body_with_400(
             self, 
             client,
             saved_completable_commitment, 

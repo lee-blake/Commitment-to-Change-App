@@ -7,6 +7,7 @@ from commitments.models import ClinicianProfile, Commitment
 
 
 class TestCommitment:
+    """Tests for Commitment"""
 
     @pytest.fixture(name="commitment_owner")
     def fixture_commitment_owner(self):
@@ -31,11 +32,11 @@ class TestCommitment:
         return ClinicianProfile.objects.create(
             user=user
         )
-        
+
 
     @pytest.mark.django_db
     class TestSaveExpiredIfPastDeadline:
-        """Tests for save_expired_if_past_deadline"""
+        """Tests for Commitment.save_expired_if_past_deadline"""
 
         def test_saves_expired_if_past_deadline_and_in_progress(self, saved_commitment_owner):
             today = date.today()
