@@ -1,6 +1,6 @@
 from django.forms import ModelForm, DateInput, ModelChoiceField
 
-from .models import Commitment, Course
+from .models import Commitment, Course, CommitmentTemplate
 
 
 class CommitmentForm(ModelForm):
@@ -42,6 +42,15 @@ class DeleteCommitmentForm(ModelForm):
 class CourseForm(ModelForm):
     class Meta:
         model = Course
+        fields = [
+            "title",
+            "description"
+        ]
+
+
+class CommitmentTemplateForm(ModelForm):
+    class Meta:
+        model = CommitmentTemplate
         fields = [
             "title",
             "description"

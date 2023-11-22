@@ -10,10 +10,11 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpRespon
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
+from django.urls import reverse
 
-from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm
+from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentTemplateForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
-from .models import Commitment, ClinicianProfile, ProviderProfile, Course
+from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
 
 def commitment_remaining_time(request, commitment_id):
@@ -368,3 +369,51 @@ class JoinCourseView(LoginRequiredMixin, View):
             return HttpResponseRedirect("/app/course/{}/view".format(course.id))
         elif request.user.is_provider:
             return HttpResponseRedirect("/app/course/{}/view".format(course.id))
+
+
+class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+
+    @staticmethod
+    def get(request):
+        form = CommitmentTemplateForm()
+        return render(
+            request,
+            "commitments/create_commitment_template.html",
+            context={"form": form}
+        )
+
+    @staticmethod
+    def post(request):
+        form = CommitmentTemplateForm(request.POST)
+        if form.is_valid():
+            form.instance.owner = ProviderProfile.objects.get(user=request.user)
+            commitment_template = form.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "view CommitmentTemplate", 
+                    kwargs={ "commitment_template_id": commitment_template.id }
+                )
+            )
+        else:
+            return render(
+                request,
+                "commitments/create_commitment_template.html",
+                context={"form": form}
+            )
+
+
+class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+
+    @staticmethod
+    def get(request, commitment_template_id):
+        profile = ProviderProfile.objects.get(user=request.user)
+        commitment_template= get_object_or_404(
+            CommitmentTemplate,
+            id=commitment_template_id,
+            owner=profile
+        )
+        return render(
+            request,
+            "commitments/view_commitment_template.html",
+            context={"commitment_template": commitment_template}
+        )
