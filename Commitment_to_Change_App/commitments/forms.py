@@ -1,4 +1,5 @@
-from django.forms import ModelForm, DateInput, ModelChoiceField
+from django.forms import ModelForm, DateInput, ModelChoiceField, CheckboxSelectMultiple, \
+    ModelMultipleChoiceField
 
 from .models import Commitment, Course, CommitmentTemplate
 
@@ -55,3 +56,19 @@ class CommitmentTemplateForm(ModelForm):
             "title",
             "description"
         ]
+
+class CourseSelectSuggestedCommitmentsForm(ModelForm):
+    class Meta:
+        model = Course
+        fields = ["suggested_commitments"]
+
+    suggested_commitments = ModelMultipleChoiceField(
+        queryset=CommitmentTemplate.objects.none(),
+        required=False,
+        widget=CheckboxSelectMultiple
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+        self.fields["suggested_commitments"].queryset = \
+            CommitmentTemplate.objects.filter(owner=self.instance.owner)

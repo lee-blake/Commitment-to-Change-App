@@ -32,5 +32,10 @@ urlpatterns = [
           "commitment-template/<int:commitment_template_id>/view/",
           views.ViewCommitmentTemplateView.as_view(),
           name="view CommitmentTemplate"
-     )
+     ),
+     path(
+          "course/<int:course_id>/suggested-commitments/select/",
+          views.CourseChangeSuggestedCommitmentsView.as_view(),
+          name="change Course suggested commitments"
+     ),
 ]

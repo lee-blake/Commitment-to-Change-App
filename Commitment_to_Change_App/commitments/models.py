@@ -30,6 +30,9 @@ class CommitmentTemplate(models.Model):
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
 
+    def __str__(self):
+        return str(self.title)
+
     def into_commitment(self, **kwargs):
         return Commitment(
             title=self.title,
@@ -45,6 +48,7 @@ class Course(models.Model):
     owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
+    suggested_commitments = models.ManyToManyField(CommitmentTemplate)
     join_code = models.CharField("Join code", max_length=100)
     students = models.ManyToManyField(ClinicianProfile)
 

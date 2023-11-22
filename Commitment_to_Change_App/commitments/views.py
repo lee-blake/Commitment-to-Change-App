@@ -12,7 +12,8 @@ from django.shortcuts import render
 from django.views import View
 from django.urls import reverse
 
-from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentTemplateForm
+from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentTemplateForm, \
+    CourseSelectSuggestedCommitmentsForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -417,3 +418,34 @@ class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, View):
             "commitments/view_commitment_template.html",
             context={"commitment_template": commitment_template}
         )
+
+
+class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, View):
+
+    @staticmethod
+    def get(request, course_id):
+        viewer = ProviderProfile.objects.get(user=request.user)
+        course = get_object_or_404(Course, id=course_id, owner=viewer)
+        form = CourseSelectSuggestedCommitmentsForm(instance=course)
+        return render(
+            request,
+            "commitments/course_change_suggested_commitments.html",
+            context={"course": course, "form": form}
+        )
+
+    @staticmethod
+    def post(request, course_id):
+        viewer = ProviderProfile.objects.get(user=request.user)
+        course = get_object_or_404(Course, id=course_id, owner=viewer)
+        form = CourseSelectSuggestedCommitmentsForm(request.POST, instance=course)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "view course", 
+                    kwargs={ "course_id": course.id }
+                )
+            )
+        else:
+            return CourseChangeSuggestedCommitmentsView.get(request, course_id)
+    

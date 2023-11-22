@@ -201,3 +201,21 @@ class TestCommitmentTemplate:
                 deadline=date.today()
             )
             assert commitment.deadline == date.today()
+
+
+    class TestCommitmentTemplateToString:
+        """Tests for CommitmentTemplate.__str__"""
+
+        def test_first_template_returns_correctly(self):
+            template = CommitmentTemplate(
+                title="test title 1",
+                description="irrelevant"
+            )
+            assert str(template) == "test title 1"
+
+        def test_second_template_returns_correctly(self):
+            template = CommitmentTemplate(
+                title="not the same",
+                description="also irrelevant"
+            )
+            assert str(template) == "not the same"
