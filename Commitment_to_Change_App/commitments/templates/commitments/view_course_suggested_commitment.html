@@ -1,0 +1,9 @@
+<div>
+    {% if request.user.is_provider %}
+    <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
+        {{ suggested_commitment }}
+    </a>
+    {% elif request.user.is_clinician %}
+        {{ suggested_commitment }}
+    {% endif %}
+</div>
