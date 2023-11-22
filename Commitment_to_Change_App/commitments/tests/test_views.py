@@ -635,3 +635,19 @@ class TestViewCourseView:
             ).content.decode()
             assert commitment_template_1.title in html
             assert commitment_template_2.title in html
+
+        def test_select_suggested_commitments_button_shows_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            select_suggested_commitments_link_url = reverse(
+                "change Course suggested commitments",
+                kwargs={"course_id": enrolled_course.id}
+            )
+            select_suggested_commitments_link_regex = re.compile(
+                r"\<a\s[^\>]*href=\"" + select_suggested_commitments_link_url + r"\"[^\>]*\>"
+            )
+            assert select_suggested_commitments_link_regex.search(html)
