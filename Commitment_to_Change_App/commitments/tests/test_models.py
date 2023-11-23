@@ -159,8 +159,7 @@ class TestCommitmentTemplate:
             assert commitment.description == "Template description"
 
         def test_converting_does_not_return_same_require_template_fields_each_time(
-            self,
-            commitment_template_owner
+            self, commitment_template_owner
         ):
             template = CommitmentTemplate(
                 title="A different title",
@@ -172,8 +171,7 @@ class TestCommitmentTemplate:
             assert commitment.description == "A different description"
 
         def test_converting_correctly_refers_back_to_source_template(
-            self,
-            commitment_template_owner
+            self, commitment_template_owner
         ):
             template = CommitmentTemplate(
                 title="Template title",
@@ -184,9 +182,7 @@ class TestCommitmentTemplate:
             assert commitment.source_template == template
 
         def test_converting_assigns_mandatory_commitment_keyword_arguments(
-            self,
-            commitment_owner,
-            commitment_template_owner
+            self, commitment_owner, commitment_template_owner
         ):
             """Test that other mandatory keyword arguments to Commitments are set on the Commitment
             created by into_commitment"""

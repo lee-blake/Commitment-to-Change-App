@@ -124,10 +124,7 @@ class TestCompleteCommitmentView:
             )
 
         def test_good_request_marks_complete(
-            self, 
-            client,
-            saved_completable_commitment, 
-            saved_commitment_owner
+            self, client, saved_completable_commitment, saved_commitment_owner
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -144,10 +141,7 @@ class TestCompleteCommitmentView:
             assert reloaded_commitment.status == Commitment.CommitmentStatus.COMPLETE
         
         def test_rejects_non_owner_with_no_changes(
-            self, 
-            client,
-            saved_completable_commitment, 
-            other_clinician_account
+            self, client,saved_completable_commitment, other_clinician_account
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -164,10 +158,7 @@ class TestCompleteCommitmentView:
             assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
 
         def test_rejects_non_owner_with_404(
-            self, 
-            client,
-            saved_completable_commitment, 
-            other_clinician_account
+            self, client, saved_completable_commitment, other_clinician_account
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -183,10 +174,7 @@ class TestCompleteCommitmentView:
             assert response.status_code == 404
 
         def test_rejects_bad_request_body_with_no_changes(
-            self, 
-            client,
-            saved_completable_commitment, 
-            saved_commitment_owner
+            self, client, saved_completable_commitment, saved_commitment_owner
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -203,10 +191,7 @@ class TestCompleteCommitmentView:
             assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
 
         def test_rejects_bad_request_body_with_400(
-            self, 
-            client,
-            saved_completable_commitment, 
-            saved_commitment_owner
+            self, client, saved_completable_commitment, saved_commitment_owner
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -249,11 +234,7 @@ class TestCreateCommitmentTemplateView:
             post_method_regex = re.compile(r"method=\"(post|POST)\"")
             assert post_method_regex.search(form_tag)
 
-        def test_shows_required_title_field(
-            self,
-            client,
-            saved_provider_user
-        ):
+        def test_shows_required_title_field(self, client, saved_provider_user):
             target_url = reverse("create CommitmentTemplate")
             client.force_login(saved_provider_user)
             html = client.get(target_url).content.decode()
@@ -266,11 +247,7 @@ class TestCreateCommitmentTemplateView:
             required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
             assert required_attribute_regex.search(title_input_tag)
 
-        def test_shows_required_description_field(
-            self,
-            client,
-            saved_provider_user
-        ):
+        def test_shows_required_description_field(self, client, saved_provider_user):
             target_url = reverse("create CommitmentTemplate")
             client.force_login(saved_provider_user)
             html = client.get(target_url).content.decode()
@@ -288,9 +265,7 @@ class TestCreateCommitmentTemplateView:
         """Tests for CreateCommitmentView.post"""
 
         def test_invalid_request_returns_the_get_page_with_error_notes(
-            self,
-            client,
-            saved_provider_user
+            self, client, saved_provider_user
         ):
             target_url = reverse("create CommitmentTemplate")
             client.force_login(saved_provider_user)
@@ -308,9 +283,7 @@ class TestCreateCommitmentTemplateView:
             assert error_notes_regex.search(html)
 
         def test_valid_request_creates_template_with_right_owner(
-            self,
-            client,
-            saved_provider_profile
+            self, client, saved_provider_profile
         ):
             client.force_login(saved_provider_profile.user)
             client.post(
@@ -327,9 +300,7 @@ class TestCreateCommitmentTemplateView:
             assert template.owner == saved_provider_profile
 
         def test_valid_request_redirects_to_correct_url(
-            self,
-            client,
-            saved_provider_profile
+            self, client, saved_provider_profile
         ):
             client.force_login(saved_provider_profile.user)
             response = client.post(
@@ -363,10 +334,7 @@ class TestViewCommitmentTemplateView:
         )
 
     def test_rejects_clinician_accounts_with_403(
-        self,
-        client,
-        saved_clinician_account,
-        saved_commitment_template
+        self, client, saved_clinician_account, saved_commitment_template
     ):
         target_url = reverse(
             "view CommitmentTemplate", 
@@ -377,10 +345,7 @@ class TestViewCommitmentTemplateView:
         assert response.status_code == 403
 
     def test_rejects_other_providers_with_404(
-        self,
-        client,
-        other_provider_profile,
-        saved_commitment_template
+        self, client, other_provider_profile, saved_commitment_template
     ):
         target_url = reverse(
             "view CommitmentTemplate", 
@@ -391,10 +356,7 @@ class TestViewCommitmentTemplateView:
         assert response.status_code == 404
 
     def test_shows_mandatory_fields_somewhere_in_page(
-        self,
-        client,
-        saved_provider_profile,
-        saved_commitment_template
+        self, client, saved_provider_profile, saved_commitment_template
     ):
         target_url = reverse(
             "view CommitmentTemplate", 
