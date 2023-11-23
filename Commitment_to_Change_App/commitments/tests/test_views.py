@@ -652,6 +652,40 @@ class TestViewCourseView:
             )
             assert select_suggested_commitments_link_regex.search(html)
 
+        def test_create_from_suggested_commitment_button_shows_in_page_for_clinician(
+            self, client, saved_commitment_owner, enrolled_course,
+            commitment_template_1, commitment_template_2
+        ):
+            enrolled_course.suggested_commitments.add(
+                commitment_template_1, commitment_template_2
+            )
+            client.force_login(saved_commitment_owner.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            create_from_link_url_1 = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            create_from_link_regex_1 = re.compile(
+                r"\<a\s[^\>]*href=\"" + create_from_link_url_1 + r"\"[^\>]*\>"
+            )
+            assert create_from_link_regex_1.search(html)
+            create_from_link_url_2 = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_2.id
+                }
+            )
+            create_from_link_regex_2 = re.compile(
+                r"\<a\s[^\>]*href=\"" + create_from_link_url_2 + r"\"[^\>]*\>"
+            )
+            assert create_from_link_regex_2.search(html)
+
 
 @pytest.mark.django_db
 class TestCreateFromSuggestedCommitmentView:

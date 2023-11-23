@@ -4,6 +4,11 @@
         {{ suggested_commitment }}
     </a>
     {% elif request.user.is_clinician %}
-        {{ suggested_commitment }}
+        {{ suggested_commitment }} 
+        <a 
+        href="{% url 'create Commitment from suggested commitment' course_id=course.id commitment_template_id=suggested_commitment.id %}"
+        >
+            <button>Make This Commitment</button>
+        </a>
     {% endif %}
 </div>
