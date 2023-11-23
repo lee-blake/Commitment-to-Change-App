@@ -109,7 +109,12 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, View):
             form.instance.owner = profile
             form.instance.status = Commitment.CommitmentStatus.IN_PROGRESS
             commitment = form.save()
-            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
+            return HttpResponseRedirect(
+                reverse(
+                    "view commitment",
+                    kwargs={"commitment_id": commitment.id}
+                )
+            )
         else:
             return render(request, "commitments/make_commitment.html", context={"form": form})
 
@@ -161,7 +166,12 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, View):
         form = CommitmentForm(request.POST, instance=commitment, profile=profile)
         if form.is_valid():
             commitment = form.save()
-            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment.id))
+            return HttpResponseRedirect(
+                reverse(
+                    "view commitment",
+                    kwargs={"commitment_id": commitment.id}
+                )
+            )
         else:
             return render(
                 request,
@@ -181,7 +191,12 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
         if request.POST.get("complete") == "true":
             commitment.mark_complete()
             commitment.save()
-            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+            return HttpResponseRedirect(
+                reverse(
+                    "view commitment",
+                    kwargs={"commitment_id": commitment.id}
+                )
+            )
         else:
             return HttpResponseBadRequest(
                 "'complete' key must be set to 'true' to complete a commitment"
@@ -196,7 +211,12 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
         if request.POST.get("discontinue") == "true":
             commitment.mark_discontinued()
             commitment.save()
-            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+            return HttpResponseRedirect(
+                reverse(
+                    "view commitment",
+                    kwargs={"commitment_id": commitment.id}
+                )
+            )
         else:
             return HttpResponseBadRequest(
                 "'discontinue' key must be set to 'true' to discontinue a commitment"
@@ -215,7 +235,12 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         if request.POST.get("reopen") == "true":
             commitment.reopen()
             commitment.save()
-            return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
+            return HttpResponseRedirect(
+                reverse(
+                    "view commitment",
+                    kwargs={"commitment_id": commitment.id}
+                )
+            )
         else:
             return HttpResponseBadRequest(
                 "'reopen' key must be set to 'true' to reopen a commitment"
@@ -289,7 +314,12 @@ class CreateCourseView(LoginRequiredMixin, View):
             form.instance.owner = ProviderProfile.objects.get(user=request.user)
             form.instance.join_code = CreateCourseView.generate_random_join_code(8)
             course = form.save()
-            return HttpResponseRedirect("/app/course/{}/view".format(course.id))
+            return HttpResponseRedirect(
+                reverse(
+                    "view course",
+                    kwargs={"course_id": course.id}
+                )
+            )
         else:
             return render(request, "commitments/create_course.html", context={"form": form})
 
@@ -320,7 +350,12 @@ class EditCourseView(ProviderLoginRequiredMixin, View):
         form = CourseForm(request.POST, instance=course)
         if form.is_valid():
             course = form.save()
-            return HttpResponseRedirect("/app/course/{}/view".format(course.id))
+            return HttpResponseRedirect(
+                reverse(
+                    "view course",
+                    kwargs={"course_id": course.id}
+                )
+            )
         else:
             return render(
                 request,
@@ -385,9 +420,19 @@ class JoinCourseView(LoginRequiredMixin, View):
             profile = ClinicianProfile.objects.get(user=request.user)
             if not course.students.contains(profile):
                 course.students.add(profile)
-            return HttpResponseRedirect("/app/course/{}/view".format(course.id))
+            return HttpResponseRedirect(
+                reverse(
+                    "view course",
+                    kwargs={"course_id": course.id}
+                )
+            )
         elif request.user.is_provider:
-            return HttpResponseRedirect("/app/course/{}/view".format(course.id))
+            return HttpResponseRedirect(
+                reverse(
+                    "view course",
+                    kwargs={"course_id": course.id}
+                )
+            )
 
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, View):
