@@ -2,8 +2,6 @@ import datetime
 import random
 import string
 
-import cme_accounts.forms
-import cme_accounts.models
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
     HttpResponseServerError, HttpResponseNotFound
@@ -11,6 +9,9 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 from django.urls import reverse
+
+import cme_accounts.forms
+import cme_accounts.models
 
 from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm
@@ -182,7 +183,9 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
-            return HttpResponseBadRequest("'complete' key must be set to 'true' to complete a commitment")
+            return HttpResponseBadRequest(
+                "'complete' key must be set to 'true' to complete a commitment"
+            )
 
 
 class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
@@ -195,7 +198,9 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
-            return HttpResponseBadRequest("'discontinue' key must be set to 'true' to discontinue a commitment")
+            return HttpResponseBadRequest(
+                "'discontinue' key must be set to 'true' to discontinue a commitment"
+            )
 
     @staticmethod
     def get(request):
@@ -212,7 +217,9 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
             commitment.save()
             return HttpResponseRedirect("/app/commitment/{}/view".format(commitment_id))
         else:
-            return HttpResponseBadRequest("'reopen' key must be set to 'true' to reopen a commitment")
+            return HttpResponseBadRequest(
+                "'reopen' key must be set to 'true' to reopen a commitment"
+            )
 
     @staticmethod
     def get(request):
@@ -298,12 +305,12 @@ class EditCourseView(ProviderLoginRequiredMixin, View):
         course = get_object_or_404(Course, id=course_id, owner=profile)
         form = CourseForm(instance=course)
         return render(
-            request, 
+            request,
             "commitments/edit_course.html", 
             context= {
                 "course": course,
                 "form": form
-            }    
+            }
         )
 
     @staticmethod
@@ -316,12 +323,12 @@ class EditCourseView(ProviderLoginRequiredMixin, View):
             return HttpResponseRedirect("/app/course/{}/view".format(course.id))
         else:
             return render(
-                request, 
+                request,
                 "commitments/edit_course.html", 
                 context= {
                     "course": course,
                     "form": form
-                }    
+                }
             )
 
 
@@ -358,9 +365,12 @@ class ViewCourseView(LoginRequiredMixin, View):
                 "discontinued": discontinued
             }
         }
-        if request.user.is_provider and course.owner == ProviderProfile.objects.get(user=request.user):
+        if request.user.is_provider and \
+                course.owner == ProviderProfile.objects.get(user=request.user):
             return render(request, "commitments/view_owned_course.html", context)
-        elif request.user.is_clinician and course.students.contains(ClinicianProfile.objects.get(user=request.user)):
+        elif request.user.is_clinician and course.students.contains(
+            ClinicianProfile.objects.get(user=request.user)
+        ):
             return render(
                 request, "commitments/view_course.html", context)
         else:
