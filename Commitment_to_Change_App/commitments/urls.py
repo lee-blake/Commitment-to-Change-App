@@ -38,4 +38,9 @@ urlpatterns = [
           views.CourseChangeSuggestedCommitmentsView.as_view(),
           name="change Course suggested commitments"
      ),
+     path(
+          "course/<int:course_id>/suggested-commitments/<int:commitment_template_id>/create-from/",
+          views.CreateFromSuggestedCommitmentView.as_view(),
+          name="create Commitment from suggested commitment"
+     ),
 ]

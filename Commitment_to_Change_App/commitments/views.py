@@ -448,4 +448,56 @@ class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, View):
             )
         else:
             return CourseChangeSuggestedCommitmentsView.get(request, course_id)
-    
+
+
+class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
+
+    @staticmethod
+    def get(request, course_id, commitment_template_id):
+        course = get_object_or_404(Course, id=course_id)
+        viewer = get_object_or_404(
+            course.students, user=request.user
+        )
+        commitment_template = get_object_or_404(
+            course.suggested_commitments, id=commitment_template_id
+        )
+        form_instance = commitment_template.into_commitment(
+            owner=viewer,
+            associated_course=course
+        )
+        form = CommitmentForm(instance=form_instance, profile=viewer)
+        return render(
+            request,
+            "commitments/create_from_suggested_commitment.html",
+            {"form": form, "course": course, "commitment_template": commitment_template}
+        )
+
+    @staticmethod
+    def post(request, course_id, commitment_template_id):
+        course = get_object_or_404(Course, id=course_id)
+        viewer = get_object_or_404(
+            course.students, user=request.user
+        )
+        commitment_template = get_object_or_404(
+            course.suggested_commitments, id=commitment_template_id
+        )
+        form_instance = commitment_template.into_commitment(
+            owner=viewer,
+            associated_course=course,
+            status=Commitment.CommitmentStatus.IN_PROGRESS
+        )
+        form = CommitmentForm(request.POST, instance=form_instance, profile=viewer)
+        if form.is_valid():
+            commitment = form.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "view commitment",
+                    kwargs={ "commitment_id": commitment.id }
+                )
+            )
+        else:
+            return render(
+                request,
+                "commitments/create_from_suggested_commitment.html",
+                {"form": form, "course": course, "commitment_template": commitment_template}
+            )
