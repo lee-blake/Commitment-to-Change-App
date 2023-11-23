@@ -1,7 +1,7 @@
 {% extends "commitments/view_course.html" %}
 
 {% block join_link %}
-<div class="center">Share this link to invite students to the course:
+<div class="text-center">Share this link to invite students to the course:
 	<div>
 	  <strong>
 		https://127.0.0.1:8000{% url 'join course' course_id=course.id join_code=course.join_code %}
