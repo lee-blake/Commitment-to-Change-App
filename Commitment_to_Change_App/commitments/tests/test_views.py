@@ -966,6 +966,17 @@ class TestProviderDashboardView:
         # The tests I have added here only cover new code and adding those tests would
         # make this feature branch even more cumbersome than it is already. - Lee
 
+        def test_provider_dashboard_links_to_create_commitment_template(
+            self, client, saved_provider_profile,
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("provider dashboard")).content.decode()
+            create_commitment_template_link = reverse("create CommitmentTemplate")
+            create_commitment_template_link_regex = re.compile(
+                r"\<a\s[^\>]*href=\"" + create_commitment_template_link + r"\"[^\>]*\>"
+            )
+            assert create_commitment_template_link_regex.search(html)
+
         def test_provider_dashboard_lists_commitment_templates(
             self, client, saved_provider_profile, commitment_template_1, commitment_template_2
         ):
