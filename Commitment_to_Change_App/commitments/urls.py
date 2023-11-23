@@ -48,4 +48,9 @@ urlpatterns = [
           views.DeleteCommitmentTemplateView.as_view(),
           name="delete CommitmentTemplate"
      ),
+     path(
+          "commitment-template/<int:commitment_template_id>/edit/",
+          views.EditCommitmentTemplateView.as_view(),
+          name="edit CommitmentTemplate"
+     ),
 ]

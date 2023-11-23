@@ -1109,4 +1109,159 @@ class TestDeleteCommitmentTemplateView:
             )
             assert response.status_code == 302
             assert response.url == reverse("provider dashboard")
-        
+
+
+@pytest.mark.django_db
+class TestEditCommitmentTemplateView:
+    """Tests for EditCommitmentTemplateView"""
+
+    class TestGet:
+        """Tests for EditCommitmentTemplateView.get"""
+
+        def test_rejects_clinician_accounts_with_403(
+            self, client, saved_clinician_user, commitment_template_1
+        ):
+            target_url = reverse(
+                "edit CommitmentTemplate", 
+                kwargs={ "commitment_template_id": commitment_template_1.id }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "edit CommitmentTemplate", 
+                kwargs={ "commitment_template_id": commitment_template_1.id }
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client,saved_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "edit CommitmentTemplate", 
+                kwargs={ "commitment_template_id": commitment_template_1.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_mandatory_commitment_template_fields_are_filled_by_default(
+            self, client, saved_provider_profile, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "edit CommitmentTemplate", 
+                kwargs={ "commitment_template_id": commitment_template_1.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            title_input_regex = re.compile(
+                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            )
+            title_input_match = title_input_regex.search(html)
+            assert title_input_match
+            assert f"value=\"{commitment_template_1.title}\"" in title_input_match[0]
+            description_input_regex = re.compile(
+                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
+            )
+            description_input_match = description_input_regex.search(html)
+            assert description_input_match
+            assert commitment_template_1.description in description_input_match[0]
+
+
+    class TestPost:
+        """Tests for EditCommitmentTemplateView.post"""
+
+        def test_rejects_clinician_accounts_with_403(
+            self, client, saved_clinician_user, commitment_template_1
+        ):
+            target_url = reverse(
+                "edit CommitmentTemplate", 
+                kwargs={ "commitment_template_id": commitment_template_1.id }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "edit CommitmentTemplate", 
+                kwargs={ "commitment_template_id": commitment_template_1.id }
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_bad_request_returns_get_form(
+            self, client, saved_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "edit CommitmentTemplate", 
+                kwargs={ "commitment_template_id": commitment_template_1.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.post(
+                target_url,
+                {"title":""}
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+
+        def test_valid_request_alters_commitment_template(
+            self, client, saved_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "edit CommitmentTemplate", 
+                kwargs={ "commitment_template_id": commitment_template_1.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "new description"
+                }
+            )
+            reloaded_commitment_template = CommitmentTemplate.objects.get(
+                id=commitment_template_1.id
+            )
+            assert reloaded_commitment_template.title == "new title"
+            assert reloaded_commitment_template.description == "new description"
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "edit CommitmentTemplate", 
+                kwargs={ "commitment_template_id": commitment_template_1.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "new description"
+                }
+            )
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view CommitmentTemplate",
+                kwargs={"commitment_template_id": commitment_template_1.id}
+            )

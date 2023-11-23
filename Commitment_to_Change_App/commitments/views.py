@@ -593,3 +593,47 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, View):
             )
         else:
             return HttpResponseBadRequest("'delete' key must be set 'true' to be deleted")
+
+
+class EditCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+
+    @staticmethod
+    def get(request, commitment_template_id):
+        viewer = ProviderProfile.objects.get(user=request.user)
+        commitment_template = get_object_or_404(
+            CommitmentTemplate, id=commitment_template_id, owner=viewer
+        )
+        form = CommitmentTemplateForm(instance=commitment_template)
+        return render(
+            request,
+            "commitments/edit_commitment_template.html",
+            context={
+                "commitment_template": commitment_template,
+                "form": form
+            }
+        )
+
+    @staticmethod
+    def post(request, commitment_template_id):
+        viewer = ProviderProfile.objects.get(user=request.user)
+        commitment_template = get_object_or_404(
+            CommitmentTemplate, id=commitment_template_id, owner=viewer
+        )
+        form = CommitmentTemplateForm(request.POST, instance=commitment_template)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(
+                reverse(
+                    "view CommitmentTemplate",
+                    kwargs={"commitment_template_id": commitment_template_id}
+                )
+            )
+        else:
+            return render(
+                request,
+                "commitments/edit_commitment_template.html",
+                context={
+                    "commitment_template": commitment_template,
+                    "form": form
+                }
+            )
