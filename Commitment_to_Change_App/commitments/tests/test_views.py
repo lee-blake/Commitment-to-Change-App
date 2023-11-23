@@ -1,8 +1,9 @@
 import re
 
+from datetime import date
+
 import pytest
 
-from datetime import date
 from django.urls import reverse
 
 from cme_accounts.models import User
@@ -27,8 +28,8 @@ def fixture_saved_commitment_owner(saved_clinician_account):
 @pytest.fixture(name="other_clinician_account")
 def fixture_other_clinician_account():
     user = User.objects.create(
-        username="other", 
-        password="password", 
+        username="other",
+        password="password",
         email="test@email.me",
         is_clinician=True
     )
@@ -139,7 +140,7 @@ class TestCompleteCommitmentView:
             )
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
             assert reloaded_commitment.status == Commitment.CommitmentStatus.COMPLETE
-        
+
         def test_rejects_non_owner_with_no_changes(
             self, client,saved_completable_commitment, other_clinician_account
         ):
@@ -567,7 +568,7 @@ class TestViewCourseView:
         """Tests for ViewCourseView.get"""
 
         # TODO Add tests to cover all Iteration 1 functionality
-        # The tests I have added here only cover new code and adding those tests would 
+        # The tests I have added here only cover new code and adding those tests would
         # make this feature branch even more cumbersome than it is already. - Lee
 
         def test_suggested_commitments_show_in_page_for_provider(
