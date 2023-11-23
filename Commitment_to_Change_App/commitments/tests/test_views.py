@@ -10,8 +10,8 @@ from cme_accounts.models import User
 from commitments.models import ClinicianProfile, ProviderProfile, Commitment, CommitmentTemplate, \
     Course
 
-@pytest.fixture(name="saved_clinician_account")
-def fixture_saved_clinician_account():
+@pytest.fixture(name="saved_clinician_user")
+def fixture_saved_clinician_user():
     return User.objects.create(
         username="testuser",
         password="password",
@@ -19,14 +19,14 @@ def fixture_saved_clinician_account():
         is_clinician=True
     )
 
-@pytest.fixture(name="saved_commitment_owner")
-def fixture_saved_commitment_owner(saved_clinician_account):
+@pytest.fixture(name="saved_clinician_profile")
+def fixture_saved_clinician_profile(saved_clinician_user):
     return ClinicianProfile.objects.create(
-        user=saved_clinician_account
+        user=saved_clinician_user
     )
 
-@pytest.fixture(name="other_clinician_account")
-def fixture_other_clinician_account():
+@pytest.fixture(name="other_clinician_profile")
+def fixture_other_clinician_profile():
     user = User.objects.create(
         username="other",
         password="password",
@@ -52,31 +52,28 @@ def fixture_saved_provider_profile(saved_provider_user):
         user=saved_provider_user
     )
 
-@pytest.fixture(name="other_provider_user")
-def fixture_other_provider_user():
-    return User.objects.create(
+@pytest.fixture(name="other_provider_profile")
+def fixture_other_provider_profile():
+    user = User.objects.create(
         username="other-provider",
         password="password",
         email="test@email.me",
         is_provider=True
     )
+    return ProviderProfile.objects.create(
+        user=user
+    )
 
 @pytest.fixture(name="enrolled_course")
-def fixture_enrolled_course(saved_provider_profile, saved_commitment_owner):
+def fixture_enrolled_course(saved_provider_profile, saved_clinician_profile):
     course = Course.objects.create(
         title="Enrolled Course Title",
         description="Enrolled Course Description",
         owner=saved_provider_profile,
         join_code="JOINCODE"
     )
-    course.students.add(saved_commitment_owner)
+    course.students.add(saved_clinician_profile)
     return course
-
-@pytest.fixture(name="other_provider_profile")
-def fixture_other_provider_profile(other_provider_user):
-    return ProviderProfile.objects.create(
-        user=other_provider_user
-    )
 
 @pytest.fixture(name="commitment_template_1")
 def fixture_commitment_template_1(saved_provider_profile):
@@ -104,9 +101,9 @@ class TestCompleteCommitmentView:
         get does not exist. The only test here verifies that it returns an appropriate error.
         """
 
-        def test_get_returns_405(self, client, saved_commitment_owner):
+        def test_get_returns_405(self, client, saved_clinician_profile):
             target_url = reverse("complete commitment", kwargs={"commitment_id": 1})
-            client.force_login(saved_commitment_owner.user)
+            client.force_login(saved_clinician_profile.user)
             response = client.get(target_url)
             assert response.status_code == 405
 
@@ -115,9 +112,9 @@ class TestCompleteCommitmentView:
         """Tests for CompletCommitmentView.post"""
 
         @pytest.fixture(name="saved_completable_commitment")
-        def fixture_saved_completable_commitment(self, saved_commitment_owner):
+        def fixture_saved_completable_commitment(self, saved_clinician_profile):
             return Commitment.objects.create(
-                owner=saved_commitment_owner,
+                owner=saved_clinician_profile,
                 title="Test title",
                 description="Test description",
                 deadline=date.today(),
@@ -125,7 +122,7 @@ class TestCompleteCommitmentView:
             )
 
         def test_good_request_marks_complete(
-            self, client, saved_completable_commitment, saved_commitment_owner
+            self, client, saved_completable_commitment, saved_clinician_profile
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -133,7 +130,7 @@ class TestCompleteCommitmentView:
                     "commitment_id": saved_completable_commitment.id
                 }
             )
-            client.force_login(saved_commitment_owner.user)
+            client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
                 {"complete": "true"}
@@ -142,7 +139,7 @@ class TestCompleteCommitmentView:
             assert reloaded_commitment.status == Commitment.CommitmentStatus.COMPLETE
 
         def test_rejects_non_owner_with_no_changes(
-            self, client,saved_completable_commitment, other_clinician_account
+            self, client,saved_completable_commitment, other_clinician_profile
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -150,7 +147,7 @@ class TestCompleteCommitmentView:
                     "commitment_id": saved_completable_commitment.id
                 }
             )
-            client.force_login(other_clinician_account.user)
+            client.force_login(other_clinician_profile.user)
             client.post(
                 target_url,
                 {"complete": "true"}
@@ -159,7 +156,7 @@ class TestCompleteCommitmentView:
             assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
 
         def test_rejects_non_owner_with_404(
-            self, client, saved_completable_commitment, other_clinician_account
+            self, client, saved_completable_commitment, other_clinician_profile
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -167,7 +164,7 @@ class TestCompleteCommitmentView:
                     "commitment_id": saved_completable_commitment.id
                 }
             )
-            client.force_login(other_clinician_account.user)
+            client.force_login(other_clinician_profile.user)
             response = client.post(
                 target_url,
                 {"complete": "true"}
@@ -175,7 +172,7 @@ class TestCompleteCommitmentView:
             assert response.status_code == 404
 
         def test_rejects_bad_request_body_with_no_changes(
-            self, client, saved_completable_commitment, saved_commitment_owner
+            self, client, saved_completable_commitment, saved_clinician_profile
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -183,7 +180,7 @@ class TestCompleteCommitmentView:
                     "commitment_id": saved_completable_commitment.id
                 }
             )
-            client.force_login(saved_commitment_owner.user)
+            client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
                 {"complete": "blah blah nonsense"}
@@ -192,7 +189,7 @@ class TestCompleteCommitmentView:
             assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
 
         def test_rejects_bad_request_body_with_400(
-            self, client, saved_completable_commitment, saved_commitment_owner
+            self, client, saved_completable_commitment, saved_clinician_profile
         ):
             target_url = reverse(
                 "complete commitment", 
@@ -200,7 +197,7 @@ class TestCompleteCommitmentView:
                     "commitment_id": saved_completable_commitment.id
                 }
             )
-            client.force_login(saved_commitment_owner.user)
+            client.force_login(saved_clinician_profile.user)
             response = client.post(
                 target_url,
                 {"complete": "blah blah nonsense"}
@@ -215,8 +212,8 @@ class TestCreateCommitmentTemplateView:
     class TestGet:
         """Tests for CreateCommitmentView.get"""
 
-        def test_rejects_clinician_accounts_with_403(self, client, saved_clinician_account):
-            client.force_login(saved_clinician_account)
+        def test_rejects_clinician_accounts_with_403(self, client, saved_clinician_user):
+            client.force_login(saved_clinician_user)
             response = client.get(
                 reverse("create CommitmentTemplate")
             )
@@ -335,13 +332,13 @@ class TestViewCommitmentTemplateView:
         )
 
     def test_rejects_clinician_accounts_with_403(
-        self, client, saved_clinician_account, saved_commitment_template
+        self, client, saved_clinician_user, saved_commitment_template
     ):
         target_url = reverse(
             "view CommitmentTemplate", 
             kwargs={ "commitment_template_id": saved_commitment_template.id }
         )
-        client.force_login(saved_clinician_account)
+        client.force_login(saved_clinician_user)
         response = client.get(target_url)
         assert response.status_code == 403
 
@@ -378,13 +375,13 @@ class TestCourseChangeSuggestedCommitmentsView:
         """Tests for CourseChangeSuggestedCommitmentsView.get"""
 
         def test_rejects_clinician_accounts_with_403(
-            self, client, saved_clinician_account, enrolled_course
+            self, client, saved_clinician_user, enrolled_course
         ):
             target_url = reverse(
                 "change Course suggested commitments", 
                 kwargs={ "course_id": enrolled_course.id }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             response = client.get(target_url)
             assert response.status_code == 403
 
@@ -464,13 +461,13 @@ class TestCourseChangeSuggestedCommitmentsView:
         """Tests for CourseChangeSuggestedCommitmentsView.post"""
 
         def test_rejects_clinician_accounts_with_403(
-            self, client, saved_clinician_account, enrolled_course
+            self, client, saved_clinician_user, enrolled_course
         ):
             target_url = reverse(
                 "change Course suggested commitments", 
                 kwargs={ "course_id": enrolled_course.id }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             response = client.post(target_url)
             assert response.status_code == 403
 
@@ -586,13 +583,13 @@ class TestViewCourseView:
             assert commitment_template_2.title in html
 
         def test_suggested_commitments_show_in_page_for_clinician(
-            self, client, saved_commitment_owner, enrolled_course,
+            self, client, saved_clinician_profile, enrolled_course,
             commitment_template_1, commitment_template_2
         ):
             enrolled_course.suggested_commitments.add(
                 commitment_template_1, commitment_template_2
             )
-            client.force_login(saved_commitment_owner.user)
+            client.force_login(saved_clinician_profile.user)
             html = client.get(
                 reverse("view course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
@@ -616,13 +613,13 @@ class TestViewCourseView:
             assert select_suggested_commitments_link_regex.search(html)
 
         def test_create_from_suggested_commitment_button_shows_in_page_for_clinician(
-            self, client, saved_commitment_owner, enrolled_course,
+            self, client, saved_clinician_profile, enrolled_course,
             commitment_template_1, commitment_template_2
         ):
             enrolled_course.suggested_commitments.add(
                 commitment_template_1, commitment_template_2
             )
-            client.force_login(saved_commitment_owner.user)
+            client.force_login(saved_clinician_profile.user)
             html = client.get(
                 reverse("view course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
@@ -673,7 +670,7 @@ class TestCreateFromSuggestedCommitmentView:
             assert response.status_code == 403
 
         def test_rejects_non_student_clinician_accounts_with_404(
-            self, client, other_clinician_account, enrolled_course, commitment_template_1
+            self, client, other_clinician_profile, enrolled_course, commitment_template_1
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
@@ -683,12 +680,12 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(other_clinician_account.user)
+            client.force_login(other_clinician_profile.user)
             response = client.get(target_url)
             assert response.status_code == 404
 
         def test_returns_404_on_missing_course(
-            self, client, saved_clinician_account, enrolled_course, commitment_template_1
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
         ):
             target_url = reverse(
                 "create Commitment from suggested commitment", 
@@ -697,12 +694,12 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             response = client.get(target_url)
             assert response.status_code == 404
 
         def test_returns_404_on_missing_commitment_template(
-            self, client, saved_clinician_account, enrolled_course, commitment_template_1
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
         ):
             target_url = reverse(
                 "create Commitment from suggested commitment", 
@@ -711,12 +708,12 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id + 1
                 }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             response = client.get(target_url)
             assert response.status_code == 404
 
         def test_returns_404_on_commitment_template_not_a_part_of_course(
-            self, client, saved_clinician_account, enrolled_course, commitment_template_1
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
         ):
             target_url = reverse(
                 "create Commitment from suggested commitment", 
@@ -725,12 +722,12 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             response = client.get(target_url)
             assert response.status_code == 404
 
         def test_shows_post_form_pointing_to_create_commitment_view(
-            self, client,saved_clinician_account, enrolled_course, commitment_template_1
+            self, client,saved_clinician_user, enrolled_course, commitment_template_1
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
@@ -740,7 +737,7 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             html = client.get(target_url).content.decode()
             form_regex = re.compile(
                 r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
@@ -752,7 +749,7 @@ class TestCreateFromSuggestedCommitmentView:
             assert post_method_regex.search(form_tag)
 
         def test_mandatory_commitment_template_fields_are_filled_by_default(
-            self, client,saved_clinician_account, enrolled_course, commitment_template_1
+            self, client,saved_clinician_user, enrolled_course, commitment_template_1
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
@@ -762,7 +759,7 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             html = client.get(target_url).content.decode()
             title_input_regex = re.compile(
                 r"\<input[^\>]*name=\"title\"[^\>]*\>"
@@ -778,7 +775,7 @@ class TestCreateFromSuggestedCommitmentView:
             assert commitment_template_1.description in description_input_match[0]
 
         def test_course_field_is_set_by_default(
-            self, client,saved_clinician_account, enrolled_course, commitment_template_1
+            self, client,saved_clinician_user, enrolled_course, commitment_template_1
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
@@ -788,7 +785,7 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             html = client.get(target_url).content.decode()
             course_option_regex = re.compile(
                 r"\<option[^\>]*value=\"" + str(enrolled_course.id) + r"\"[^\>]*\>"
@@ -816,7 +813,7 @@ class TestCreateFromSuggestedCommitmentView:
             assert response.status_code == 403
 
         def test_rejects_non_student_clinician_accounts_with_404(
-            self, client, other_clinician_account, enrolled_course, commitment_template_1
+            self, client, other_clinician_profile, enrolled_course, commitment_template_1
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
@@ -826,12 +823,12 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(other_clinician_account.user)
+            client.force_login(other_clinician_profile.user)
             response = client.post(target_url)
             assert response.status_code == 404
 
         def test_returns_404_on_missing_course(
-            self, client, saved_clinician_account, enrolled_course, commitment_template_1
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
         ):
             target_url = reverse(
                 "create Commitment from suggested commitment", 
@@ -840,12 +837,12 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             response = client.post(target_url)
             assert response.status_code == 404
 
         def test_returns_404_on_missing_commitment_template(
-            self, client, saved_clinician_account, enrolled_course, commitment_template_1
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
         ):
             target_url = reverse(
                 "create Commitment from suggested commitment", 
@@ -854,12 +851,12 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id + 1
                 }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             response = client.post(target_url)
             assert response.status_code == 404
 
         def test_returns_404_on_commitment_template_not_a_part_of_course(
-            self, client, saved_clinician_account, enrolled_course, commitment_template_1
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
         ):
             target_url = reverse(
                 "create Commitment from suggested commitment", 
@@ -868,12 +865,12 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_clinician_account)
+            client.force_login(saved_clinician_user)
             response = client.post(target_url)
             assert response.status_code == 404
 
         def test_bad_request_returns_get_form(
-            self, client,saved_commitment_owner, enrolled_course, commitment_template_1
+            self, client,saved_clinician_profile, enrolled_course, commitment_template_1
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
@@ -883,7 +880,7 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_commitment_owner.user)
+            client.force_login(saved_clinician_profile.user)
             html = client.post(
                 target_url,
                 {}
@@ -894,7 +891,7 @@ class TestCreateFromSuggestedCommitmentView:
             assert form_regex.search(html)
 
         def test_valid_request_creates_commitment_with_correct_values(
-            self, client, saved_commitment_owner, enrolled_course, commitment_template_1
+            self, client, saved_clinician_profile, enrolled_course, commitment_template_1
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
@@ -904,7 +901,7 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_commitment_owner.user)
+            client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
                 {
@@ -921,11 +918,11 @@ class TestCreateFromSuggestedCommitmentView:
                 associated_course=enrolled_course.id
             )
             assert commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
-            assert commitment.owner == saved_commitment_owner
+            assert commitment.owner == saved_clinician_profile
             assert commitment.source_template == commitment_template_1
 
         def test_valid_request_redirects_correctly(
-            self, client, saved_commitment_owner, enrolled_course, commitment_template_1
+            self, client, saved_clinician_profile, enrolled_course, commitment_template_1
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
@@ -935,7 +932,7 @@ class TestCreateFromSuggestedCommitmentView:
                     "commitment_template_id": commitment_template_1.id
                 }
             )
-            client.force_login(saved_commitment_owner.user)
+            client.force_login(saved_clinician_profile.user)
             response = client.post(
                 target_url,
                 {
