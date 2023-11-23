@@ -19,5 +19,21 @@
             </div>
         </div>
     </div>
+    <div class="row g-5">
+        <div class="col">
+            <div class="px-4 pb-3 foreground round-corners">
+                <div class="py-1 primary-accent round-corners center accent-text">
+                    <h1>Commitment Templates</h1>
+                </div>
+                <div class="foreground round-corners">
+                    <div class="py-1 background round-corners">
+                        {% for commitment_template in commitment_templates %}
+                        {% include "commitments/dashboard_commitment_template.html" %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock page_content %}

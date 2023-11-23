@@ -82,7 +82,15 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, View):
     def get(request, *args, **kwargs):
         profile = ProviderProfile.objects.get(user=request.user)
         courses = Course.objects.filter(owner=profile)
-        return render(request, "commitments/dashboard_provider.html", {"courses": courses})
+        commitment_templates = CommitmentTemplate.objects.filter(owner=profile)
+        return render(
+            request,
+            "commitments/dashboard_provider.html", 
+            {
+                "courses": courses,
+                "commitment_templates": commitment_templates
+            }
+        )
 
 
 class MakeCommitmentView(ClinicianLoginRequiredMixin, View):
