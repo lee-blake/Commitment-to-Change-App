@@ -564,3 +564,32 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
                 "commitments/create_from_suggested_commitment.html",
                 {"form": form, "course": course, "commitment_template": commitment_template}
             )
+
+
+class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+
+    @staticmethod
+    def get(request, commitment_template_id):
+        viewer = ProviderProfile.objects.get(user=request.user)
+        commitment_template = get_object_or_404(
+            CommitmentTemplate, id=commitment_template_id, owner=viewer
+        )
+        return render(
+            request,
+            "commitments/delete_commitment_template.html",
+            {"commitment_template": commitment_template}
+        )
+
+    @staticmethod
+    def post(request, commitment_template_id):
+        viewer = ProviderProfile.objects.get(user=request.user)
+        commitment_template = get_object_or_404(
+            CommitmentTemplate, id=commitment_template_id, owner=viewer
+        )
+        if request.POST.get("delete") == "true":
+            commitment_template.delete()
+            return HttpResponseRedirect(
+                reverse("provider dashboard")
+            )
+        else:
+            return HttpResponseBadRequest("'delete' key must be set 'true' to be deleted")

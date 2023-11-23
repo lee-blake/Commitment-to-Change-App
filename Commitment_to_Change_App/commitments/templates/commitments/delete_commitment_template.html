@@ -1,0 +1,20 @@
+{% extends "commitments/base.html" %}
+
+{% block title %} Delete {{ commitment_template.title }} {% endblock title %}
+
+{% block page_content %}
+<div class="w3-container">
+    <div class="w3-panel commitment-title round-corners primary-accent">
+        <h1>{{ commitment_template.title }}</h1>
+    </div>
+    <div class="w3-panel round-corners secondary-accent center">
+        <div class="w3-panel round-corners secondary-accent center">
+            <p>Are you sure you want to delete {{ commitment_template.title }}?</p>
+        </div>
+        <a href="{% url 'view CommitmentTemplate' commitment_template_id=commitment_template.id %}">
+            <button>Cancel</button>
+        </a>
+        {% include "commitments/post_buttons/delete_commitment_template_confirm_button.html" %}
+    </div>
+</div>
+{% endblock page_content %}

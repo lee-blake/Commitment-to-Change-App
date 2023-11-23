@@ -995,3 +995,118 @@ class TestProviderDashboardView:
                 r"\<a\s[^\>]*href=\"" + commitment_template_2_view_link + r"\"[^\>]*\>"
             )
             assert commitment_template_2_link_regex.search(html)
+
+
+@pytest.mark.django_db
+class TestDeleteCommitmentTemplateView:
+    """Tests for DeleteCommitmentTemplateView"""
+
+    class TestGet:
+        """Tests for DeleteCommitmentTemplateView.get"""
+
+        def test_rejects_clinician_accounts_with_403(
+            self, client, saved_clinician_user, commitment_template_1
+        ):
+            target_url = reverse(
+                "delete CommitmentTemplate", 
+                kwargs={"commitment_template_id": commitment_template_1.id}
+            )
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "delete CommitmentTemplate", 
+                kwargs={"commitment_template_id": commitment_template_1.id}
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client,saved_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "delete CommitmentTemplate", 
+                kwargs={"commitment_template_id": commitment_template_1.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+
+    class TestPost:
+        """Tests for DeleteCommitmentTemplateView.post"""
+
+        def test_rejects_clinician_accounts_with_403(
+            self, client, saved_clinician_user, commitment_template_1
+        ):
+            target_url = reverse(
+                "delete CommitmentTemplate", 
+                kwargs={"commitment_template_id": commitment_template_1.id}
+            )
+            client.force_login(saved_clinician_user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "delete CommitmentTemplate", 
+                kwargs={"commitment_template_id": commitment_template_1.id}
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_rejects_bad_request_with_400(
+            self, client, saved_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "delete CommitmentTemplate", 
+                kwargs={"commitment_template_id": commitment_template_1.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 400
+
+        def test_valid_request_deletes_commitment_template(
+            self, client, saved_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "delete CommitmentTemplate", 
+                kwargs={"commitment_template_id": commitment_template_1.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {"delete": "true"}
+            )
+            assert not CommitmentTemplate.objects.filter(id=commitment_template_1.id).exists()
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_provider_profile, commitment_template_1
+        ):
+            target_url = reverse(
+                "delete CommitmentTemplate", 
+                kwargs={"commitment_template_id": commitment_template_1.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.post(
+                target_url,
+                {"delete": "true"}
+            )
+            assert response.status_code == 302
+            assert response.url == reverse("provider dashboard")
+        

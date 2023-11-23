@@ -43,4 +43,9 @@ urlpatterns = [
           views.CreateFromSuggestedCommitmentView.as_view(),
           name="create Commitment from suggested commitment"
      ),
+     path(
+          "commitment-template/<int:commitment_template_id>/delete/",
+          views.DeleteCommitmentTemplateView.as_view(),
+          name="delete CommitmentTemplate"
+     ),
 ]
