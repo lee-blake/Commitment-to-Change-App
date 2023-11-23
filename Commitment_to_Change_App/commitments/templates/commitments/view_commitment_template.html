@@ -12,8 +12,21 @@
       <p>{{ commitment_template.description }}</p>
     </div>
     <div class="w3-panel center">
-      {% block edit_button %} {% endblock edit_button %}
-      {% block delete_button %} {% endblock delete_button %}
+      {% block edit_button %}
+      <a href="{% url 'edit CommitmentTemplate' commitment_template_id=commitment_template.id %}">
+        <button class="standard-button primary-accent">
+        Edit Commitment Template
+        </button>
+      </a>
+      {% endblock edit_button %}
+
+      {% block delete_button %}
+      <a href="{% url 'delete CommitmentTemplate' commitment_template_id=commitment_template.id %}">
+        <button class="standard-button primary-accent">
+        Delete Commitment Template
+        </button>
+      </a>
+      {% endblock delete_button %}
     </div>
   </div>
 </div>
