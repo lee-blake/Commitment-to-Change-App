@@ -129,3 +129,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_HOST = custom_settings.EMAIL_HOST
 EMAIL_PORT = custom_settings.EMAIL_PORT
+
+ACCOUNT_ACTIVATION_DAYS = 7

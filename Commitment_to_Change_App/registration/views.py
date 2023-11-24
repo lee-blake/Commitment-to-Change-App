@@ -1,8 +1,8 @@
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views import View
-
-import cme_accounts.forms
-import cme_accounts.models
+from django.views.generic.base import TemplateView
+from django_registration.backends.activation.views import ActivationView, RegistrationView
 
 from commitments.models import ClinicianProfile, ProviderProfile
 
@@ -16,47 +16,43 @@ class RegisterTypeChoiceView(View):
         return render(request, "registration/register_choice.html")
 
 
-class RegisterClinicianView(View):
+class RegisterClinicianView(RegistrationView):
 
-    @staticmethod
-    def get(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "registration/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm()
-        return render(request, "registration/register_clinician.html", context={"form": form})
+    template_name = "registration/register_clinician.html"
+    email_subject_template = "registration/registration_email_subject.txt"
+    email_body_template = "registration/registration_email_body.txt"
+    success_url = reverse_lazy("awaiting activation")
 
-    @staticmethod
-    def post(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "registration/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.instance.is_clinician = True
-            user = form.save()
-            ClinicianProfile.objects.create(user=user)
-            return render(request, "registration/register_successful.html")
-        else:
-            return render(request, "registration/register_clinician.html", context={"form": form})
+    def register(self, form):
+        user = RegistrationView.register(self, form)
+        ClinicianProfile.objects.create(user=user)
+        return user
 
 
-class RegisterProviderView(View):
+class RegisterProviderView(RegistrationView):
 
-    @staticmethod
-    def get(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "registration/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm()
-        return render(request, "registration/register_provider.html", context={"form": form})
+    template_name = "registration/register_provider.html"
+    email_subject_template = "registration/registration_email_subject.txt"
+    email_body_template = "registration/registration_email_body.txt"
+    success_url = reverse_lazy("awaiting activation")
 
-    @staticmethod
-    def post(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "registration/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.instance.is_provider = True
-            user = form.save()
-            ProviderProfile.objects.create(user=user)
-            return render(request, "registration/register_successful.html")
-        else:
-            return render(request, "registration/register_provider.html", context={"form": form})
+    def register(self, form):
+        user = RegistrationView.register(self, form)
+        ProviderProfile.objects.create(user=user)
+        return user
+
+
+class AwaitingActivationView(TemplateView):
+
+    template_name = "registration/awaiting_activation.html"
+
+
+class ActivateAccountView(ActivationView):
+
+    template_name = "registration/activation_failed.html"
+    success_url = reverse_lazy("activation complete")
+
+
+class ActivationCompleteView(TemplateView):
+
+    template_name = "registration/activation_complete.html"
