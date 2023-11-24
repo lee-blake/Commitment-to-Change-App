@@ -1,7 +1,7 @@
 from datetime import date
 from django.test import SimpleTestCase
 from cme_accounts.models import User
-from .models import Commitment, ClinicianProfile
+from commitments.models import Commitment, ClinicianProfile
 
 class CommitmentTestCase(SimpleTestCase):
     def setUp(self):
