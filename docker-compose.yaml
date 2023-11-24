@@ -15,6 +15,7 @@ services:
       - ./Commitment_to_Change_App:/app:ro
       - cme-ctc-web-migrations-cme_accounts:/app/cme_accounts/migrations
       - cme-ctc-web-migrations-commitments:/app/commitments/migrations
+      - cme-ctc-web-migrations-registration:/app/registration/migrations
       - cme-ctc-web-pytest-cache:/app/.pytest_cache
       - cme-ctc-web-coverage-cache:/app/.coverage_cache
     depends_on:
@@ -37,5 +38,6 @@ services:
 volumes:
   cme-ctc-web-migrations-cme_accounts:
   cme-ctc-web-migrations-commitments:
+  cme-ctc-web-migrations-registration:
   cme-ctc-web-pytest-cache:
   cme-ctc-web-coverage-cache:

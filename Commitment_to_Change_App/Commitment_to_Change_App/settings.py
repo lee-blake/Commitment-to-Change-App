@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cme_accounts',
     'commitments',
+    'registration',
     'django.contrib.admin',
 ]
 

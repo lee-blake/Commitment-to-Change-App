@@ -2,8 +2,6 @@ import datetime
 import random
 import string
 
-import cme_accounts.forms
-import cme_accounts.models
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
     HttpResponseServerError, HttpResponseNotFound
@@ -207,56 +205,6 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def get(request):
         return HttpResponseNotAllowed(['POST'])
-
-
-class RegisterTypeChoiceView(View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        return render(request, "commitments/register_choice.html")
-
-
-class RegisterClinicianView(View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "commitments/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm()
-        return render(request, "commitments/register_clinician.html", context={"form": form})
-
-    @staticmethod
-    def post(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "commitments/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.instance.is_clinician = True
-            user = form.save()
-            ClinicianProfile.objects.create(user=user)
-            return render(request, "commitments/register_successful.html")
-        else:
-            return render(request, "commitments/register_clinician.html", context={"form": form})
-
-
-class RegisterProviderView(View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "commitments/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm()
-        return render(request, "commitments/register_provider.html", context={"form": form})
-
-    @staticmethod
-    def post(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "commitments/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.instance.is_provider = True
-            user = form.save()
-            ProviderProfile.objects.create(user=user)
-            return render(request, "commitments/register_successful.html")
-        else:
-            return render(request, "commitments/register_provider.html", context={"form": form})
 
 
 class CreateCourseView(LoginRequiredMixin, View):
