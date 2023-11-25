@@ -145,6 +145,16 @@ class TestRegisterClinicianView:
             assert response.url == reverse("awaiting activation")
 
 
+class TestAwaitingActivationView:
+    """Tests for AwaitingActivationView"""
+
+    def test_get_returns_correct_page(self, client):
+        response = client.get(reverse("awaiting activation"))
+        assert response.status_code == 200
+        html = response.content.decode()
+        assert "Verify your email" in html
+
+
 @pytest.mark.django_db
 class TestRegisterProviderView:
     """Tests for RegisterProviderView"""
@@ -361,3 +371,13 @@ class TestActivateAccountView:
             html = client.get(target_url).content.decode()
             assert "Activation Failed" in html
             assert "already been activated" in html
+
+
+class TestActivationCompleteView:
+    """Tests for ActivationCompleteView"""
+
+    def test_get_returns_correct_page(self, client):
+        response = client.get(reverse("activation complete"))
+        assert response.status_code == 200
+        html = response.content.decode()
+        assert "Account Activation Complete" in html
