@@ -5,6 +5,7 @@ from django.views.generic.base import TemplateView
 from django_registration.backends.activation.views import ActivationView, RegistrationView
 
 from commitments.models import ClinicianProfile, ProviderProfile
+from .forms import ClinicianRegistrationForm, ProviderRegistrationForm
 
 
 class RegisterTypeChoiceView(View):
@@ -22,6 +23,7 @@ class RegisterClinicianView(RegistrationView):
     email_subject_template = "registration/registration_email_subject.txt"
     email_body_template = "registration/registration_email_body.txt"
     success_url = reverse_lazy("awaiting activation")
+    form_class = ClinicianRegistrationForm
 
     def register(self, form):
         user = RegistrationView.register(self, form)
@@ -35,6 +37,7 @@ class RegisterProviderView(RegistrationView):
     email_subject_template = "registration/registration_email_subject.txt"
     email_body_template = "registration/registration_email_body.txt"
     success_url = reverse_lazy("awaiting activation")
+    form_class = ProviderRegistrationForm
 
     def register(self, form):
         user = RegistrationView.register(self, form)
