@@ -70,7 +70,7 @@ class TestSignInView:
 
     class TestPost:
         """Tests for SignInView.post"""
-        
+
         def test_invalid_request_shows_get_form_with_error_notes(self, client):
             target_url = reverse("login")
             html = client.post(
@@ -274,7 +274,7 @@ class TestResetPasswordView:
             # We can't guarantee the other view will work fine so it is better to verify that
             # in the consistency checks while verifying only that this view thinks it is OK.
             assert ResetPasswordView.token_generator.check_token(user_to_reset, sent_token)
-            
+
 
         def test_valid_request_redirects_to_awaiting_email_url(
             self, client, user_to_reset, captured_email #pylint: disable=unused-argument
@@ -321,7 +321,7 @@ class TestResetPasswordConfirmView:
             "uidb64": uidb64,
             "token": token
         }
-        
+
 
     class TestGet:
         """Tests for ResetPasswordConfirmView.get
@@ -348,7 +348,7 @@ class TestResetPasswordConfirmView:
                 kwargs={
                     "uidb64": valid_reset_url_kwargs["uidb64"],
                     "token": "%%%%"
-                }                
+                }
             )
             # Django does a redirect in this view for security reasons and we should follow.
             html = client.get(target_url, follow=True).content.decode()
