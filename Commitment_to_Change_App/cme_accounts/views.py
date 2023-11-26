@@ -14,6 +14,8 @@ class SignOutView(LogoutView):
 
 class ResetPasswordView(PasswordResetView):
     template_name = "accounts/reset_password.html"
+    subject_template_name = "accounts/password_reset_email_subject.txt"
+    email_template_name = "accounts/password_reset_email_body.txt"
     success_url = reverse_lazy("awaiting reset email")
 
 

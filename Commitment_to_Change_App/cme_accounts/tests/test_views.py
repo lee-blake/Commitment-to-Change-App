@@ -108,6 +108,7 @@ class TestResetPasswordView:
             # We can't guarantee the other view will work fine so it is better to verify that
             # in the consistency checks while verifying only that this view thinks it is OK.
             assert ResetPasswordView.token_generator.check_token(user_to_reset, sent_token)
+            
 
         def test_valid_request_redirects_to_awaiting_email_url(
             self, client, user_to_reset, captured_email #pylint: disable=unused-argument
