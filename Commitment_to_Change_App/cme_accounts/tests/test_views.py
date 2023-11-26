@@ -21,6 +21,172 @@ def fixture_captured_email(settings):
     # This attribute does exist if the locmem backend is set - Django sets it at runtime.
     return mail.outbox #pylint: disable=no-member
 
+
+@pytest.mark.django_db
+class TestSignInView:
+    """Tests for SignInView"""
+
+    @pytest.fixture(name="user_to_login")
+    def fixture_user_to_login(self):
+        # We need to use set_password to generate the pbkdf2 hash that Django uses in its
+        # authentication. Otherwise, the login page will always fail. The password attribute
+        # is then set to that hash, so we can't use it in requrests - which is why we set the
+        # raw_password attribute.
+        user = User(
+            username="valid user",
+            email="fake@email.localhost",
+            password="testP@ssw0rd"
+        )
+        user.set_password(user.password)
+        user.save()
+        user.raw_password = "testP@ssw0rd"
+        return user
+
+    class TestGet:
+        """Tests for SignInView.get"""
+        def test_shows_post_form_pointing_to_this_view(self, client):
+            target_url = reverse("login")
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_shows_required_form_fields(self, client):
+            target_url = reverse("login")
+            html = client.get(target_url).content.decode()
+            assert "name=\"username\"" in html
+            assert "name=\"password\"" in html
+
+        def test_shows_link_to_reset_password(self, client):
+            target_url = reverse("login")
+            html = client.get(target_url).content.decode()
+            assert "href=\"" + reverse("reset password") + "\"" in html
+
+
+    class TestPost:
+        """Tests for SignInView.post"""
+        
+        def test_invalid_request_shows_get_form_with_error_notes(self, client):
+            target_url = reverse("login")
+            html = client.post(
+                target_url,
+                {}
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_invalid_credentials_show_get_form_with_error_notes(self, client, user_to_login):
+            target_url = reverse("login")
+            html = client.post(
+                target_url,
+                {
+                    "username": user_to_login.username,
+                    "password": user_to_login.raw_password + "wrong"
+                }
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_invalid_credentials_do_not_log_in_user(self, client, user_to_login):
+            target_url = reverse("login")
+            client.post(
+                target_url,
+                {
+                    "username": user_to_login.username,
+                    "password": user_to_login.raw_password + "wrong"
+                }
+            )
+            # Django does not have a nice way to check if the user is logged in from a client
+            # request. This will have to do.
+            assert not "_auth_user_id" in client.session
+
+        def test_valid_login_does_log_in_user(self, client, user_to_login):
+            target_url = reverse("login")
+            client.post(
+                target_url,
+                {
+                    "username": user_to_login.username,
+                    "password": user_to_login.raw_password
+                }
+            )
+            # Django does not have a nice way to check if the user is logged in from a client
+            # request. This will have to do.
+            assert "_auth_user_id" in client.session
+            assert int(client.session["_auth_user_id"]) == user_to_login.id
+
+
+@pytest.mark.django_db
+class TestSignOutView:
+    """Tests for SignOutView"""
+
+    @pytest.fixture(name="valid_user")
+    def fixture_valid_user(self):
+        return User.objects.create(
+            username="username",
+            email="a@b.localhost",
+            password="password"
+        )
+
+    class TestGet:
+        """Tests for SignOutView.get"""
+
+        def test_deprecated_get_request_logs_out(self, client, valid_user):
+            """Test that a get request to the URL logs out the user. 
+
+            Django has deprecated this functionality so we should use POST requests
+            instead. However, we should still have a test here because if someone
+            mistakenly uses the GET method and Django stops supporting it, things will
+            break. This test will immediately explain why. The alternative is to throw an
+            error on a GET request, but that is likely to confuse users or not adequately
+            inform the programmer of the problem. Adding this test is the best option.
+            
+            When we start using Django 5.0+, we can remove this test once any other issues
+            with the """
+            # Suppress the deprecation warning for this test only.
+            import warnings #pylint: disable=import-outside-toplevel
+            from django.utils.deprecation import \
+                RemovedInDjango50Warning #pylint: disable=import-outside-toplevel
+            warnings.simplefilter("ignore", category=RemovedInDjango50Warning)
+            client.force_login(valid_user)
+            client.get(reverse("logout"))
+            # Django does not have a nice way to check if the user is logged in from a client
+            # request. This will have to do.
+            assert "_auth_user_id" not in client.session
+
+
+    class TestPost:
+        """Tests for SignOutView.post"""
+
+        def test_post_request_logs_out(self, client, valid_user):
+            client.force_login(valid_user)
+            client.post(reverse("logout"))
+            # Django does not have a nice way to check if the user is logged in from a client
+            # request. This will have to do.
+            assert "_auth_user_id" not in client.session
+
+        def test_post_request_returns_page_indicating_logout(self, client, valid_user):
+            client.force_login(valid_user)
+            html = client.post(reverse("logout")).content.decode()
+            assert "You have successfully logged out" in html
+
+
 @pytest.mark.django_db
 class TestResetPasswordView:
     """Tests for ResetPasswordView"""
