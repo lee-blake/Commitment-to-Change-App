@@ -1,4 +1,4 @@
-from django.urls import include, path
+from django.urls import path
 
 from . import views
 
@@ -17,8 +17,7 @@ urlpatterns = [
     ),
     path(
         "password-reset/done/", 
-        views.ResetPasswordCompleteView.as_view(), 
+        views.ResetPasswordCompleteView.as_view(),
         name="password reset complete"
     ),
-    path("", include("django.contrib.auth.urls")),
 ]
