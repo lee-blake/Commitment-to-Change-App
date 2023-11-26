@@ -4,7 +4,6 @@ from django.views import View
 from django.views.generic.base import TemplateView
 from django_registration.backends.activation.views import ActivationView, RegistrationView
 
-from commitments.models import ClinicianProfile, ProviderProfile
 from .forms import ClinicianRegistrationForm, ProviderRegistrationForm
 
 
@@ -25,10 +24,18 @@ class RegisterClinicianView(RegistrationView):
     success_url = reverse_lazy("awaiting activation")
     form_class = ClinicianRegistrationForm
 
-    def register(self, form):
-        user = RegistrationView.register(self, form)
-        ClinicianProfile.objects.create(user=user)
-        return user
+    def create_inactive_user(self, form):
+        """Creates the inactive user and sends an email with activation instructions.
+
+        Inherited from RegistrationView.
+
+        This must be overriden to be able to save a ClinicianProfile because the original
+        implementation only calls a save(commit=True) on the user, not the form. To save the profile
+        form data we need to change it to save the form and set the user inactive in the form.
+        Since we also return the profile when saving, we also need to adjust for that."""
+        new_user = form.save().user
+        self.send_activation_email(new_user)
+        return new_user
 
 
 class RegisterProviderView(RegistrationView):
@@ -39,10 +46,18 @@ class RegisterProviderView(RegistrationView):
     success_url = reverse_lazy("awaiting activation")
     form_class = ProviderRegistrationForm
 
-    def register(self, form):
-        user = RegistrationView.register(self, form)
-        ProviderProfile.objects.create(user=user)
-        return user
+    def create_inactive_user(self, form):
+        """Creates the inactive user and sends an email with activation instructions.
+
+        Inherited from RegistrationView.
+
+        This must be overriden to be able to save a ProviderProfile because the original
+        implementation only calls a save(commit=True) on the user, not the form. To save the profile
+        form data we need to change it to save the form and set the user inactive in the form.
+        Since we also return the profile when saving, we also need to adjust for that."""
+        new_user = form.save().user
+        self.send_activation_email(new_user)
+        return new_user
 
 
 class AwaitingActivationView(TemplateView):
