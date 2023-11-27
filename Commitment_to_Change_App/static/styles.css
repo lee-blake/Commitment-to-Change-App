@@ -140,6 +140,22 @@ form {
      text-align: center;
      text-decoration: none;
  }
+ .close-x-button
+ {
+    font-size: 18px;
+    border: 0px solid transparent;
+    color: var(--light-text);
+    background-color:var(--foreground);
+    border-radius: var(--standard-round);
+    transition: 0.3s ease-in-out;
+
+ }
+ .close-x-button:hover
+ {
+    color: var(--primary-text);
+    filter: brightness(90%);
+    
+ }
  .commitment_header
  {
      background-color: var(--primary-accent);
