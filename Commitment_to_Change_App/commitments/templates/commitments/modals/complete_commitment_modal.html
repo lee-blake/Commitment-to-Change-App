@@ -1,25 +1,17 @@
-<!-- Button -->
-<button type="button" class="standard-button primary-accent" data-bs-toggle="modal" data-bs-target="#completeCommitmentModal">
-    Complete
-</button>
+{% extends "commitments/modals/confirm_modal.html" %}
 
+{% block modal_button_name %}
+Complete
+{% endblock modal_button_name %}
 
+{% block modal_title %}
+Complete
+{% endblock modal_title %}
 
-<!-- Modal -->
-<div class="modal fade" id="completeCommitmentModal" tabindex="-1" aria-labelledby="completeCommitmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="completeCommitmentModalLabel">Confirm Complete</h1>
-                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">X</button>
-            </div>
-            <div class="modal-body">
-              <p>Are you sure you wish to mark "{{ commitment.title }}" as complete? </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-              {% include "commitments/post_buttons/complete_commitment_button.html" %}
-            </div>
-        </div>
-    </div>
-</div>
+{% block modal_action %}
+complete
+{% endblock modal_action %}
+
+{% block confirm_action %}
+{% include "commitments/post_buttons/complete_commitment_button.html" %}
+{% endblock confirm_action %}

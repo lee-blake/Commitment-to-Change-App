@@ -1,25 +1,17 @@
-<!-- Button -->
-<button type="button" class="standard-button primary-accent" data-bs-toggle="modal" data-bs-target="#reopenCommitmentModal">
-    Reopen
-</button>
+{% extends "commitments/modals/confirm_modal.html" %}
 
+{% block modal_button_name %}
+Discontinue
+{% endblock modal_button_name %}
 
+{% block modal_title %}
+Discontinue
+{% endblock modal_title %}
 
-<!-- Modal -->
-<div class="modal fade" id="reopenCommitmentModal" tabindex="-1" aria-labelledby="reopenCommitmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="reopenCommitmentModalLabel">Confirm Reopen</h1>
-                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">X</button>
-            </div>
-            <div class="modal-body">
-              <p>Are you sure you wish to reopen "{{ commitment.title }}"?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-              {% include "commitments/post_buttons/reopen_commitment_button.html" %}
-            </div>
-        </div>
-    </div>
-</div>
+{% block modal_action %}
+discontinue
+{% endblock modal_action %}
+
+{% block confirm_action %}
+{% include "commitments/post_buttons/reopen_commitment_button.html" %}
+{% endblock confirm_action %}
