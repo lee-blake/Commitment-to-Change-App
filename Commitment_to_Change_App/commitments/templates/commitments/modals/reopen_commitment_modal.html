@@ -1,16 +1,14 @@
 {% extends "commitments/modals/confirm_modal.html" %}
 
-{% block modal_button_name %}
-Discontinue
-{% endblock modal_button_name %}
+{% block modal_button_name %}Reopen{% endblock modal_button_name %}
 
-{% block modal_title %}
-Discontinue
-{% endblock modal_title %}
+{% block modal_target_label %}reopen{% endblock modal_target_label %}
 
-{% block modal_action %}
-discontinue
-{% endblock modal_action %}
+{% block modal_label %}reopen{% endblock modal_label %}
+
+{% block modal_title %}reopen{% endblock modal_title %}
+
+{% block modal_action %}reopen{% endblock modal_action %}
 
 {% block confirm_action %}
 {% include "commitments/post_buttons/reopen_commitment_button.html" %}

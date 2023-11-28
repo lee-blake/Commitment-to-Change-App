@@ -3,14 +3,15 @@
 <!-- Button -->
 
 
-<button type="button" class="standard-button primary-accent" data-bs-toggle="modal" data-bs-target="#modal">
+<button type="button" class="standard-button primary-accent" data-bs-toggle="modal" 
+data-bs-target="#{% block modal_target_label %}{% endblock modal_target_label %}modal">
     {% block modal_button_name %}{% endblock modal_button_name %}
 </button>
 
 
 
 <!-- Modal -->
-<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="{% block modal_label %}{% endblock modal_label %}modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
