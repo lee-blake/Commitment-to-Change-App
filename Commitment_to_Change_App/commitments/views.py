@@ -29,14 +29,17 @@ def commitment_remaining_time(request, commitment_id):
         commitment.status = Commitment.CommitmentStatus.EXPIRED
 
 
-def view_commitment(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.save_expired_if_past_deadline()
-    context = {"commitment": commitment}
-    if request.user.is_authenticated and request.user == commitment.owner.user:
-        return render(request, "commitments/view_owned_commitment.html", context)
-    else:
-        return render(request, "commitments/view_commitment.html", context)
+class ViewCommitmentView(View):
+
+    @staticmethod
+    def get(request, commitment_id):
+        commitment = get_object_or_404(Commitment, id=commitment_id)
+        commitment.save_expired_if_past_deadline()
+        context = {"commitment": commitment}
+        if request.user.is_authenticated and request.user == commitment.owner.user:
+            return render(request, "commitments/view_owned_commitment.html", context)
+        else:
+            return render(request, "commitments/view_commitment.html", context)
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):

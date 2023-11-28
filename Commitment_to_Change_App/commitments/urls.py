@@ -9,8 +9,16 @@ urlpatterns = [
     path("dashboard/", views.DashboardRedirectingView.as_view(), name="dashboard"),
     path("dashboard/clinician/", views.ClinicianDashboardView.as_view(), name="clinician dashboard"),
     path("dashboard/provider/", views.ProviderDashboardView.as_view(), name="provider dashboard"),
-    path("commitment/<int:commitment_id>/view/", views.view_commitment, name="view commitment"),
-    path("commitment/<int:commitment_id>/share/", views.view_commitment, name="share commitment"),
+     path(
+          "commitment/<int:commitment_id>/view/", 
+          views.ViewCommitmentView.as_view(),
+          name="view commitment"
+     ),
+     path(
+          "commitment/<int:commitment_id>/share/", 
+          views.ViewCommitmentView.as_view(),
+          name="share commitment"
+     ),
     path("commitment/<int:commitment_id>/complete/", views.CompleteCommitmentView.as_view(),
          name="complete commitment"),
     path("commitment/<int:commitment_id>/discontinue/", views.DiscontinueCommitmentView.as_view(),
