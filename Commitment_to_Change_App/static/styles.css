@@ -197,7 +197,7 @@ form {
  div.default-form label
  {
      display: block;
- }
+ } 
  div.default-form select, div.default-form input
  {
      border: 1px solid grey;
@@ -224,6 +224,14 @@ form {
      box-sizing: border-box;
      display: inline-block;
      width: 100%;
+ }
+
+.selectSuggestedForm input[type=submit]
+ {
+     background-color: var(--primary-accent);
+     border-radius: 15px;
+     color: var(--accent-text);
+     max-width: 100%;
  }
 
 /* 
