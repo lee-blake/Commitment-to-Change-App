@@ -545,6 +545,371 @@ class TestCreateFromSuggestedCommitmentView:
 
 
 @pytest.mark.django_db
+class TestEditCommitmentView:
+    """Tests for EditCommitmentView"""
+
+    @pytest.fixture(name="existing_commitment")
+    def fixture_existing_commitment(self, saved_clinician_profile):
+        return Commitment.objects.create(
+            owner=saved_clinician_profile,
+            title="Existing title",
+            description="Existing description",
+            deadline=date.today(),
+            status=Commitment.CommitmentStatus.IN_PROGRESS
+        )
+
+
+    class TestGet:
+        """Tests for EditCommitmentView.get"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_provider_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_clinician_accounts_with_404(
+            self, client, other_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_no_such_commitment_returns_404(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            uid = existing_commitment.id
+            existing_commitment.delete()
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": uid}
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_mandatory_commitment_fields_are_filled_and_required(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            title_input_regex = re.compile(
+                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            )
+            title_input_match = title_input_regex.search(html)
+            assert title_input_match
+            assert "required" in title_input_match[0]
+            assert existing_commitment.title in title_input_match[0]
+            description_input_regex = re.compile(
+                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
+            )
+            description_input_match = description_input_regex.search(html)
+            assert description_input_match
+            assert "required" in description_input_match[0]
+            assert existing_commitment.description in description_input_match[0]
+            deadline_input_regex = re.compile(
+                r"\<input[^\>]*name=\"deadline\"[^\>]*\>"
+            )
+            deadline_input_match = deadline_input_regex.search(html)
+            assert deadline_input_match
+            assert "required" in deadline_input_match[0]
+            assert str(existing_commitment.deadline) in deadline_input_match[0]
+
+        def test_associated_course_shows_only_enrolled_courses_and_blank(
+            self, client, saved_clinician_profile, enrolled_course, non_enrolled_course,
+            existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            associated_course_select_regex = re.compile(
+                r"\<select[^\>]*name=\"associated_course\"[^\>]*\>"
+            )
+            associated_course_select_match = associated_course_select_regex.search(html)
+            assert associated_course_select_match
+            associated_course_select_contents = \
+                html.split(associated_course_select_match.group())[1]\
+                .split("</select>")[0]
+            assert "value=\"\"" in associated_course_select_contents
+            assert str(enrolled_course) in associated_course_select_contents
+            assert str(non_enrolled_course) not in associated_course_select_contents
+
+
+    class TestPost:
+        """Tests for EditCommitmentView.post"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_provider_user)
+            response = client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description",
+                    "deadline": date.today()
+                }
+            )
+            assert response.status_code == 403
+
+        def test_rejects_other_clinician_accounts_with_404(
+            self, client, other_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description",
+                    "deadline": date.today()
+                }
+            )
+            assert response.status_code == 404
+
+        def test_no_such_commitment_returns_404(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            uid = existing_commitment.id
+            existing_commitment.delete()
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": uid}
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description",
+                    "deadline": date.today()
+                }
+            )
+            assert response.status_code == 404
+
+        def test_bad_request_returns_get_form_with_error_notes(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.post(
+                target_url,
+                {}
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_good_request_edits_commitment(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            new_deadline = date.today().replace(year=date.today().year+1)
+            client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "new description",
+                    "deadline": new_deadline
+                }
+            )
+            reloaded_commitment = Commitment.objects.get(id=existing_commitment.id)
+            assert reloaded_commitment.title == "new title"
+            assert reloaded_commitment.description == "new description"
+            assert reloaded_commitment.deadline == new_deadline
+
+        def test_good_request_redirects_to_view_page(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            new_deadline = date.today().replace(year=date.today().year+1)
+            response = client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "new description",
+                    "deadline": new_deadline
+                }
+            )
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+
+        def test_empty_titles_are_rejected(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "description": "new description",
+                    "deadline": date.today()
+                }
+            )
+            reloaded_commitment = Commitment.objects.get(id=existing_commitment.id)
+            assert reloaded_commitment.description != "new description"
+
+        def test_empty_descriptions_are_rejected(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "deadline": date.today()
+                }
+            )
+            reloaded_commitment = Commitment.objects.get(id=existing_commitment.id)
+            assert reloaded_commitment.title != "new title"
+
+        def test_empty_deadlines_are_rejected(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "test description"
+                }
+            )
+            reloaded_commitment = Commitment.objects.get(id=existing_commitment.id)
+            assert reloaded_commitment.title != "new title"
+
+        def test_past_deadlines_are_rejected(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "test description",
+                    "deadline": date.fromisoformat("2000-01-01")
+                }
+            )
+            reloaded_commitment = Commitment.objects.get(id=existing_commitment.id)
+            assert reloaded_commitment.title != "new title"
+
+        def test_enrolled_courses_are_accepted(
+            self, client, saved_clinician_profile, enrolled_course, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description",
+                    "deadline": date.today(),
+                    "associated_course": enrolled_course.id
+                }
+            )
+            reloaded_commitment = Commitment.objects.get(id=existing_commitment.id)
+            assert reloaded_commitment.associated_course == enrolled_course
+
+        def test_non_enrolled_courses_are_rejected(
+            self, client, saved_clinician_profile, non_enrolled_course, existing_commitment
+        ):
+            target_url = reverse(
+                "edit commitment",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "test description",
+                    "deadline": date.today(),
+                    "associated_course": non_enrolled_course.id
+                }
+            )
+            reloaded_commitment = Commitment.objects.get(id=existing_commitment.id)
+            assert reloaded_commitment.associated_course != non_enrolled_course
+            assert reloaded_commitment.title != "new title"
+
+
+@pytest.mark.django_db
 class TestCompleteCommitmentView:
     """Tests for CompleteCommitmentView"""
 
