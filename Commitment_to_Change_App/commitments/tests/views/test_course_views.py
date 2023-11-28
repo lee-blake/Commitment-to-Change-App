@@ -8,6 +8,96 @@ from django.urls import reverse
 
 
 @pytest.mark.django_db
+class TestViewCourseView:
+    """Tests for ViewCourseView"""
+
+    class TestGet:
+        """Tests for ViewCourseView.get"""
+
+        # TODO Add tests to cover all Iteration 1 functionality
+        # The tests I have added here only cover new code and adding those tests would
+        # make this feature branch even more cumbersome than it is already. - Lee
+
+        def test_suggested_commitments_show_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course,
+            commitment_template_1, commitment_template_2
+        ):
+            enrolled_course.suggested_commitments.add(
+                commitment_template_1, commitment_template_2
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert commitment_template_1.title in html
+            assert commitment_template_2.title in html
+
+        def test_suggested_commitments_show_in_page_for_clinician(
+            self, client, saved_clinician_profile, enrolled_course,
+            commitment_template_1, commitment_template_2
+        ):
+            enrolled_course.suggested_commitments.add(
+                commitment_template_1, commitment_template_2
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert commitment_template_1.title in html
+            assert commitment_template_2.title in html
+
+        def test_select_suggested_commitments_button_shows_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            select_suggested_commitments_link_url = reverse(
+                "change Course suggested commitments",
+                kwargs={"course_id": enrolled_course.id}
+            )
+            select_suggested_commitments_link_regex = re.compile(
+                r"\<a\s[^\>]*href=\"" + select_suggested_commitments_link_url + r"\"[^\>]*\>"
+            )
+            assert select_suggested_commitments_link_regex.search(html)
+
+        def test_create_from_suggested_commitment_button_shows_in_page_for_clinician(
+            self, client, saved_clinician_profile, enrolled_course,
+            commitment_template_1, commitment_template_2
+        ):
+            enrolled_course.suggested_commitments.add(
+                commitment_template_1, commitment_template_2
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            create_from_link_url_1 = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            create_from_link_regex_1 = re.compile(
+                r"\<a\s[^\>]*href=\"" + create_from_link_url_1 + r"\"[^\>]*\>"
+            )
+            assert create_from_link_regex_1.search(html)
+            create_from_link_url_2 = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_2.id
+                }
+            )
+            create_from_link_regex_2 = re.compile(
+                r"\<a\s[^\>]*href=\"" + create_from_link_url_2 + r"\"[^\>]*\>"
+            )
+            assert create_from_link_regex_2.search(html)
+
+
+@pytest.mark.django_db
 class TestCourseChangeSuggestedCommitmentsView:
     """Tests for CourseChangeSuggestedCommitmentsView"""
 
@@ -197,92 +287,3 @@ class TestCourseChangeSuggestedCommitmentsView:
             assert response.url == reverse(
                 "view course", kwargs={ "course_id": enrolled_course.id }
             )
-
-@pytest.mark.django_db
-class TestViewCourseView:
-    """Tests for ViewCourseView"""
-
-    class TestGet:
-        """Tests for ViewCourseView.get"""
-
-        # TODO Add tests to cover all Iteration 1 functionality
-        # The tests I have added here only cover new code and adding those tests would
-        # make this feature branch even more cumbersome than it is already. - Lee
-
-        def test_suggested_commitments_show_in_page_for_provider(
-            self, client, saved_provider_profile, enrolled_course,
-            commitment_template_1, commitment_template_2
-        ):
-            enrolled_course.suggested_commitments.add(
-                commitment_template_1, commitment_template_2
-            )
-            client.force_login(saved_provider_profile.user)
-            html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
-            ).content.decode()
-            assert commitment_template_1.title in html
-            assert commitment_template_2.title in html
-
-        def test_suggested_commitments_show_in_page_for_clinician(
-            self, client, saved_clinician_profile, enrolled_course,
-            commitment_template_1, commitment_template_2
-        ):
-            enrolled_course.suggested_commitments.add(
-                commitment_template_1, commitment_template_2
-            )
-            client.force_login(saved_clinician_profile.user)
-            html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
-            ).content.decode()
-            assert commitment_template_1.title in html
-            assert commitment_template_2.title in html
-
-        def test_select_suggested_commitments_button_shows_in_page_for_provider(
-            self, client, saved_provider_profile, enrolled_course
-        ):
-            client.force_login(saved_provider_profile.user)
-            html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
-            ).content.decode()
-            select_suggested_commitments_link_url = reverse(
-                "change Course suggested commitments",
-                kwargs={"course_id": enrolled_course.id}
-            )
-            select_suggested_commitments_link_regex = re.compile(
-                r"\<a\s[^\>]*href=\"" + select_suggested_commitments_link_url + r"\"[^\>]*\>"
-            )
-            assert select_suggested_commitments_link_regex.search(html)
-
-        def test_create_from_suggested_commitment_button_shows_in_page_for_clinician(
-            self, client, saved_clinician_profile, enrolled_course,
-            commitment_template_1, commitment_template_2
-        ):
-            enrolled_course.suggested_commitments.add(
-                commitment_template_1, commitment_template_2
-            )
-            client.force_login(saved_clinician_profile.user)
-            html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
-            ).content.decode()
-            create_from_link_url_1 = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            create_from_link_regex_1 = re.compile(
-                r"\<a\s[^\>]*href=\"" + create_from_link_url_1 + r"\"[^\>]*\>"
-            )
-            assert create_from_link_regex_1.search(html)
-            create_from_link_url_2 = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_2.id
-                }
-            )
-            create_from_link_regex_2 = re.compile(
-                r"\<a\s[^\>]*href=\"" + create_from_link_url_2 + r"\"[^\>]*\>"
-            )
-            assert create_from_link_regex_2.search(html)
