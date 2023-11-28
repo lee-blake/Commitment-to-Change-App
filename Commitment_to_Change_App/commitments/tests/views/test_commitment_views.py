@@ -910,6 +910,205 @@ class TestEditCommitmentView:
 
 
 @pytest.mark.django_db
+class TestViewCommitmentView:
+    """Tests for ViewCommitmentView"""
+
+    @pytest.fixture(name="viewable_commitment_1")
+    def fixture_viewable_commitment_1(self, saved_clinician_profile):
+        return Commitment.objects.create(
+            title="First commitment",
+            description="This is the first description",
+            deadline=date.today(),
+            owner=saved_clinician_profile,
+            status=Commitment.CommitmentStatus.IN_PROGRESS
+        )
+
+    @pytest.fixture(name="viewable_commitment_2")
+    def fixture_viewable_commitment_2(self, saved_clinician_profile):
+        return Commitment.objects.create(
+            title="Second commitment",
+            description="This is the second description",
+            deadline=date.fromisoformat("2000-01-01"),
+            owner=saved_clinician_profile,
+            status=Commitment.CommitmentStatus.EXPIRED
+        )
+
+
+    class TestGet:
+        """Tests for ViewCommitmentView.get"""
+
+        def test_missing_commitment_returns_404(self, client, viewable_commitment_1):
+            uid = viewable_commitment_1.id
+            viewable_commitment_1.delete()
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": uid}
+            )
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_first_commitment_values_show_in_page(
+            self, client, saved_clinician_profile, viewable_commitment_1
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert viewable_commitment_1.title in html
+            assert viewable_commitment_1.description in html
+            # It is best not to hardcode a particular date format for the template
+            # Year and day are always numeric so we will just search for them.
+            assert str(viewable_commitment_1.deadline.year) in html
+            assert str(viewable_commitment_1.deadline.day) in html
+            assert str(viewable_commitment_1.status) in html
+
+        def test_second_commitment_values_show_in_page(
+            self, client, saved_clinician_profile, viewable_commitment_2
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_2.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert viewable_commitment_2.title in html
+            assert viewable_commitment_2.description in html
+            # It is best not to hardcode a particular date format for the template
+            # Year and day are always numeric so we will just search for them.
+            assert str(viewable_commitment_2.deadline.year) in html
+            assert str(viewable_commitment_2.deadline.day) in html
+            assert str(viewable_commitment_2.status) in html
+
+        def test_other_clinicians_can_view_commitment(
+            self, client, other_clinician_profile, viewable_commitment_1
+        ):
+            client.force_login(other_clinician_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert viewable_commitment_1.title in html
+            assert viewable_commitment_1.description in html
+
+        def test_providers_can_view_commitment(
+            self, client, saved_provider_profile, viewable_commitment_1
+        ):
+            client.force_login(saved_provider_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert viewable_commitment_1.title in html
+            assert viewable_commitment_1.description in html
+
+        def test_anonymous_users_can_view_commitment(
+            self, client, viewable_commitment_2
+        ):
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_2.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert viewable_commitment_2.title in html
+            assert viewable_commitment_2.description in html
+
+        def test_alteration_buttons_show_in_page_for_owner(
+            self, client, saved_clinician_profile, viewable_commitment_1
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            delete_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert delete_button_regex.search(html)
+            edit_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert edit_button_regex.search(html)
+
+        def test_alteration_buttons_do_not_show_for_other_clinicians(
+            self, client, other_clinician_profile, viewable_commitment_1
+        ):
+            client.force_login(other_clinician_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            delete_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not delete_button_regex.search(html)
+            edit_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not edit_button_regex.search(html)
+
+        def test_alteration_buttons_do_not_show_for_providers(
+            self, client, saved_provider_profile, viewable_commitment_1
+        ):
+            client.force_login(saved_provider_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            delete_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not delete_button_regex.search(html)
+            edit_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not edit_button_regex.search(html)
+
+        def test_alteration_buttons_do_not_show_for_anonymous_users(
+            self, client, viewable_commitment_1
+        ):
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            delete_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not delete_button_regex.search(html)
+            edit_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not edit_button_regex.search(html)
+
+
+    class TestPost:
+        """Tests for ViewCommitmentView.post"""
+
+        def test_post_rejected_with_405(self, client, viewable_commitment_1):
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            response = client.post(target_url)
+            assert response.status_code == 405
+
+
+@pytest.mark.django_db
 class TestCompleteCommitmentView:
     """Tests for CompleteCommitmentView"""
 
