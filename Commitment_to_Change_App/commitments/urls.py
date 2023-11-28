@@ -14,11 +14,6 @@ urlpatterns = [
           views.ViewCommitmentView.as_view(),
           name="view commitment"
      ),
-     path(
-          "commitment/<int:commitment_id>/share/", 
-          views.ViewCommitmentView.as_view(),
-          name="share commitment"
-     ),
     path("commitment/<int:commitment_id>/complete/", views.CompleteCommitmentView.as_view(),
          name="complete commitment"),
     path("commitment/<int:commitment_id>/discontinue/", views.DiscontinueCommitmentView.as_view(),
