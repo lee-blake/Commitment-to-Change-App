@@ -231,7 +231,6 @@ form {
      background-color: var(--primary-accent);
      border-radius: 15px;
      color: var(--accent-text);
-     max-width: 100%;
  }
 
 /* 
