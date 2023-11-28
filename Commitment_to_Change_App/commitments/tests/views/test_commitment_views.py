@@ -12,6 +12,231 @@ from commitments.models import Commitment
 
 
 @pytest.mark.django_db
+class TestMakeCommitmentView:
+    """Tests for MakeCommitmentView"""
+
+    class TestGet:
+        """Tests for MakeCommitmentView.get"""
+
+        def test_rejects_provider_accounts_with_403(self, client, saved_provider_user):
+            target_url = reverse("make commitment")
+            client.force_login(saved_provider_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_shows_post_form_pointing_to_this_view(self, client, saved_clinician_profile):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_mandatory_commitment_fields_are_required(self, client, saved_clinician_profile):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            title_input_regex = re.compile(
+                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            )
+            title_input_match = title_input_regex.search(html)
+            assert title_input_match
+            assert "required" in title_input_match[0]
+            description_input_regex = re.compile(
+                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
+            )
+            description_input_match = description_input_regex.search(html)
+            assert description_input_match
+            assert "required" in description_input_match[0]
+            deadline_input_regex = re.compile(
+                r"\<input[^\>]*name=\"deadline\"[^\>]*\>"
+            )
+            deadline_input_match = deadline_input_regex.search(html)
+            assert deadline_input_match
+            assert "required" in deadline_input_match[0]
+
+        def test_associated_course_shows_only_enrolled_courses_and_blank(
+            self, client, saved_clinician_profile, enrolled_course, non_enrolled_course
+        ):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            associated_course_select_regex = re.compile(
+                r"\<select[^\>]*name=\"associated_course\"[^\>]*\>"
+            )
+            associated_course_select_match = associated_course_select_regex.search(html)
+            assert associated_course_select_match
+            associated_course_select_contents = \
+                html.split(associated_course_select_match.group())[1]\
+                .split("</select>")[0]
+            assert "value=\"\"" in associated_course_select_contents
+            assert str(enrolled_course) in associated_course_select_contents
+            assert str(non_enrolled_course) not in associated_course_select_contents
+
+
+    class TestPost:
+        """Tests for MakeCommitmentView.post"""
+
+        def test_rejects_provider_accounts_with_403(self, client, saved_provider_user):
+            target_url = reverse("make commitment")
+            client.force_login(saved_provider_user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_bad_request_returns_get_form_with_error_notes(
+            self, client, saved_clinician_profile
+        ):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            html = client.post(
+                target_url,
+                {}
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_good_request_creates_commitment(self, client, saved_clinician_profile):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description",
+                    "deadline": date.today()
+                }
+            )
+            assert Commitment.objects.filter(
+                title="sample title",
+                description="test description",
+                deadline=date.today()
+            ).exists()
+
+        def test_good_request_redirects_to_view_page(self, client, saved_clinician_profile):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description",
+                    "deadline": date.today()
+                }
+            )
+            commitment = Commitment.objects.get(
+                title="sample title",
+                description="test description",
+                deadline=date.today()
+            )
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view commitment",
+                kwargs={"commitment_id": commitment.id}
+            )
+
+        def test_empty_titles_are_rejected(self, client, saved_clinician_profile):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "description": "test description",
+                    "deadline": date.today()
+                }
+            )
+            assert not Commitment.objects.filter(description="test description").exists()
+
+        def test_empty_descriptions_are_rejected(self, client, saved_clinician_profile):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "deadline": date.today()
+                }
+            )
+            assert not Commitment.objects.filter(title="sample title").exists()
+
+        def test_empty_deadlines_are_rejected(self, client, saved_clinician_profile):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description"
+                }
+            )
+            assert not Commitment.objects.filter(title="sample title").exists()
+
+        def test_past_deadlines_are_rejected(self, client, saved_clinician_profile):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description",
+                    "deadline": date.fromisoformat("2000-01-01")
+                }
+            )
+            assert not Commitment.objects.filter(title="sample title").exists()
+
+        def test_enrolled_courses_are_accepted(
+            self, client, saved_clinician_profile, enrolled_course
+        ):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description",
+                    "deadline": date.today(),
+                    "associated_course": enrolled_course.id
+                }
+            )
+            commitment = Commitment.objects.get(
+                title="sample title",
+                description="test description",
+                deadline=date.today()
+            )
+            assert commitment.associated_course == enrolled_course
+
+        def test_non_enrolled_courses_are_rejected(
+            self, client, saved_clinician_profile, non_enrolled_course
+        ):
+            target_url = reverse("make commitment")
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "sample title",
+                    "description": "test description",
+                    "deadline": date.today(),
+                    "associated_course": non_enrolled_course.id
+                }
+            )
+            assert not Commitment.objects.filter(
+                title="sample title",
+                description="test description",
+                deadline=date.today()
+            ).exists()
+
+
+@pytest.mark.django_db
 class TestCreateFromSuggestedCommitmentView:
     """Tests for CreateFromSuggestedCommitmentView"""
 
