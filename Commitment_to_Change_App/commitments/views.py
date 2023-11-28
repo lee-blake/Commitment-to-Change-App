@@ -1,4 +1,3 @@
-import datetime
 import random
 import string
 
@@ -17,16 +16,6 @@ from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentT
     CourseSelectSuggestedCommitmentsForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
-
-
-def commitment_remaining_time(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.show = commitment.deadline
-    context = {"commitment": commitment}
-    if commitment.deadline > datetime.date.today():
-        return render(request, "commitments/view_commitment.html", context)
-    else:
-        commitment.status = Commitment.CommitmentStatus.EXPIRED
 
 
 class ViewCommitmentView(View):
