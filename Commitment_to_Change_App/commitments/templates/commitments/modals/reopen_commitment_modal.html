@@ -1,18 +1,21 @@
 {% extends "commitments/modals/confirm_modal.html" %}
 
-{% with commitment_id=commitment.id action="reopen" %}
+{% block modal_open_button_text %}Reopen{% endblock modal_open_button_text %}
 
-{% block modal_button_name %}Reopen{% endblock modal_button_name %}
+{% block modal_title_text %}Confirm reopen{% endblock modal_title_text %}
 
-{% block modal_target_label %}{{ action }}_modal_{{ commitment_id }}{% endblock modal_target_label %}
-
-{% block modal_id_label %}{{ action }}_modal_{{ commitment_id }}{% endblock modal_id_label %}
-
-{% block modal_title %}{{ action }}{% endblock modal_title %}
-
-{% block modal_action %}{{ action }}{% endblock modal_action %}
-{% endwith %}
+{% block modal_body_text %}
+Are you sure you wish to reopen "{{ commitment.title }}"?
+{% endblock modal_body_text %}
 
 {% block confirm_action %}
 {% include "commitments/post_buttons/reopen_commitment_button.html" %}
 {% endblock confirm_action %}
+
+{% block modal_everything %}
+{% with commitment_id=commitment.id|stringformat:"d"  %}
+{% with modal_id="modal_action_reopen_"|add:commitment_id %}
+{{ block.super }}
+{% endwith %}
+{% endwith %}
+{% endblock modal_everything %}

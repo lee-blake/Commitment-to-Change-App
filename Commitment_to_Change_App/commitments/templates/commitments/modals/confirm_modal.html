@@ -1,24 +1,28 @@
 <!-- confirm_modal.html -->
-
+{% block modal_everything %}
 <!-- Button -->
 {% with commitment_id=commitment.id %}
 <button type="button" class="standard-button primary-accent" data-bs-toggle="modal" 
-data-bs-target="#{% block modal_target_label %}{% endblock modal_target_label %}">
-    {% block modal_button_name %}{% endblock modal_button_name %}
+data-bs-target="#{{ modal_id }}">
+    {% block modal_open_button_text %}{% endblock modal_open_button_text %}
 </button>
 
 
 
 <!-- Modal -->
-<div class="modal fade" id="{% block modal_id_label %}{% endblock modal_id_label %}" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modalLabel">Confirm {% block modal_title %}{% endblock modal_title %}</h1>
+                <h1 class="modal-title fs-5" id="modalLabel">
+                    {% block modal_title_text %}{% endblock modal_title_text %}
+                </h1>
                 <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">X</button>
             </div>
             <div class="modal-body">
-              <p>Are you sure you wish to {% block modal_action %} {% endblock modal_action %} "{{ commitment.title }}"?</p>
+                <p> 
+                    {% block modal_body_text %} {% endblock modal_body_text %}
+                </p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
@@ -29,3 +33,5 @@ data-bs-target="#{% block modal_target_label %}{% endblock modal_target_label %}
     </div>
 </div>
 {% endwith %}
+
+{% endblock modal_everything %}
