@@ -6,6 +6,154 @@ import pytest
 
 from django.urls import reverse
 
+from commitments.models import Course
+
+
+@pytest.mark.django_db
+class TestCreateCourseView:
+    """Tests for CreateCourseView"""
+
+    class TestGet:
+        """Tests for CreateCourseView.get"""
+
+        def test_rejects_clinician_accounts_with_403(self, client, saved_clinician_user):
+            client.force_login(saved_clinician_user)
+            response = client.get(
+                reverse("create course")
+            )
+            assert response.status_code == 403
+
+        def test_shows_post_form_pointing_to_this_view(self, client, saved_provider_user):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_shows_required_title_field(self, client, saved_provider_user):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_user)
+            html = client.get(target_url).content.decode()
+            title_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            )
+            title_input_tag_match = title_input_tag_regex.search(html)
+            assert title_input_tag_match
+            title_input_tag = title_input_tag_match[0]
+            required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
+            assert required_attribute_regex.search(title_input_tag)
+
+        def test_shows_required_description_field(self, client, saved_provider_user):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_user)
+            html = client.get(target_url).content.decode()
+            description_input_tag_regex = re.compile(
+                r"\<textarea[^\>]*name=\"description\"[^\>]*\>"
+            )
+            description_input_tag_match = description_input_tag_regex.search(html)
+            assert description_input_tag_match
+            description_input_tag = description_input_tag_match[0]
+            required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
+            assert required_attribute_regex.search(description_input_tag)
+    
+    class TestPost:
+        """Tests for CreateCourseView.post"""
+
+        def test_rejects_clinician_accounts_with_403(self, client, saved_clinician_user):
+            client.force_login(saved_clinician_user)
+            response = client.get(
+                reverse("create course")
+            )
+            assert response.status_code == 403
+
+        def test_invalid_request_returns_the_get_page_with_error_notes(
+            self, client, saved_provider_user
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_user)
+            html = client.post(
+                target_url,
+                {"title": "valid", "description": ""}
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_missing_title_does_not_create_course(
+            self, client, saved_provider_user
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_user)
+            client.post(
+                target_url,
+                {
+                    "description": "missing title"
+                }
+            )
+            assert not Course.objects.filter(description="missing title").exists()
+
+        def test_missing_description_does_not_create_course(
+            self, client, saved_provider_user
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_user)
+            client.post(
+                target_url,
+                {
+                    "title": "missing description"
+                }
+            )
+            assert not Course.objects.filter(title="missing description").exists()
+
+        def test_valid_request_creates_course_with_right_owner(
+            self, client, saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                reverse("create course"),
+                {
+                    "title": "new course", 
+                    "description": "made for checking valid requests to CreateCourseView"
+                }
+            )
+            course = Course.objects.get(
+                title="new course",
+                description="made for checking valid requests to CreateCourseView"
+            )
+            assert course.owner == saved_provider_profile
+
+        def test_valid_request_redirects_to_correct_url(
+            self, client, saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            response = client.post(
+                reverse("create course"),
+                {
+                    "title": "new course", 
+                    "description": "made for checking valid requests to CreateCourseView"
+                }
+            )
+            course = Course.objects.get(
+                title="new course",
+                description="made for checking valid requests to CreateCourseView"
+            )
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view course", 
+                kwargs={ "course_id": course.id }
+            )
+
 
 @pytest.mark.django_db
 class TestViewCourseView:
