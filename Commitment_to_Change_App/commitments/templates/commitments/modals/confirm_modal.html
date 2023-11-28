@@ -1,17 +1,16 @@
-
+<!-- confirm_modal.html -->
 
 <!-- Button -->
-
-
+{% with commitment_id=commitment.id %}
 <button type="button" class="standard-button primary-accent" data-bs-toggle="modal" 
-data-bs-target="#{% block modal_target_label %}{% endblock modal_target_label %}modal">
+data-bs-target="#{% block modal_target_label %}{% endblock modal_target_label %}">
     {% block modal_button_name %}{% endblock modal_button_name %}
 </button>
 
 
 
 <!-- Modal -->
-<div class="modal fade" id="{% block modal_label %}{% endblock modal_label %}modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="{% block modal_id_label %}{% endblock modal_id_label %}" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -29,3 +28,4 @@ data-bs-target="#{% block modal_target_label %}{% endblock modal_target_label %}
         </div>
     </div>
 </div>
+{% endwith %}

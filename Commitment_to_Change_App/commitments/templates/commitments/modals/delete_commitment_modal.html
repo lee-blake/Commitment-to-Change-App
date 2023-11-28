@@ -1,16 +1,17 @@
 {% extends "commitments/modals/confirm_modal.html" %}
 
-{% block modal_button_name %}
-Delete
-{% endblock modal_button_name %}
+{% with commitment_id=commitment.id action="delete" %}
 
-{% block modal_title %}
-Delete
-{% endblock modal_title %}
+{% block modal_button_name %}Delete{% endblock modal_button_name %}
 
-{% block modal_action %}
-delete
-{% endblock modal_action %}
+{% block modal_target_label %}{{ action }}_modal_{{ commitment_id }}{% endblock modal_target_label %}
+
+{% block modal_id_label %}{{ action }}_modal_{{ commitment_id }}{% endblock modal_id_label %}
+
+{% block modal_title %}{{ action }}{% endblock modal_title %}
+
+{% block modal_action %}{{ action }}{% endblock modal_action %}
+{% endwith %}
 
 {% block confirm_action %}
 {% include "commitments/post_buttons/delete_commitment_confirm_button.html" %}
