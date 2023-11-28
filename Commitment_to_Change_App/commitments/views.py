@@ -301,7 +301,7 @@ class RegisterProviderView(View):
             return render(request, "commitments/register_provider.html", context={"form": form})
 
 
-class CreateCourseView(LoginRequiredMixin, View):
+class CreateCourseView(ProviderLoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
         form = CourseForm()
