@@ -1,12 +1,13 @@
 """Tests for views relating to Course objects."""
 
+import datetime
 import re
 
 import pytest
 
 from django.urls import reverse
 
-from commitments.models import Course
+from commitments.models import Commitment, Course
 
 
 @pytest.mark.django_db
@@ -61,7 +62,7 @@ class TestCreateCourseView:
             description_input_tag = description_input_tag_match[0]
             required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
             assert required_attribute_regex.search(description_input_tag)
-    
+
     class TestPost:
         """Tests for CreateCourseView.post"""
 
@@ -335,16 +336,174 @@ class TestEditCourseView:
 class TestViewCourseView:
     """Tests for ViewCourseView"""
 
-    # TODO Add tests to cover all Iteration 1 functionality
-        # The tests I have added here only cover new code and adding those tests would
-        # make this feature branch even more cumbersome than it is already. - Lee
+    @pytest.fixture(name="associated_commitments")
+    def fixture_associated_commitments(self, saved_clinician_profile, enrolled_course):
+        return (
+            Commitment.objects.create(
+                owner=saved_clinician_profile,
+                title="First associated test commitment",
+                description="This is the first commitment to commitment display for a course.",
+                deadline=datetime.date.today(),
+                status=Commitment.CommitmentStatus.IN_PROGRESS,
+                associated_course=enrolled_course
+            ),
+            Commitment.objects.create(
+                owner=saved_clinician_profile,
+                title="First associated test commitment",
+                description="This is the second commitment to commitment display for a course.",
+                deadline=datetime.date.today(),
+                status=Commitment.CommitmentStatus.IN_PROGRESS,
+                associated_course=enrolled_course
+            ),
+            Commitment.objects.create(
+                owner=saved_clinician_profile,
+                title="Third associated test commitment",
+                description="This is the third commitment to commitment display for a course.",
+                deadline=datetime.date.today(),
+                status=Commitment.CommitmentStatus.IN_PROGRESS,
+                associated_course=enrolled_course
+            ),
+        )
+
+    @pytest.fixture(name="non_associated_commitment")
+    def fixture_non_associated_commitment(self, saved_clinician_profile):
+        return Commitment.objects.create(
+            owner=saved_clinician_profile,
+                title="Not associate",
+                description="This isn't associated with a course",
+                deadline=datetime.date.today(),
+                status=Commitment.CommitmentStatus.IN_PROGRESS,
+        )
+
 
     class TestGetUnauthorizedView:
         """Tests for ViewCourseView.get that involve unauthorized viewers."""
 
+        def test_rejects_unenrolled_clinician_accounts_with_404(
+            self, client, other_clinician_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "view course",
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "view course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
 
     class TestGetOwnerView:
         """Tests for ViewCourseView.get viewing from the perspective of the owner."""
+
+        def test_mandatory_fields_show_in_page_for_provider_1(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert enrolled_course.title in html
+            assert enrolled_course.description in html
+
+        def test_mandatory_fields_show_in_page_for_provider_2(
+            self, client, saved_provider_profile
+        ):
+            new_course = Course.objects.create(
+                title="New course for testing",
+                description="This is for testing fields show in the page.",
+                owner=saved_provider_profile,
+                join_code="JOINCODE"
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": new_course.id })
+            ).content.decode()
+            assert new_course.title in html
+            assert new_course.description in html
+
+        def test_join_link_shows_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            join_link = reverse(
+                "join course",
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "join_code": enrolled_course.join_code
+                }
+            )
+            assert join_link in html
+
+        def test_enrolled_students_list_shows_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course,
+            saved_clinician_profile, other_clinician_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            # For now it is always username display. When we change that, we should
+            # alter this test to check that the new display method is also respected.
+            assert saved_clinician_profile.username in html
+            assert other_clinician_profile.username not in html
+
+        def test_general_commitment_statistics_show_in_page_for_provider_1(
+            self, client, saved_provider_profile,
+            enrolled_course, associated_commitments
+        ):
+            # Test data: 1 IN_PROGRESS, 1 COMPLETE, 1 DISCONTINUED
+            associated_commitments[0].status = Commitment.CommitmentStatus.IN_PROGRESS
+            associated_commitments[0].save()
+            associated_commitments[1].status = Commitment.CommitmentStatus.COMPLETE
+            associated_commitments[1].save()
+            associated_commitments[2].status = Commitment.CommitmentStatus.DISCONTINUED
+            associated_commitments[2].save()
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            # This can change if we do something other than a table.
+            assert "<td>In progress</td><td>1</td>" in html
+            assert "<td>Completed</td><td>1</td>" in html
+            assert "<td>Past Due</td><td>0</td>" in html
+            assert "<td>Discontinued</td><td>1</td>" in html
+            assert "<th>Total</th><th>3</th>" in html
+
+        def test_general_commitment_statistics_show_in_page_for_provider_2(
+            self, client, saved_provider_profile,
+            enrolled_course, associated_commitments
+        ):
+            # Fill in the gaps for the statistics to prevent hardcoding/faking the table.
+            # Test data: 2 EXPIRED
+            associated_commitments[0].status = Commitment.CommitmentStatus.EXPIRED
+            associated_commitments[0].save()
+            associated_commitments[1].status = Commitment.CommitmentStatus.EXPIRED
+            associated_commitments[1].save()
+            associated_commitments[2].delete()
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            # This can change if we do something other than a table.
+            assert "<td>In progress</td><td>0</td>" in html
+            assert "<td>Completed</td><td>0</td>" in html
+            assert "<td>Past Due</td><td>2</td>" in html
+            assert "<td>Discontinued</td><td>0</td>" in html
+            assert "<th>Total</th><th>2</th>" in html
+
 
         def test_suggested_commitments_show_in_page_for_provider(
             self, client, saved_provider_profile, enrolled_course,
@@ -376,9 +535,53 @@ class TestViewCourseView:
             )
             assert select_suggested_commitments_link_regex.search(html)
 
+        def test_associated_commitments_show_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course,
+            associated_commitments, non_associated_commitment
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            for commitment in associated_commitments:
+                assert commitment.title in html
+            assert non_associated_commitment.title not in html
+
 
     class TestGetStudentView:
         """Tests for ViewCourseView.get viewing from the perspective of a student."""
+
+        def test_mandatory_fields_show_in_page_for_clinician(
+            self, client, saved_clinician_profile, enrolled_course
+        ):
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert enrolled_course.title in html
+            assert enrolled_course.description in html
+
+        def test_general_commitment_statistics_show_in_page_for_clinician(
+            self, client, saved_clinician_profile,
+            enrolled_course, associated_commitments
+        ):
+            # Test data: 1 IN_PROGRESS, 1 COMPLETE, 1 DISCONTINUED
+            associated_commitments[0].status = Commitment.CommitmentStatus.IN_PROGRESS
+            associated_commitments[0].save()
+            associated_commitments[1].status = Commitment.CommitmentStatus.COMPLETE
+            associated_commitments[1].save()
+            associated_commitments[2].status = Commitment.CommitmentStatus.DISCONTINUED
+            associated_commitments[2].save()
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            # This can change if we do something other than a table.
+            assert "<td>In progress</td><td>1</td>" in html
+            assert "<td>Completed</td><td>1</td>" in html
+            assert "<td>Past Due</td><td>0</td>" in html
+            assert "<td>Discontinued</td><td>1</td>" in html
+            assert "<th>Total</th><th>3</th>" in html
 
         def test_suggested_commitments_show_in_page_for_clinician(
             self, client, saved_clinician_profile, enrolled_course,
@@ -428,9 +631,34 @@ class TestViewCourseView:
             )
             assert create_from_link_regex_2.search(html)
 
+        def test_associated_commitments_show_in_page_for_clinician(
+            self, client, saved_clinician_profile, enrolled_course,
+            associated_commitments, non_associated_commitment
+        ):
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            for commitment in associated_commitments:
+                assert commitment.title in html
+            assert non_associated_commitment.title not in html
+
 
     class TestPost:
         """Tests for ViewCourseView.post"""
+
+        def test_rejects_post_with_405(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            target_url = reverse(
+                "view course",
+                kwargs={"course_id": enrolled_course.id}
+            )
+            response = client.post(
+                target_url, {}
+            )
+            assert response.status_code == 405
 
 
 @pytest.mark.django_db
