@@ -156,6 +156,182 @@ class TestCreateCourseView:
 
 
 @pytest.mark.django_db
+class TestEditCourseView:
+    """Tests for EditCourseView"""
+
+    class TestGet:
+        """Tests for EditCourseView.get"""
+
+        def test_rejects_clinician_accounts_with_403(
+            self, client, saved_clinician_user, enrolled_course
+        ):
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client,saved_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_mandatory_course_fields_are_filled_by_default(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            title_input_regex = re.compile(
+                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            )
+            title_input_match = title_input_regex.search(html)
+            assert title_input_match
+            assert f"value=\"{enrolled_course.title}\"" in title_input_match[0]
+            description_input_regex = re.compile(
+                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
+            )
+            description_input_match = description_input_regex.search(html)
+            assert description_input_match
+            assert enrolled_course.description in description_input_match[0]
+
+
+    class TestPost:
+        """Tests for EditCourseView.post"""
+
+        def test_rejects_clinician_accounts_with_403(
+            self, client, saved_clinician_user, enrolled_course
+        ):
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_bad_request_returns_get_form(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.post(
+                target_url,
+                {}
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+
+        def test_valid_request_alters_course(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "new description"
+                }
+            )
+            reloaded_course = Course.objects.get(
+                id=enrolled_course.id
+            )
+            assert reloaded_course.title == "new title"
+            assert reloaded_course.description == "new description"
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "new description"
+                }
+            )
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view course",
+                kwargs={"course_id": enrolled_course.id}
+            )
+
+        def test_valid_request_does_not_alter_enrolled_students(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            students_before = [ student for student in enrolled_course.students.all() ]
+            assert len(students_before) > 0
+            target_url = reverse(
+                "edit course", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "new title",
+                    "description": "new description"
+                }
+            )
+            assert len(enrolled_course.students.all()) == len(students_before)
+            for student in students_before:
+                assert enrolled_course.students.contains(student)
+
+
+@pytest.mark.django_db
 class TestViewCourseView:
     """Tests for ViewCourseView"""
 
