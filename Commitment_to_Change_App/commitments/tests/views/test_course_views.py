@@ -335,12 +335,16 @@ class TestEditCourseView:
 class TestViewCourseView:
     """Tests for ViewCourseView"""
 
-    class TestGet:
-        """Tests for ViewCourseView.get"""
-
-        # TODO Add tests to cover all Iteration 1 functionality
+    # TODO Add tests to cover all Iteration 1 functionality
         # The tests I have added here only cover new code and adding those tests would
         # make this feature branch even more cumbersome than it is already. - Lee
+
+    class TestGetUnauthorizedView:
+        """Tests for ViewCourseView.get that involve unauthorized viewers."""
+
+
+    class TestGetOwnerView:
+        """Tests for ViewCourseView.get viewing from the perspective of the owner."""
 
         def test_suggested_commitments_show_in_page_for_provider(
             self, client, saved_provider_profile, enrolled_course,
@@ -350,20 +354,6 @@ class TestViewCourseView:
                 commitment_template_1, commitment_template_2
             )
             client.force_login(saved_provider_profile.user)
-            html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
-            ).content.decode()
-            assert commitment_template_1.title in html
-            assert commitment_template_2.title in html
-
-        def test_suggested_commitments_show_in_page_for_clinician(
-            self, client, saved_clinician_profile, enrolled_course,
-            commitment_template_1, commitment_template_2
-        ):
-            enrolled_course.suggested_commitments.add(
-                commitment_template_1, commitment_template_2
-            )
-            client.force_login(saved_clinician_profile.user)
             html = client.get(
                 reverse("view course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
@@ -385,6 +375,24 @@ class TestViewCourseView:
                 r"\<a\s[^\>]*href=\"" + select_suggested_commitments_link_url + r"\"[^\>]*\>"
             )
             assert select_suggested_commitments_link_regex.search(html)
+
+
+    class TestGetStudentView:
+        """Tests for ViewCourseView.get viewing from the perspective of a student."""
+
+        def test_suggested_commitments_show_in_page_for_clinician(
+            self, client, saved_clinician_profile, enrolled_course,
+            commitment_template_1, commitment_template_2
+        ):
+            enrolled_course.suggested_commitments.add(
+                commitment_template_1, commitment_template_2
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert commitment_template_1.title in html
+            assert commitment_template_2.title in html
 
         def test_create_from_suggested_commitment_button_shows_in_page_for_clinician(
             self, client, saved_clinician_profile, enrolled_course,
@@ -419,6 +427,10 @@ class TestViewCourseView:
                 r"\<a\s[^\>]*href=\"" + create_from_link_url_2 + r"\"[^\>]*\>"
             )
             assert create_from_link_regex_2.search(html)
+
+
+    class TestPost:
+        """Tests for ViewCourseView.post"""
 
 
 @pytest.mark.django_db
