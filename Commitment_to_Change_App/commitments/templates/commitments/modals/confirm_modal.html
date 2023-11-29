@@ -20,11 +20,11 @@ data-bs-target="#{{ modal_id }}">
 
 
 <!-- Modal -->
-<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-labelledby="{{ modal_id }}Label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="modalLabel">
+                <h1 class="modal-title fs-5" id="{{ modal_id }}Label">
                     {% block modal_title_text %}{% endblock modal_title_text %}
                 </h1>
                 <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">X</button>
@@ -35,7 +35,7 @@ data-bs-target="#{{ modal_id }}">
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal">Cancel</button>
                 
                 {% block confirm_action %} {% endblock confirm_action %}
             </div>
