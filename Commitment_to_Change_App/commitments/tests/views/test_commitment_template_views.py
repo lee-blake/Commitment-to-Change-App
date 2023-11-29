@@ -171,9 +171,8 @@ class TestEditCommitmentTemplateView:
             assert post_method_regex.search(form_tag)
 
         def test_mandatory_commitment_template_fields_are_filled_by_default(
-            self, client, saved_provider_profile, enrolled_course, commitment_template_1
+            self, client, saved_provider_profile, commitment_template_1
         ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
                 "edit CommitmentTemplate", 
                 kwargs={ "commitment_template_id": commitment_template_1.id }
