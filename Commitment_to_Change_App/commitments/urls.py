@@ -20,4 +20,34 @@ urlpatterns = [
     path("course/<int:course_id>/edit/", views.EditCourseView.as_view(), name="edit course"),
     path("course/<int:course_id>/view/", views.ViewCourseView.as_view(), name="view course"),
     path("course/<int:course_id>/join/<str:join_code>/", views.JoinCourseView.as_view(), name="join course"),
+     path(
+          "commitment-template/create/", 
+          views.CreateCommitmentTemplateView.as_view(),
+          name="create CommitmentTemplate"
+     ),
+     path(
+          "commitment-template/<int:commitment_template_id>/view/",
+          views.ViewCommitmentTemplateView.as_view(),
+          name="view CommitmentTemplate"
+     ),
+     path(
+          "course/<int:course_id>/suggested-commitments/select/",
+          views.CourseChangeSuggestedCommitmentsView.as_view(),
+          name="change Course suggested commitments"
+     ),
+     path(
+          "course/<int:course_id>/suggested-commitments/<int:commitment_template_id>/create-from/",
+          views.CreateFromSuggestedCommitmentView.as_view(),
+          name="create Commitment from suggested commitment"
+     ),
+     path(
+          "commitment-template/<int:commitment_template_id>/delete/",
+          views.DeleteCommitmentTemplateView.as_view(),
+          name="delete CommitmentTemplate"
+     ),
+     path(
+          "commitment-template/<int:commitment_template_id>/edit/",
+          views.EditCommitmentTemplateView.as_view(),
+          name="edit CommitmentTemplate"
+     ),
 ]
