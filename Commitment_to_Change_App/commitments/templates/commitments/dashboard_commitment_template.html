@@ -1,0 +1,16 @@
+<div class="container-fluid">
+    <div class="row foreground p-1 round-corners m-3 border-on-hover">
+        <div class="col-md-12">
+            <div class="text-center">
+                <h3>
+                    <a href="{% url 'view CommitmentTemplate' commitment_template_id=commitment_template.id %}">
+                        <button type="button" 
+                          id="view-course-button" class="background round-corners p-2">
+                        {{ commitment_template.title }}
+                        </button>
+                    </a>
+                </h3>
+            </div>
+        </div>
+    </div>
+</div>
