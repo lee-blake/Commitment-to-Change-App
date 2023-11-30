@@ -1,0 +1,33 @@
+{% extends "commitments/base.html" %} 
+
+{% block title %} {{ commitment_template.title }} {% endblock title %} 
+
+{% block page_content %}
+<div class="container-fluid">
+  <div class="container-fluid p-2 my-3 commitment-title round-corners primary-accent">
+    <h1>{{ commitment_template.title }}</h1>
+  </div>
+  <div class="container-fluid p-3 round-corners foreground">
+    <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
+      <p>{{ commitment_template.description }}</p>
+    </div>
+    <div class="container-fluid text-center">
+      {% block edit_button %}
+      <a href="{% url 'edit CommitmentTemplate' commitment_template_id=commitment_template.id %}">
+        <button class="standard-button primary-accent" type="submit">
+        Edit
+        </button>
+      </a>
+      {% endblock edit_button %}
+
+      {% block delete_button %}
+      <a href="{% url 'delete CommitmentTemplate' commitment_template_id=commitment_template.id %}">
+        <button class="standard-button primary-accent" type="submit">
+        Delete
+        </button>
+      </a>
+      {% endblock delete_button %}
+    </div>
+  </div>
+</div>
+{% endblock page_content %}

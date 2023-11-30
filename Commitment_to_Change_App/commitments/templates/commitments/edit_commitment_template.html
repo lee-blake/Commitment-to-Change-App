@@ -1,0 +1,19 @@
+{% extends "commitments/base.html" %}
+
+{% block title %} Edit Commitment Template {% endblock title %}
+
+{% block page_content %}
+<div class="container-fluid px-5 pt-5 text-center background">
+    <div class="row g-5">
+        <div class="col" align="center">
+            <div class="px-4 py-3 foreground round-corners edit-form">
+                {% include "commitments/post_buttons/edit_commitment_template_confirm_button.html" %}
+                
+            <a href="{% url 'view CommitmentTemplate' commitment_template_id=commitment_template.id %}" 
+              class="view-button p-1">Cancel</a>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock page_content %}

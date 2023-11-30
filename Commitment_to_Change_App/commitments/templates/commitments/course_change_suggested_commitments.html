@@ -1,0 +1,24 @@
+{% extends "commitments/base.html" %}
+
+{% block title %} Select Suggested Commitments for {{ course.title }} {% endblock title %}
+
+{% block page_content %}
+<div class="container-fluid px-5 pt-5 text-center background">
+    
+    <div class="row g-5">
+        <div class="col" align="center">
+            <div class="px-4 py-3 foreground round-corners">
+                <h1 class="text-center">Select Suggested Commitments for {{ course.title }}</h1>
+                <form 
+                action="{% url 'change Course suggested commitments' course_id=course.id %}" 
+                method="post"
+                class="selectSuggestedForm">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" value="Submit" class="py-1 px-3">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock page_content %}
