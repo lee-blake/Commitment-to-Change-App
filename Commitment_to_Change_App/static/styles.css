@@ -151,6 +151,10 @@ form {
      color: #FFFFFF;
      text-align: center;
  }
+ .info-popover
+ {
+
+ }
  .standard-button
  {
      background-color: var(--primary-accent);
