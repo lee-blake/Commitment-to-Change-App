@@ -1,7 +1,8 @@
 import datetime
 
-import cme_accounts.models
 from django.db import models
+
+import cme_accounts.models
 
 from . import validators
 
@@ -22,12 +23,32 @@ class ProviderProfile(models.Model):
     user = models.OneToOneField(cme_accounts.models.User, on_delete=models.CASCADE)
 
 
+class CommitmentTemplate(models.Model):
+    created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
+    last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
+    title = models.CharField("Title", max_length=200)
+    description = models.TextField("Description", max_length=2000)
+
+    def __str__(self):
+        return str(self.title)
+
+    def into_commitment(self, **kwargs):
+        return Commitment(
+            title=self.title,
+            description=self.description,
+            source_template=self,
+            **kwargs
+        )
+
+
 class Course(models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
     owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
+    suggested_commitments = models.ManyToManyField(CommitmentTemplate)
     join_code = models.CharField("Join code", max_length=100)
     students = models.ManyToManyField(ClinicianProfile)
 
@@ -56,6 +77,9 @@ class Commitment(models.Model):
 
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    source_template = models.ForeignKey(
+        CommitmentTemplate, on_delete=models.SET_NULL, null=True, default=None
+    )
     owner = models.ForeignKey(ClinicianProfile, on_delete=models.CASCADE)
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
@@ -63,7 +87,12 @@ class Commitment(models.Model):
     deadline = models.DateField("Deadline", validators=[
         validators.date_is_not_in_past
     ])
-    associated_course = models.ForeignKey(Course, on_delete=models.SET_NULL, null=True, default=None)
+    associated_course = models.ForeignKey(
+        Course,
+        on_delete=models.SET_NULL,
+        null=True,
+        default=None
+    )
 
     @property
     def status_text(self):
@@ -83,7 +112,7 @@ class Commitment(models.Model):
 
     def reopen(self):
         if self.status in {
-            Commitment.CommitmentStatus.COMPLETE, 
+            Commitment.CommitmentStatus.COMPLETE,
             Commitment.CommitmentStatus.DISCONTINUED
             }:
             today = datetime.date.today()

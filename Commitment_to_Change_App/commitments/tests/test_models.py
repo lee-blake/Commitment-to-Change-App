@@ -1,9 +1,9 @@
-import pytest
-
 from datetime import date
 
+import pytest
+
 from cme_accounts.models import User
-from commitments.models import ClinicianProfile, Commitment
+from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, ProviderProfile
 
 
 class TestCommitmentStatus:
@@ -17,12 +17,12 @@ class TestCommitmentStatus:
 
         def test_complete_gives_correct_string(self):
             assert str(Commitment.CommitmentStatus.COMPLETE) == "Complete"
-        
+
         def test_expired_gives_correct_string(self):
             """Test that EXPIRED converts to string correctly.
             
-            While we may use 'expired' in the code, it is a little force for users
-            and so we should display 'past due' instead."""
+            While we may use 'expired' in the code, such language is forceful enough that it may
+            discourage users. We should display 'past due' instead."""
 
             assert str(Commitment.CommitmentStatus.EXPIRED) == "Past Due"
 
@@ -36,8 +36,8 @@ class TestCommitment:
     @pytest.fixture(name="commitment_owner")
     def fixture_commitment_owner(self):
         user = User(
-            username="testuser", 
-            password="password", 
+            username="testuser",
+            password="password",
             email="test@email.me",
             is_clinician=True
         )
@@ -48,8 +48,8 @@ class TestCommitment:
     @pytest.fixture(name="saved_commitment_owner")
     def fixture_saved_commitment_owner(self):
         user = User.objects.create(
-            username="testuser", 
-            password="password", 
+            username="testuser",
+            password="password",
             email="test@email.me",
             is_clinician=True
         )
@@ -87,7 +87,7 @@ class TestCommitment:
             commitment.save_expired_if_past_deadline()
             reloaded_commitment = Commitment.objects.get(id=commitment.id)
             assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
-        
+
         def test_no_status_change_if_not_in_progress(self, saved_commitment_owner):
             today = date.today()
             past_deadline = today.replace(year=today.year - 1)
@@ -116,3 +116,102 @@ class TestCommitment:
             commitment.save_expired_if_past_deadline()
             reloaded_commitment = Commitment.objects.get(id=commitment.id)
             assert reloaded_commitment.last_updated == last_modification_before_method_call
+
+
+class TestCommitmentTemplate:
+    """Tests for CommitmentTemplate"""
+
+    class TestIntoCommitment:
+        """Tests for CommitmentTemplate.into_commitment"""
+
+        @pytest.fixture(name="commitment_template_owner")
+        def fixture_commitment_template_owner(self):
+            user = User(
+                username="provider",
+                password="password",
+                email="test@email.me",
+                is_provider=True
+            )
+            return ProviderProfile(
+                user=user
+            )
+
+        @pytest.fixture(name="commitment_owner")
+        def fixture_commitment_owner(self):
+            user = User(
+                username="clinician",
+                password="password",
+                email="test@email.me",
+                is_clinician=True
+            )
+            return ClinicianProfile(
+                user=user
+            )
+
+        def test_converting_copies_required_template_fields(self, commitment_template_owner):
+            template = CommitmentTemplate(
+                title="Template title",
+                description="Template description",
+                owner=commitment_template_owner
+            )
+            commitment = template.into_commitment()
+            assert commitment.title == "Template title"
+            assert commitment.description == "Template description"
+
+        def test_converting_does_not_return_same_require_template_fields_each_time(
+            self, commitment_template_owner
+        ):
+            template = CommitmentTemplate(
+                title="A different title",
+                description="A different description",
+                owner=commitment_template_owner
+            )
+            commitment = template.into_commitment()
+            assert commitment.title == "A different title"
+            assert commitment.description == "A different description"
+
+        def test_converting_correctly_refers_back_to_source_template(
+            self, commitment_template_owner
+        ):
+            template = CommitmentTemplate(
+                title="Template title",
+                description="Template description",
+                owner=commitment_template_owner
+            )
+            commitment = template.into_commitment()
+            assert commitment.source_template == template
+
+        def test_converting_assigns_mandatory_commitment_keyword_arguments(
+            self, commitment_owner, commitment_template_owner
+        ):
+            """Test that other mandatory keyword arguments to Commitments are set on the Commitment
+            created by into_commitment"""
+
+            template = CommitmentTemplate(
+                title="Template title",
+                description="Template description",
+                owner=commitment_template_owner
+            )
+            commitment = template.into_commitment(
+                owner=commitment_owner,
+                deadline=date.today()
+            )
+            assert commitment.deadline == date.today()
+
+
+    class TestCommitmentTemplateToString:
+        """Tests for CommitmentTemplate.__str__"""
+
+        def test_first_template_returns_correctly(self):
+            template = CommitmentTemplate(
+                title="test title 1",
+                description="irrelevant"
+            )
+            assert str(template) == "test title 1"
+
+        def test_second_template_returns_correctly(self):
+            template = CommitmentTemplate(
+                title="not the same",
+                description="also irrelevant"
+            )
+            assert str(template) == "not the same"

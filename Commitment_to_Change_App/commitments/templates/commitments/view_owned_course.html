@@ -17,3 +17,9 @@
   </button>
 </a>
 {% endblock edit_button %}
+
+{% block select_suggested_commitments_button %}
+<a href="{% url 'change Course suggested commitments' course_id=course.id %}">
+	<button>Select</button>
+</a>
+{% endblock select_suggested_commitments_button %}
