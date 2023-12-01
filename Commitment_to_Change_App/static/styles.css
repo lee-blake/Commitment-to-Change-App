@@ -155,6 +155,14 @@ form {
  {
 
  }
+
+ .modal-dialog {
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(15px, 10%, 300px);
+    padding-right: clamp(15px, 10%, 300px);
+}
  .standard-button
  {
      background-color: var(--primary-accent);
