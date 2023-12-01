@@ -1,0 +1,2 @@
+Visit this link to verify:
+http://localhost:8000{% url 'activate account' activation_key=activation_key %}
