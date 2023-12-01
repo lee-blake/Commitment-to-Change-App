@@ -2,11 +2,13 @@
   <div class="row foreground p-1 round-corners m-3 border-on-hover">
       <div class="col-md-12">
           <div class="text-center">
+            {% block unique_identifier %}
             <div>
                 {% if course.unique_identifier %}
                 {{ course.unique_identifier}}
                 {% endif %}
             </div>
+            {% endblock unique_identifier %}
               <h3>
                   <a href="{% url 'view course' course_id=course.id %}"><button type="button" id="view-course-button" class="background round-corners p-2">{{ course.title }}</button></a>
               </h3>
