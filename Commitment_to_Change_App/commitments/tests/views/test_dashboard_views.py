@@ -152,9 +152,61 @@ class TestProviderDashboardView:
     class TestGet:
         """Tests for ProviderDashboardView.get"""
 
-        # TODO Add tests to cover all Iteration 1 functionality
-        # The tests I have added here only cover new code and adding those tests would
-        # make this feature branch even more cumbersome than it is already. - Lee
+        @pytest.fixture(name="courses_owned_by_saved_provider_profile")
+        def fixture_courses_owned_by_saved_provider_profile(
+            self, saved_provider_profile, enrolled_course
+        ):
+            return (
+                enrolled_course,
+                Course.objects.create(
+                    owner=saved_provider_profile,
+                    title="Owned course for testing provider dashboard",
+                    description="This should show in the dashboard"
+                ),
+                Course.objects.create(
+                    owner=saved_provider_profile,
+                    title="Another course for testing provider dashboard",
+                    description="This should also show in the dashboard"
+                ),
+            )
+
+        def test_provider_dashboard_links_to_create_course(
+            self, client, saved_provider_profile,
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("provider dashboard")).content.decode()
+            create_course_link = reverse("create course")
+            create_course_link_regex = re.compile(
+                r"\<a\s[^\>]*href=\"" + create_course_link + r"\"[^\>]*\>"
+            )
+            assert create_course_link_regex.search(html)
+
+        def test_all_owned_courses_show_links_in_page(
+            self, client, saved_provider_profile, courses_owned_by_saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("provider dashboard")).content.decode()
+            for course in courses_owned_by_saved_provider_profile:
+                course_view_url = reverse(
+                    "view course",
+                    kwargs={"course_id": course.id}
+                )
+                course_link = f"href=\"{course_view_url}\""
+                assert course_link in html
+
+        def test_no_unowned_courses_show_in_page(
+            self, client, other_provider_profile, courses_owned_by_saved_provider_profile
+        ):
+            client.force_login(other_provider_profile.user)
+            html = client.get(reverse("provider dashboard")).content.decode()
+            for course in courses_owned_by_saved_provider_profile:
+                course_view_url = reverse(
+                    "view course",
+                    kwargs={"course_id": course.id}
+                )
+                course_link = f"href=\"{course_view_url}\""
+                assert course_link not in html
+                assert course.title not in html
 
         def test_provider_dashboard_links_to_create_commitment_template(
             self, client, saved_provider_profile,
@@ -196,3 +248,14 @@ class TestProviderDashboardView:
                 r"\<a\s[^\>]*href=\"" + commitment_template_2_view_link + r"\"[^\>]*\>"
             )
             assert commitment_template_2_link_regex.search(html)
+
+    class TestPost:
+        """Tests for ProviderDashboardView.post"""
+
+        def test_post_rejected_with_405(self, client, saved_provider_profile):
+            client.force_login(saved_provider_profile.user)
+            response = client.post(
+                reverse("provider dashboard"),
+                {}
+            )
+            assert response.status_code == 405
