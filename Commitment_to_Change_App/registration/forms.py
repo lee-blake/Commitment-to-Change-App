@@ -41,15 +41,20 @@ class ProviderRegistrationForm(RegistrationForm):
         self.instance.is_active = False
         self.instance.is_provider = True
         self._profile_form = ProviderProfileForm(*args, **kwargs)
-        self.fields.update(ProviderProfileForm(*args, **kwargs).fields)
+        self.fields.update(self._profile_form.fields)
 
     def clean(self):
         super().clean()
+        self._ensure_profile_form_is_cleaned()
+
+    def _ensure_profile_form_is_cleaned(self):
+        # A full clean is necessary to ensure the profile form sets up cleaned_data correctly.
         self._profile_form.full_clean()
+        # Field-level validation errors are already handled by the updating of the registration
+        # form's fields in the constructor. We only onclude the non-field errors to avoid showing
+        # the user the same error twice.
         for error in self._profile_form.non_field_errors():
             self.add_error(None, error)
-
-
 
     def save(self, commit=True):
         """Saves the form. Only saves to the database if commit=True.
@@ -65,6 +70,4 @@ class ProviderRegistrationForm(RegistrationForm):
         user = RegistrationForm.save(self, commit=commit)
         self._profile_form.instance.user = user
         profile = self._profile_form.save(commit=commit)
-        if commit:
-            profile.save()
         return profile

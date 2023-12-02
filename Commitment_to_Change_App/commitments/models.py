@@ -21,7 +21,7 @@ class ProviderProfile(models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
     user = models.OneToOneField(cme_accounts.models.User, on_delete=models.CASCADE)
-    institution = models.CharField("Institution", max_length=250)
+    institution = models.CharField("Institution name", max_length=250)
 
 
 class CommitmentTemplate(models.Model):
