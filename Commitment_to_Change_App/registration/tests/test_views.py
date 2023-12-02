@@ -217,7 +217,8 @@ class TestRegisterProviderView:
                     "username": "valid_username",
                     "email": "valid@email.localhost",
                     "password1": "passw0rd!",
-                    "password2": "passw0rd!"
+                    "password2": "passw0rd!",
+                    "institution": "Stanford CME"
                 }
             )
             user = User.objects.get(username="valid_username")
@@ -233,7 +234,8 @@ class TestRegisterProviderView:
                     "username": "valid_username",
                     "email": "valid@email.localhost",
                     "password1": "passw0rd!",
-                    "password2": "passw0rd!"
+                    "password2": "passw0rd!",
+                    "institution": "Stanford CME"
                 }
             )
             assert len(captured_email) == 1
@@ -271,11 +273,32 @@ class TestRegisterProviderView:
                     "username": "valid_username",
                     "email": "valid@email.localhost",
                     "password1": "passw0rd!",
-                    "password2": "passw0rd!"
+                    "password2": "passw0rd!",
+                    "institution": "Stanford CME"
                 }
             )
             assert response.status_code == 302
             assert response.url == reverse("awaiting activation")
+
+        def test_invalid_institution_returns_the_get_page_with_error_notes(self, client):
+            target_url = reverse("register provider")
+            html = client.post(
+                target_url,
+                {
+                    "username": "valid_username",
+                    "email": "valid@email.localhost",
+                    "password1": "passw0rd!",
+                    "password2": "passw0rd!",
+                }
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
 
 
 @pytest.mark.django_db
