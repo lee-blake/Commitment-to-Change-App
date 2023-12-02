@@ -1,7 +1,8 @@
 from django_registration.forms import RegistrationForm
 
 from cme_accounts.models import User
-from commitments.models import ClinicianProfile, ProviderProfile
+from commitments.forms import ProviderProfileForm
+from commitments.models import ClinicianProfile
 
 
 class ClinicianRegistrationForm(RegistrationForm):
@@ -39,6 +40,16 @@ class ProviderRegistrationForm(RegistrationForm):
         super(RegistrationForm, self).__init__(*args, **kwargs)
         self.instance.is_active = False
         self.instance.is_provider = True
+        self._profile_form = ProviderProfileForm(*args, **kwargs)
+        self.fields.update(ProviderProfileForm(*args, **kwargs).fields)
+
+    def clean(self):
+        super().clean()
+        self._profile_form.full_clean()
+        for error in self._profile_form.non_field_errors():
+            self.add_error(None, error)
+
+
 
     def save(self, commit=True):
         """Saves the form. Only saves to the database if commit=True.
@@ -51,8 +62,9 @@ class ProviderRegistrationForm(RegistrationForm):
         This may be unintuitive given the form instance is a User, but it is preferable to
         either throwing an error on commit=False (also unintuitive) or not informing the
         programmer that they need to save the profile too (will lead to serious bugs)."""
-        user = RegistrationForm.save(self, commit)
-        profile = ProviderProfile(user=user)
+        user = RegistrationForm.save(self, commit=commit)
+        self._profile_form.instance.user = user
+        profile = self._profile_form.save(commit=commit)
         if commit:
             profile.save()
         return profile
