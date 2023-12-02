@@ -1,0 +1,29 @@
+{% extends "commitments/modals/confirm_modal.html" %}
+{% block modal_open_button_text %}
+    Discontinue
+{% endblock modal_open_button_text %}
+
+{% block modal_title_text %}
+    Confirm discontuation
+{% endblock modal_title_text %}
+
+{% block modal_body_text %}
+    Are you sure you wish to mark "{{ commitment.title }}"" as discontinued?
+{% endblock modal_body_text %}
+
+{% block confirm_action %}
+    {% include "commitments/post_buttons/discontinue_commitment_button.html" %}
+{% endblock confirm_action %}
+
+{% comment %} 
+    Surrounding the extended template content (modal_everything) with these {% with %} statements 
+    is necessary to allow the parent template to access our modal_id variable.
+    Two with statements are necessary in order to first fetch and format the current 
+    commitment_id, and then prepend our action string to create a unique modal_id for the modal to use.
+{% endcomment %}
+
+{% block modal_everything %}
+    {% with commitment_id=commitment.id|stringformat:"d" %}
+        {% with modal_id="modal_action_discontinue_"|add:commitment_id %}{{ block.super }}{% endwith %}
+    {% endwith %}
+{% endblock modal_everything %}

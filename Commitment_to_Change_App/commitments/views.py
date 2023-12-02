@@ -191,12 +191,7 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
         if request.POST.get("complete") == "true":
             commitment.mark_complete()
             commitment.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
+            return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
                 "'complete' key must be set to 'true' to complete a commitment"
@@ -211,12 +206,7 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
         if request.POST.get("discontinue") == "true":
             commitment.mark_discontinued()
             commitment.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
+            return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
                 "'discontinue' key must be set to 'true' to discontinue a commitment"
@@ -235,12 +225,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         if request.POST.get("reopen") == "true":
             commitment.reopen()
             commitment.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
+            return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
                 "'reopen' key must be set to 'true' to reopen a commitment"

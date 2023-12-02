@@ -1,6 +1,7 @@
 {% extends "commitments/view_commitment.html" %}
 
 {% block edit_button %}
+
   <form action="{% url 'edit commitment' commitment_id=commitment.id %}">
     <button class="standard-button primary-accent" type="submit">
       Edit Commitment
@@ -9,9 +10,7 @@
 {% endblock edit_button %}
 
 {% block delete_button %}
-  <form action="{% url 'delete commitment' commitment_id=commitment.id %}">
-    <button class="standard-button primary-accent" type="submit">
-      Delete Commitment
-    </button>
-  </form>
+ 
+{% include "commitments/modals/delete_commitment_modal.html" %}
+  
 {% endblock delete_button %}
