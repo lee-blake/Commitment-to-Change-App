@@ -1,32 +1,24 @@
 {% extends "commitments/base.html" %}
-{% block title %} Provider Dashboard {% endblock title %}
+{% block title %}
+    Provider Dashboard
+{% endblock title %}
 
 {% block page_content %}
-<div class="container-fluid px-5 pt-5 text-center background">
-    <div class="row g-5 px-4 pb-3 foreground round-corners">
-        <div class="col-lg-6">
+    <div class="container-fluid px-5 pt-5 text-center background">
+        <div class="row g-5 px-4 py-3 foreground round-corners">
+            <div class="col background round-corners">
                 <div class="py-1 primary-accent round-corners text-center accent-text">
                     <h1>Courses</h1>
                 </div>
-                <div class="foreground round-corners">
-                    <div class="py-1 background round-corners">
-                        {% include "commitments/dashboard_course.html" %}
-                    </div>
-                </div>
-        </div>
-        <div class="col-lg-6">
+                {% include "commitments/dashboard_course.html" %}
                 <div class="py-1 primary-accent round-corners center accent-text">
                     <h1>Commitment Templates</h1>
                 </div>
-                <div class="foreground round-corners">
-                    <div class="py-1 background round-corners">
-                        {% for commitment_template in commitment_templates %}
-                        {% include "commitments/dashboard_commitment_template.html" %}
-                        {% endfor %}
-                    </div>
-                </div>
+                {% for commitment_template in commitment_templates %}
+                    {% include "commitments/dashboard_commitment_template.html" %}
+                {% endfor %}
+            </div>
         </div>
+
     </div>
-        
-</div>
 {% endblock page_content %}
