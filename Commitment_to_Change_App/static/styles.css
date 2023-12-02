@@ -222,7 +222,9 @@ form {
      background-color: var(--primary-accent);
      border-radius: 15px;
      color: var(--accent-text);
+     max-width: 50%;
  }
+ 
  div.default-form label
  {
      display: block;
