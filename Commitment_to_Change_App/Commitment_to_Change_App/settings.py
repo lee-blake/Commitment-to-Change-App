@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cme_accounts',
     'commitments',
+    'registration',
     'django.contrib.admin',
 ]
 
@@ -125,3 +126,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_HOST = custom_settings.EMAIL_HOST
+EMAIL_PORT = custom_settings.EMAIL_PORT
+
+ACCOUNT_ACTIVATION_DAYS = 7

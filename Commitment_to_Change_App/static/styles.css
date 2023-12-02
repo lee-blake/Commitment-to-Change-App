@@ -140,6 +140,22 @@ form {
      text-align: center;
      text-decoration: none;
  }
+ .close-x-button
+ {
+    font-size: 18px;
+    border: 0px solid transparent;
+    color: var(--light-text);
+    background-color:var(--foreground);
+    border-radius: var(--standard-round);
+    transition: 0.3s ease-in-out;
+
+ }
+ .close-x-button:hover
+ {
+    color: var(--primary-text);
+    filter: brightness(90%);
+    
+ }
  .commitment_header
  {
      background-color: var(--primary-accent);
@@ -197,7 +213,7 @@ form {
  div.default-form label
  {
      display: block;
- }
+ } 
  div.default-form select, div.default-form input
  {
      border: 1px solid grey;
@@ -224,6 +240,13 @@ form {
      box-sizing: border-box;
      display: inline-block;
      width: 100%;
+ }
+
+.selectSuggestedForm input[type=submit]
+ {
+     background-color: var(--primary-accent);
+     border-radius: 15px;
+     color: var(--accent-text);
  }
 
 /* 
