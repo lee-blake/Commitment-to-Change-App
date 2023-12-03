@@ -3,10 +3,8 @@
 {% block join_link %}
 <div class="text-center">Share this link to invite students to the course:
 	<div>
-	  <strong>
-		https://127.0.0.1:8000{% url 'join course' course_id=course.id join_code=course.join_code %}
-	  </strong>
-	  <button onclick="copyToClipboard()">Copy to Clipboard</button>
+		<p id="courseJoinLink">https://127.0.0.1:8000{% url 'join course' course_id=course.id join_code=course.join_code %}</p>
+		<p><a href="#" class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</a></p>
 	</div>
 </div>
 {% endblock join_link %}
