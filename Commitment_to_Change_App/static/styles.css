@@ -46,12 +46,15 @@ form {
  */
 
 .primary-accent {background-color: var(--primary-accent); color: var(--accent-text);}
+/* TODO: Remove the text color and switch everything back to primary-accent */
+.primary-accent-only {background-color: var(--primary-accent)}
 .primary-select {background-color: var(--primary-select);}
 .primary-border {background-color: var(--primary-border);}
 .secondary-accent {background-color: var(--secondary-accent);}
 .background {background-color: var(--background);}
 .foreground {background-color: var(--foreground);}
 .accent-text {color: var(--accent-text);}
+.primary-text {color: var(--primary-text);}
 
 /* 
 -------------------------------------------------------------------
@@ -167,6 +170,19 @@ form {
      color: #FFFFFF;
      text-align: center;
  }
+ .info-button
+ {
+    font-size: 32px;
+ }
+
+ .modal-dialog {
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: clamp(15px, 10%, 300px);
+    padding-right: clamp(15px, 10%, 300px);
+}
+
  .standard-button
  {
      background-color: var(--primary-accent);
@@ -209,7 +225,9 @@ form {
      background-color: var(--primary-accent);
      border-radius: 15px;
      color: var(--accent-text);
+     max-width: 50%;
  }
+ 
  div.default-form label
  {
      display: block;

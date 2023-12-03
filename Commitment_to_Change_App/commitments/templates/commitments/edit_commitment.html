@@ -1,17 +1,13 @@
-{% extends "commitments/base.html" %}
-
+{% extends "commitments/base_form.html" %}
 {% block title %} Edit Commitment {% endblock title %}
+{% block form_header %}
+<h1>Edit Commitment</h1>
+<p>Try to keep your commitments S.M.A.R.T. {% include "commitments/popovers/smart_popover.html" %}</p>
+{% endblock form_header %}
 
-{% block page_content %}
-<div class="container-fluid px-5 pt-5 text-center background">
-    <div class="row g-5">
-        <div class="col" align="center">
-            <div class="px-4 py-3 foreground round-corners edit-form">
-                {% include "commitments/post_buttons/edit_commitment_confirm_button.html" %}
-                <a href="{% url 'delete commitment' commitment_id=commitment.id %}" class="view-button p-1">Delete</a>
-            </div>
-            
-        </div>
-    </div>
-</div>
-{% endblock page_content %}
+{% block form_url %}
+{% url 'edit commitment' commitment_id=commitment.id %}
+{% endblock form_url %}
+{% block form_extra_action_buttons %}
+<a href="{% url 'delete commitment' commitment_id=commitment.id %}" class="view-button p-1">Delete</a>
+{% endblock form_extra_action_buttons %}
