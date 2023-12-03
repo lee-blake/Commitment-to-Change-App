@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput, ModelChoiceField, CheckboxSelectMultiple, \
     ModelMultipleChoiceField
 
-from .models import Commitment, Course, CommitmentTemplate
+from .models import Commitment, Course, CommitmentTemplate, ProviderProfile
 
 
 class CommitmentForm(ModelForm):
@@ -95,3 +95,12 @@ class CourseSelectSuggestedCommitmentsForm(ModelForm):
         super(ModelForm, self).__init__(*args, **kwargs)
         self.fields["suggested_commitments"].queryset = \
             CommitmentTemplate.objects.filter(owner=self.instance.owner)
+
+
+class ProviderProfileForm(ModelForm):
+    class Meta:
+        model = ProviderProfile
+        fields = [
+            "institution"
+        ]
+
