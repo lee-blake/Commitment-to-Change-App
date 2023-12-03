@@ -18,6 +18,24 @@ class TestViewCourseView:
         # The tests I have added here only cover new code and adding those tests would
         # make this feature branch even more cumbersome than it is already. - Lee
 
+        def test_institution_name_shows_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert saved_provider_profile.institution in html
+
+        def test_institution_name_shows_in_page_for_clinician(
+            self, client, saved_clinician_profile, enrolled_course
+        ):
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert enrolled_course.owner.institution in html
+
         def test_suggested_commitments_show_in_page_for_provider(
             self, client, saved_provider_profile, enrolled_course,
             commitment_template_1, commitment_template_2
