@@ -4,13 +4,14 @@
 {% block page_content %}
 <div class="container-fluid main-container p-4 ">
 	<div class="container-xxl px-5 round-corners foreground">
-		<div class="py-1 primary-accent round-corners text-center accent-text">
-			<h1>{{ course.title }}</h1>
+		<div class="py-1 primary-accent-only round-corners text-center">
+			<span class="h1 accent-text">{{ course.title }}</span> <span>{% include "commitments/modals/clinician_course_view_help_modal.html" %}</span>
+			
 		</div>
 		<div class="py-1 secondary-accent round-corners text-center">
 			<h2>{{ course.owner.institution }}</h2>
 		</div>
-
+		
 		<div class="row py-3 g-5">
 			<div class="col-md-6 p-3">
 				<div class="background round-corners pb-3">
