@@ -6,6 +6,7 @@
 	  <strong>
 		https://127.0.0.1:8000{% url 'join course' course_id=course.id join_code=course.join_code %}
 	  </strong>
+	  <button onclick="copyToClipboard()">Copy to Clipboard</button>
 	</div>
 </div>
 {% endblock join_link %}
