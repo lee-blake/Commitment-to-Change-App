@@ -4,9 +4,11 @@
 {% block page_content %}
 <div class="container-fluid main-container p-4 ">
 	<div class="container-xxl px-5 round-corners foreground">
-		<div class="py-1 primary-accent round-corners text-center accent-text">
-			<h1>{{ course.title }}</h1>
+		<div class="py-1 primary-accent-only round-corners text-center">
+			<h1 class="accent-text">{{ course.title }} </h1>
+			{% include "commitments/modals/view_course_help_modal.html" %}
 		</div>
+		
 
 		<div class="row py-3 g-5">
 			<div class="col-md-6 p-3">

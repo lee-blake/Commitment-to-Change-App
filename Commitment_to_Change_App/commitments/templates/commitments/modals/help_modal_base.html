@@ -23,7 +23,7 @@ data-bs-target="#{{ modal_id }}">🛈</a>
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="{{ modal_id }}Label">
-                    More info
+                    {% block modal_title %} {% endblock modal_title %}
                 </h1>
                 <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">X</button>
             </div>
