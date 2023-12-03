@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput, ModelChoiceField, CheckboxSelectMultiple, \
     ModelMultipleChoiceField
 
@@ -45,8 +46,30 @@ class CourseForm(ModelForm):
         model = Course
         fields = [
             "title",
-            "description"
+            "description",
+            "identifier",
+            "start_date",
+            "end_date"
         ]
+        widgets = {
+            "start_date": DateInput(attrs={"type": "date"}),
+            "end_date": DateInput(attrs={"type": "date"})
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self._start_date_not_after_end_date(cleaned_data):
+            raise ValidationError(
+                "The course start date must not be after the end date!",
+                code="invalid_date_range"
+            )
+        
+    def _start_date_not_after_end_date(self, cleaned_data):
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+        if start_date and end_date:
+            return start_date <= end_date
+        return True
 
 
 class CommitmentTemplateForm(ModelForm):

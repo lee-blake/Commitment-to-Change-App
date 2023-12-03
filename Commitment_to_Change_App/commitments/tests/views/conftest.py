@@ -1,5 +1,7 @@
 """Common fixtures for testing views"""
 
+import datetime
+
 import pytest
 
 from cme_accounts.models import User
@@ -67,7 +69,10 @@ def fixture_enrolled_course(saved_provider_profile, saved_clinician_profile):
         title="Enrolled Course Title",
         description="Enrolled Course Description",
         owner=saved_provider_profile,
-        join_code="JOINCODE"
+        join_code="JOINCODE",
+        identifier="ENROLLED",
+        start_date=datetime.date.fromisoformat("2001-01-01"),
+        end_date=datetime.date.fromisoformat("2001-12-31")
     )
     course.students.add(saved_clinician_profile)
     return course

@@ -1,10 +1,401 @@
 """Tests for views relating to Course objects."""
 
+import datetime
 import re
 
 import pytest
 
 from django.urls import reverse
+
+from commitments.models import Course
+
+
+@pytest.mark.django_db
+class TestCreateCourseView:
+    """Tests for CreateCourseView"""
+
+    # TODO Tests have already been written for the old functionality on another branch.
+    # Only new functionality is added here. They should be manually integrated in a merge.
+
+    class TestGet:
+        """Tests for CreateCourseView.get"""
+
+        def test_non_required_unique_identifier_input_shows_in_page(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            identifier_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"identifier\"[^\>]*\>"
+            )
+            identifier_input_tag_match = identifier_input_tag_regex.search(html)
+            assert identifier_input_tag_match
+            identifier_input_tag = identifier_input_tag_match[0]
+            required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
+            assert not required_attribute_regex.search(identifier_input_tag)
+
+        def test_non_required_start_date_input_shows_in_page(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            start_date_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"start_date\"[^\>]*\>"
+            )
+            start_date_input_tag_match = start_date_input_tag_regex.search(html)
+            assert start_date_input_tag_match
+            start_date_input_tag = start_date_input_tag_match[0]
+            required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
+            assert not required_attribute_regex.search(start_date_input_tag)
+
+        def test_non_required_end_date_input_shows_in_page(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            end_date_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"end_date\"[^\>]*\>"
+            )
+            end_date_input_tag_match = end_date_input_tag_regex.search(html)
+            assert end_date_input_tag_match
+            end_date_input_tag = end_date_input_tag_match[0]
+            required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
+            assert not required_attribute_regex.search(end_date_input_tag)
+
+
+    class TestPost:
+        """Tests for CreateCourseView.post"""
+
+        def test_set_unique_identifier_shows_on_created_course(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "title for testing unique identifier setting",
+                    "description": "description for testing unique identifier setting",
+                    "identifier": "it has been set"
+                }
+            )
+            course = Course.objects.get(
+                title="title for testing unique identifier setting",
+                description="description for testing unique identifier setting",
+            )
+            assert course.identifier == "it has been set"
+
+        def test_not_set_unique_identifier_shows_none_on_created_course(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "title for testing unique identifier setting",
+                    "description": "description for testing unique identifier setting"
+                }
+            )
+            course = Course.objects.get(
+                title="title for testing unique identifier setting",
+                description="description for testing unique identifier setting",
+            )
+            assert course.identifier is None
+
+        def test_set_start_date_shows_on_created_course(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "title for testing start date setting",
+                    "description": "description for testing start date setting",
+                    "start_date": "2000-01-01"
+                }
+            )
+            course = Course.objects.get(
+                title="title for testing start date setting",
+                description="description for testing start date setting",
+            )
+            assert course.start_date == datetime.date.fromisoformat("2000-01-01")
+
+        def test_not_set_start_date_shows_none_on_created_course(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "title for testing start date setting",
+                    "description": "description for testing start date setting"
+                }
+            )
+            course = Course.objects.get(
+                title="title for testing start date setting",
+                description="description for testing start date setting",
+            )
+            assert course.start_date is None
+
+        def test_set_end_date_shows_on_created_course(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "title for testing end date setting",
+                    "description": "description for testing end date setting",
+                    "end_date": "1999-12-31"
+                }
+            )
+            course = Course.objects.get(
+                title="title for testing end date setting",
+                description="description for testing end date setting",
+            )
+            assert course.end_date == datetime.date.fromisoformat("1999-12-31")
+
+        def test_not_set_end_date_shows_none_on_created_course(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("create course")
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "title for testing end date setting",
+                    "description": "description for testing end date setting"
+                }
+            )
+            course = Course.objects.get(
+                title="title for testing end date setting",
+                description="description for testing end date setting",
+            )
+            assert course.end_date is None
+
+
+@pytest.mark.django_db
+class TestEditCourseView:
+    """Tests for EditCourseView"""
+
+    # TODO Tests have already been written for the old functionality on another branch.
+    # Only new functionality is added here. They should be manually integrated in a merge.
+
+    @pytest.fixture(name="existing_course")
+    def fixture_existing_course(self, saved_provider_profile):
+        return Course.objects.create(
+            owner=saved_provider_profile,
+            title="Existing title",
+            description="Existing description",
+            identifier="IDENTIFIER",
+            start_date=datetime.date.fromisoformat("2000-01-01"),
+            end_date=datetime.date.fromisoformat("2001-01-01")
+        )
+
+    class TestGet:
+        """Tests for EditCourseView.get"""
+
+        def test_non_required_unique_identifier_input_shows_in_page_with_default(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            identifier_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"identifier\"[^\>]*\>"
+            )
+            identifier_input_tag_match = identifier_input_tag_regex.search(html)
+            assert identifier_input_tag_match
+            identifier_input_tag = identifier_input_tag_match[0]
+            required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
+            assert not required_attribute_regex.search(identifier_input_tag)
+            assert existing_course.identifier in identifier_input_tag
+
+        def test_non_required_start_date_input_shows_in_page(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            start_date_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"start_date\"[^\>]*\>"
+            )
+            start_date_input_tag_match = start_date_input_tag_regex.search(html)
+            assert start_date_input_tag_match
+            start_date_input_tag = start_date_input_tag_match[0]
+            required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
+            assert not required_attribute_regex.search(start_date_input_tag)
+            assert str(existing_course.start_date) in start_date_input_tag
+
+        def test_non_required_end_date_input_shows_in_page(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            end_date_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"end_date\"[^\>]*\>"
+            )
+            end_date_input_tag_match = end_date_input_tag_regex.search(html)
+            assert end_date_input_tag_match
+            end_date_input_tag = end_date_input_tag_match[0]
+            required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
+            assert not required_attribute_regex.search(end_date_input_tag)
+            assert str(existing_course.end_date) in end_date_input_tag
+
+
+    class TestPost:
+        """Tests for EditCourseView.post"""
+
+        def test_set_unique_identifier_shows_on_edited_course(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "Existing title",
+                    "description": "Existing description",
+                    "identifier": "it has been set"
+                }
+            )
+            course = Course.objects.get(id=existing_course.id)
+            assert course.identifier == "it has been set"
+
+        def test_not_set_unique_identifier_shows_none_on_created_course(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "Existing title",
+                    "description": "Existing description",
+                }
+            )
+            course = Course.objects.get(id=existing_course.id)
+            assert course.identifier is None
+
+        def test_set_start_date_shows_on_created_course(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "Existing title",
+                    "description": "Existing description",
+                    "start_date": "2000-01-01"
+                }
+            )
+            course = Course.objects.get(id=existing_course.id)
+            assert course.start_date == datetime.date.fromisoformat("2000-01-01")
+
+        def test_not_set_start_date_shows_none_on_created_course(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "Existing title",
+                    "description": "Existing description",
+                }
+            )
+            course = Course.objects.get(id=existing_course.id)
+            assert course.start_date is None
+
+        def test_set_end_date_shows_on_created_course(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "Existing title",
+                    "description": "Existing description",
+                    "end_date": "1999-12-31"
+                }
+            )
+            course = Course.objects.get(id=existing_course.id)
+            assert course.end_date == datetime.date.fromisoformat("1999-12-31")
+
+        def test_not_set_end_date_shows_none_on_created_course(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "Existing title",
+                    "description": "Existing description",
+                }
+            )
+            course = Course.objects.get(id=existing_course.id)
+            assert course.end_date is None
+
+        def test_end_before_start_date_is_rejected(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "edit course",
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": "Changed title",
+                    "description": "Changed description",
+                    "start_date": "2020-12-31",
+                    "end_date": "2020-01-01"
+                }
+            )
+            course = Course.objects.get(id=existing_course.id)
+            assert course.title != "Changed title"
+            assert course.description != "Changed description"
+            assert course.start_date != datetime.date.fromisoformat("2020-12-31")
+            assert course.end_date != datetime.date.fromisoformat("2020-01-01")
 
 
 @pytest.mark.django_db
