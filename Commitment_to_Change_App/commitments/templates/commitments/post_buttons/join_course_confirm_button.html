@@ -1,0 +1,7 @@
+<form  id="join-course-form" method="post">
+    {# We probably should explicitly include the course id and join code in this form #}
+    {# in the future, but this will do for now. #}
+    {% csrf_token %}
+    <input name="join" type="hidden" value="true">
+    <button type="submit" class="standard-button">Join</button>
+</form>
