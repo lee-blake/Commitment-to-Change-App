@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput, ModelChoiceField, CheckboxSelectMultiple, \
     ModelMultipleChoiceField
 
-from .models import Commitment, Course, CommitmentTemplate, ProviderProfile
+from .models import ClinicianProfile, Commitment, Course, CommitmentTemplate, ProviderProfile
 
 
 class CommitmentForm(ModelForm):
@@ -104,3 +104,12 @@ class ProviderProfileForm(ModelForm):
             "institution"
         ]
 
+
+class ClinicianProfileForm(ModelForm):
+    class Meta:
+        model = ClinicianProfile
+        fields = [
+            "first_name",
+            "last_name",
+            "institution"
+        ]
