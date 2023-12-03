@@ -27,7 +27,7 @@ class TestCreateCourseView:
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             identifier_input_tag_regex = re.compile(
-                r"\<input[^\>]*name=\"unique_identifier\"[^\>]*\>"
+                r"\<input[^\>]*name=\"identifier\"[^\>]*\>"
             )
             identifier_input_tag_match = identifier_input_tag_regex.search(html)
             assert identifier_input_tag_match
@@ -79,14 +79,14 @@ class TestCreateCourseView:
                 {
                     "title": "title for testing unique identifier setting",
                     "description": "description for testing unique identifier setting",
-                    "unique_identifier": "it has been set"
+                    "identifier": "it has been set"
                 }
             )
             course = Course.objects.get(
                 title="title for testing unique identifier setting",
                 description="description for testing unique identifier setting",
             )
-            assert course.unique_identifier == "it has been set"
+            assert course.identifier == "it has been set"
 
         def test_not_set_unique_identifier_shows_none_on_created_course(
             self, client, saved_provider_profile
@@ -104,7 +104,7 @@ class TestCreateCourseView:
                 title="title for testing unique identifier setting",
                 description="description for testing unique identifier setting",
             )
-            assert course.unique_identifier is None
+            assert course.identifier is None
 
         def test_set_start_date_shows_on_created_course(
             self, client, saved_provider_profile
@@ -194,7 +194,7 @@ class TestEditCourseView:
             owner=saved_provider_profile,
             title="Existing title",
             description="Existing description",
-            unique_identifier="IDENTIFIER",
+            identifier="IDENTIFIER",
             start_date=datetime.date.fromisoformat("2000-01-01"),
             end_date=datetime.date.fromisoformat("2001-01-01")
         )
@@ -212,14 +212,14 @@ class TestEditCourseView:
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             identifier_input_tag_regex = re.compile(
-                r"\<input[^\>]*name=\"unique_identifier\"[^\>]*\>"
+                r"\<input[^\>]*name=\"identifier\"[^\>]*\>"
             )
             identifier_input_tag_match = identifier_input_tag_regex.search(html)
             assert identifier_input_tag_match
             identifier_input_tag = identifier_input_tag_match[0]
             required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
             assert not required_attribute_regex.search(identifier_input_tag)
-            assert existing_course.unique_identifier in identifier_input_tag
+            assert existing_course.identifier in identifier_input_tag
 
         def test_non_required_start_date_input_shows_in_page(
             self, client, saved_provider_profile, existing_course
@@ -276,11 +276,11 @@ class TestEditCourseView:
                 {
                     "title": "Existing title",
                     "description": "Existing description",
-                    "unique_identifier": "it has been set"
+                    "identifier": "it has been set"
                 }
             )
             course = Course.objects.get(id=existing_course.id)
-            assert course.unique_identifier == "it has been set"
+            assert course.identifier == "it has been set"
 
         def test_not_set_unique_identifier_shows_none_on_created_course(
             self, client, saved_provider_profile, existing_course
@@ -298,7 +298,7 @@ class TestEditCourseView:
                 }
             )
             course = Course.objects.get(id=existing_course.id)
-            assert course.unique_identifier is None
+            assert course.identifier is None
 
         def test_set_start_date_shows_on_created_course(
             self, client, saved_provider_profile, existing_course

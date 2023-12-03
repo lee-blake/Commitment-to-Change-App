@@ -47,7 +47,7 @@ class CourseForm(ModelForm):
         fields = [
             "title",
             "description",
-            "unique_identifier",
+            "identifier",
             "start_date",
             "end_date"
         ]

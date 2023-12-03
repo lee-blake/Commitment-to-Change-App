@@ -32,7 +32,7 @@ class TestProviderDashboardView:
                     owner=saved_provider_profile,
                     title="Owned course for testing provider dashboard",
                     description="This should show in the dashboard",
-                    unique_identifier="OWNED2",
+                    identifier="OWNED2",
                     start_date=datetime.date.fromisoformat("1900-01-01")
                 ),
                 Course.objects.create(
@@ -53,8 +53,8 @@ class TestProviderDashboardView:
             client.force_login(saved_provider_profile.user)
             html = client.get(reverse("provider dashboard")).content.decode()
             for course in courses_owned_by_saved_provider_profile:
-                if course.unique_identifier:
-                    assert course.unique_identifier in html
+                if course.identifier:
+                    assert course.identifier in html
 
         def test_all_owned_courses_show_existent_start_dates_in_page(
             self, client, saved_provider_profile, courses_owned_by_saved_provider_profile

@@ -49,7 +49,7 @@ class Course(models.Model):
     owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
-    unique_identifier = models.CharField("Unique Identifier", max_length=64, blank=True, null=True)
+    identifier = models.CharField("Identifier", max_length=64, blank=True, null=True)
     start_date = models.DateField("Course start date", blank=True, null=True)
     end_date = models.DateField("Course end date", blank=True, null=True)
     suggested_commitments = models.ManyToManyField(CommitmentTemplate)

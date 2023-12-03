@@ -70,7 +70,7 @@ def fixture_enrolled_course(saved_provider_profile, saved_clinician_profile):
         description="Enrolled Course Description",
         owner=saved_provider_profile,
         join_code="JOINCODE",
-        unique_identifier="ENROLLED",
+        identifier="ENROLLED",
         start_date=datetime.date.fromisoformat("2001-01-01"),
         end_date=datetime.date.fromisoformat("2001-12-31")
     )
