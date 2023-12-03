@@ -14,7 +14,44 @@
                 <div class="py-5 foreground text-center default-form">
                     <form action="{% url 'register clinician' %}" method="post">
                         {% csrf_token %}
-                        {{ form.as_p }}
+                        
+                        <p class="required">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                        </p>
+                        <p class="required">
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
+                        </p>
+                        <div class="required">
+                            {{ form.password1.label_tag }}
+                            {{ form.password1 }}
+                            <input type="checkbox" onclick="showPassword('id_password1')">Show Password 1
+                        </div>
+                        <p>
+                            {{ form.password1.help_text }}
+                        </p>
+                        <div class="required">
+                            {{ form.password2.label_tag }}
+                            {{ form.password2 }}
+                            <input type="checkbox" onclick="showPassword('id_password2')">Show Password 2
+                        </div>
+                        <p>
+                            {{ form.password2.help_text }}
+                        </p>
+                        <p class="required"> {{ form.password2.as_field_group }} </p>
+                        <p>
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name }}
+                        </p>
+                        <p>
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name }}
+                        </p>
+                        <p>
+                            {{ form.institution.label_tag }}
+                            {{ form.institution }}
+                        </p>
                         <input type="submit" value="Create Account">
                     </form>
                 </div>
