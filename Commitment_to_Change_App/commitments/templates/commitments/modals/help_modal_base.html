@@ -11,7 +11,8 @@
 {% block modal_everything %}
 <!-- Button -->
 {% with commitment_id=commitment.id %}
-<a class="info-button p-1 {% block icon_color %}{% endblock icon_color %}" 
+<a class="info-button p-1" 
+style="color:{% block icon_color %}{% endblock icon_color %};"
 role="button"  data-bs-toggle="modal" 
 data-bs-target="#{{ modal_id }}">🛈</a>
 
