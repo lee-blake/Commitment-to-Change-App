@@ -204,6 +204,11 @@ form {
 ------------------------------------------------------------------- 
  */
 
+ .password-field {
+    display: inline !important;
+    width: 20% !important;
+ }
+
  div.default-form input[type=submit]
  {
      background-color: var(--primary-accent);
@@ -222,6 +227,26 @@ form {
      display: inline-block;
      width: 100%;
  }
+
+ div.register-form input[type=submit]
+ {
+     background-color: var(--primary-accent);
+     border-radius: 15px;
+     color: var(--accent-text);
+ }
+ div.register-form label
+ {
+     display: block;
+ } 
+ div.register-form select, div.register-form input
+ {
+     border: 1px solid grey;
+     border-radius: 4px;
+     box-sizing: border-box;
+     display: inline-block;
+
+ }
+
  div.edit-form input[type=submit]
  {
      background-color: var(--primary-accent);

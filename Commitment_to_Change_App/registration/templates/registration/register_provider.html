@@ -10,18 +10,22 @@
                 <div class="py-1 primary-accent round-corners text-center accent-text">
                     <h1>Register for a Provider Account</h1>
                 </div>
-                <div class="py-5 foreground text-center default-form">
+                <div class="py-5 foreground text-center register-form">
                     <form action="{% url 'register provider' %}" method="post">
                         {% csrf_token %}
+                        {{ form.non_field_errors }}
                         <p class="required">
+                            {{ form.username.errors }}
                             {{ form.username.label_tag }}
                             {{ form.username }}
                         </p>
                         <p class="required">
+                            {{ form.email.errors }}
                             {{ form.email.label_tag }}
                             {{ form.email }}
                         </p>
                         <div class="required">
+                            {{ form.password1.errors }}
                             {{ form.password1.label_tag }}
                             {{ form.password1 }}
                             <input type="checkbox" onclick="showPassword('id_password1')">Show Password 1
@@ -30,6 +34,7 @@
                             {{ form.password1.help_text }}
                         </p>
                         <div class="required">
+                            {{ form.password2.errors }}
                             {{ form.password2.label_tag }}
                             {{ form.password2 }}
                             <input type="checkbox" onclick="showPassword('id_password2')">Show Password 2
@@ -37,8 +42,8 @@
                         <p>
                             {{ form.password2.help_text }}
                         </p>
-                        <p class="required"> {{ form.password2.as_field_group }} </p>
                         <p class="required">
+                            {{ form.institution.errors }}
                             {{ form.institution.label_tag }}
                             {{ form.institution }}
                         </p>

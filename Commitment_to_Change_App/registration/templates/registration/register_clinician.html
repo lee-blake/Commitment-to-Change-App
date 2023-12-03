@@ -11,7 +11,7 @@
                 <div class="py-1 primary-accent round-corners text-center accent-text">
                     <h1>Register for a Clinician Account</h1>
                 </div>
-                <div class="py-5 foreground text-center default-form">
+                <div class="py-5 foreground text-center register-form">
                     <form action="{% url 'register clinician' %}" method="post">
                         {% csrf_token %}
                         
@@ -23,23 +23,22 @@
                             {{ form.email.label_tag }}
                             {{ form.email }}
                         </p>
-                        <div class="required">
+                        <div class="required password-field">
                             {{ form.password1.label_tag }}
                             {{ form.password1 }}
-                            <input type="checkbox" onclick="showPassword('id_password1')">Show Password 1
+                            <input type="checkbox" onclick="showPassword('id_password1')"> Show Password
                         </div>
                         <p>
                             {{ form.password1.help_text }}
                         </p>
-                        <div class="required">
+                        <span class="required password-field">
                             {{ form.password2.label_tag }}
                             {{ form.password2 }}
-                            <input type="checkbox" onclick="showPassword('id_password2')">Show Password 2
-                        </div>
+                            <input type="checkbox" onclick="showPassword('id_password2')"> Show Password
+                        </span>
                         <p>
                             {{ form.password2.help_text }}
                         </p>
-                        <p class="required"> {{ form.password2.as_field_group }} </p>
                         <p>
                             {{ form.first_name.label_tag }}
                             {{ form.first_name }}
