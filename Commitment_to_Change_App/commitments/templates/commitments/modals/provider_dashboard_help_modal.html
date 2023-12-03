@@ -1,12 +1,16 @@
 {% extends "commitments/modals/help_modal_base.html" %}
 
 {% block modal_title %} 
-Welcome to the "{{ course.title }}" dashboard
+Welcome to your Provider Dashboard
 {% endblock modal_title %}
 
 {% block modal_body_text %}
-To get started, choose a commitment you would like to make from the "Suggested Commitments" section, then click "Make This Commitment". 
-You can then modify the commitment to fit your specific goals.
+Here you can view all of the courses you have created, as well as your commitment templates that clinicians can use to 
+create a new template based on information provided by you. 
+<br>
+<br>
+To get started, click on "Create a course" or "Create a Commitment Template" in the navbar. Once you have created a Course or Commitment Template, they will show up in the modules below.
+
 {% endblock modal_body_text %}
 
 {% comment %} 
@@ -17,7 +21,7 @@ You can then modify the commitment to fit your specific goals.
 {% endcomment %}
 
 {% block modal_everything %}
-        {% with modal_id="dashboard_help_modal" %}
+        {% with modal_id="provider_dashboard_help_modal" %}
             {{ block.super }}
         {% endwith %}
 {% endblock modal_everything %}

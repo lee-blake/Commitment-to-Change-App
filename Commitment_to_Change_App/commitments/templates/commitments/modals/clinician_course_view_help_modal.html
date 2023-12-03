@@ -1,0 +1,23 @@
+{% extends "commitments/modals/help_modal_base.html" %}
+
+{% block modal_title %} 
+Welcome to the "{{ course.title }}" dashboard
+{% endblock modal_title %}
+
+{% block modal_body_text %}
+To get started, choose a commitment you would like to make from the "Suggested Commitments" section, then click "Make This Commitment". 
+You can then modify the commitment to fit your specific goals.
+{% endblock modal_body_text %}
+
+{% comment %} 
+    Surrounding the extended template content (modal_everything) with these {% with %} statements 
+    is necessary to allow the parent template to access our modal_id variable.
+    Two with statements are necessary in order to first fetch and format the current 
+    commitment_id, and then prepend our action string to create a unique modal_id for the modal to use.
+{% endcomment %}
+
+{% block modal_everything %}
+        {% with modal_id="clinician_course_view_help_modal" %}
+            {{ block.super }}
+        {% endwith %}
+{% endblock modal_everything %}
