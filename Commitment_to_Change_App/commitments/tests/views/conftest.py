@@ -44,7 +44,8 @@ def fixture_saved_provider_user():
 @pytest.fixture(name="saved_provider_profile")
 def fixture_saved_provider_profile(saved_provider_user):
     return ProviderProfile.objects.create(
-        user=saved_provider_user
+        user=saved_provider_user,
+        institution="Stanford CME"
     )
 
 @pytest.fixture(name="other_provider_profile")
@@ -56,7 +57,8 @@ def fixture_other_provider_profile():
         is_provider=True
     )
     return ProviderProfile.objects.create(
-        user=user
+        user=user,
+        institution="Other CME"
     )
 
 @pytest.fixture(name="enrolled_course")
