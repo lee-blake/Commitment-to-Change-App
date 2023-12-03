@@ -25,8 +25,8 @@
 						<h3>List of Students Enrolled:</h3>
 					</div>
 					<ul>
-					{% for student in course.students.all %}
-						<li>{{ student.username }}</li>
+					{% for clinician in course.students.all %}
+						<li>{% include "commitments/inline_clinician_profile.html" %}</li>
 					{% endfor %}
 					</ul>
 				</div>

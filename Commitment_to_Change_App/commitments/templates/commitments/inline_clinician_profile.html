@@ -1,0 +1,6 @@
+
+{% if clinician.first_name or clinician.last_name %}
+{{ clinician.first_name }} {{ clinician.last_name }}
+{% else %}
+{{ clinician.username }}
+{% endif %}
