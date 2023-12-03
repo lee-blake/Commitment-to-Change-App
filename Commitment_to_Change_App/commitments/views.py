@@ -2,6 +2,7 @@ import datetime
 import random
 import string
 
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
     HttpResponseServerError, HttpResponseNotFound
@@ -348,10 +349,31 @@ class ViewCourseView(LoginRequiredMixin, View):
 
 
 class JoinCourseView(LoginRequiredMixin, View):
+
     @staticmethod
     def get(request, course_id, join_code):
         course = get_object_or_404(Course, id=course_id, join_code=join_code)
-        if request.user.is_clinician:
+        if request.user.is_provider:
+            profile = ProviderProfile.objects.get(user=request.user)
+            if not course.owner == profile:
+                raise PermissionDenied("Providers cannot join courses.")
+            return render(
+                request,
+                "commitments/join_course_view_provider.html",
+                context={"course": course}
+            )
+        return render(
+            request,
+            "commitments/join_course_view_clinician.html",
+            context={"course": course}
+        )
+        
+    @staticmethod
+    def post(request, course_id, join_code):
+        if not request.user.is_clinician:
+            raise PermissionDenied("Providers cannot join courses.")
+        if request.POST.get("join") == "true":
+            course = get_object_or_404(Course, id=course_id, join_code=join_code)
             profile = ClinicianProfile.objects.get(user=request.user)
             if not course.students.contains(profile):
                 course.students.add(profile)
@@ -361,13 +383,8 @@ class JoinCourseView(LoginRequiredMixin, View):
                     kwargs={"course_id": course.id}
                 )
             )
-        elif request.user.is_provider:
-            return HttpResponseRedirect(
-                reverse(
-                    "view course",
-                    kwargs={"course_id": course.id}
-                )
-            )
+        else:
+            return JoinCourseView.get(request, course_id, join_code)
 
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, View):
