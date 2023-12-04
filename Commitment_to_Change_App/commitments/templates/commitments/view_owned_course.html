@@ -3,9 +3,8 @@
 {% block join_link %}
 <div class="text-center">Share this link to invite students to the course:
 	<div>
-	  <strong>
-		http://{{ request.get_host }}{% url 'join course' course_id=course.id join_code=course.join_code %}
-	  </strong>
+		<p id="courseJoinLink">http://{{ request.get_host }}{% url 'join course' course_id=course.id join_code=course.join_code %}</p>
+		<p><a href="#" class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</a></p>
 	</div>
 </div>
 {% endblock join_link %}
