@@ -16,3 +16,7 @@ Commitment_to_Change_App/*/migrations/*.py
 # their life easier, but does not want committed to the repo.
 dev_scripts/*
 !dev_scripts/README.txt
+
+# Do not commit working files from pytest, coverage, linters, etc.
+Commitment_to_Change_App/.coverage_cache
+Commitment_to_Change_App/.pytest_cache
