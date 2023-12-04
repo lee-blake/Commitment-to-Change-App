@@ -11,7 +11,6 @@ from django.shortcuts import render
 from django.views import View
 from django.urls import reverse
 
-import cme_accounts.forms
 import cme_accounts.models
 
 from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentTemplateForm, \
