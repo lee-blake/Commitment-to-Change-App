@@ -149,6 +149,8 @@ class TestClinicianDashboardView:
 class TestProviderDashboardView:
     """Tests for ProviderDashboardView"""
 
+
+
     class TestGet:
         """Tests for ProviderDashboardView.get"""
 
@@ -161,12 +163,15 @@ class TestProviderDashboardView:
                 Course.objects.create(
                     owner=saved_provider_profile,
                     title="Owned course for testing provider dashboard",
-                    description="This should show in the dashboard"
+                    description="This should show in the dashboard",
+                    identifier="OWNED2",
+                    start_date=datetime.date.fromisoformat("1900-01-01")
                 ),
                 Course.objects.create(
                     owner=saved_provider_profile,
                     title="Another course for testing provider dashboard",
-                    description="This should also show in the dashboard"
+                    description="This should also show in the dashboard",
+                    end_date=datetime.date.fromisoformat("2021-06-01")
                 ),
             )
 
@@ -207,6 +212,49 @@ class TestProviderDashboardView:
                 course_link = f"href=\"{course_view_url}\""
                 assert course_link not in html
                 assert course.title not in html
+
+        def test_all_owned_courses_show_existent_unique_identifiers_in_page(
+            self, client, saved_provider_profile, courses_owned_by_saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("provider dashboard")).content.decode()
+            for course in courses_owned_by_saved_provider_profile:
+                if course.identifier:
+                    assert course.identifier in html
+
+        def test_all_owned_courses_show_existent_start_dates_in_page(
+            self, client, saved_provider_profile, courses_owned_by_saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("provider dashboard")).content.decode()
+            for course in courses_owned_by_saved_provider_profile:
+                if course.start_date:
+                    # TODO this should be replaced with a more robust regex scraping of dates.
+                    iso_format = str(course.start_date)
+                    slash_format = course.start_date.strftime("%-m/%-d/%Y")
+                    spelled_month_format = course.start_date.strftime("%B %-d, %Y")
+                    short_month_format = course.start_date.strftime("%b. %-d, %Y")
+                    assert iso_format in html \
+                        or slash_format in html \
+                        or spelled_month_format in html \
+                        or short_month_format in html
+
+        def test_all_owned_courses_show_existent_end_dates_in_page(
+            self, client, saved_provider_profile, courses_owned_by_saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("provider dashboard")).content.decode()
+            for course in courses_owned_by_saved_provider_profile:
+                if course.end_date:
+                    # TODO this should be replaced with a more robust regex scraping of dates.
+                    iso_format = str(course.end_date)
+                    slash_format = course.end_date.strftime("%-m/%-d/%Y")
+                    spelled_month_format = course.end_date.strftime("%B %-d, %Y")
+                    short_month_format = course.end_date.strftime("%b. %-d, %Y")
+                    assert iso_format in html \
+                        or slash_format in html \
+                        or spelled_month_format in html \
+                        or short_month_format in html
 
         def test_provider_dashboard_links_to_create_commitment_template(
             self, client, saved_provider_profile,

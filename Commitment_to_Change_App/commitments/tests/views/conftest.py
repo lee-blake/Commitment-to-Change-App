@@ -1,5 +1,7 @@
 """Common fixtures for testing views"""
 
+import datetime
+
 import pytest
 
 from cme_accounts.models import User
@@ -44,7 +46,8 @@ def fixture_saved_provider_user():
 @pytest.fixture(name="saved_provider_profile")
 def fixture_saved_provider_profile(saved_provider_user):
     return ProviderProfile.objects.create(
-        user=saved_provider_user
+        user=saved_provider_user,
+        institution="Stanford CME"
     )
 
 @pytest.fixture(name="other_provider_profile")
@@ -56,7 +59,8 @@ def fixture_other_provider_profile():
         is_provider=True
     )
     return ProviderProfile.objects.create(
-        user=user
+        user=user,
+        institution="Other CME"
     )
 
 @pytest.fixture(name="enrolled_course")
@@ -65,9 +69,22 @@ def fixture_enrolled_course(saved_provider_profile, saved_clinician_profile):
         title="Enrolled Course Title",
         description="Enrolled Course Description",
         owner=saved_provider_profile,
-        join_code="JOINCODE"
+        join_code="JOINCODE",
+        identifier="ENROLLED",
+        start_date=datetime.date.fromisoformat("2001-01-01"),
+        end_date=datetime.date.fromisoformat("2001-12-31")
     )
     course.students.add(saved_clinician_profile)
+    return course
+
+@pytest.fixture(name="non_enrolled_course")
+def fixture_non_enrolled_course(saved_provider_profile):
+    course = Course.objects.create(
+        title="Non-enrolled Course Title",
+        description="Non-enrolled Course Description",
+        owner=saved_provider_profile,
+        join_code="CODE0002"
+    )
     return course
 
 @pytest.fixture(name="commitment_template_1")
