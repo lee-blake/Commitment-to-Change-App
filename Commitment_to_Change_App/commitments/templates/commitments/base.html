@@ -5,7 +5,9 @@
     <meta name="description" content="CME Commitment to Change App">
     <meta name="keywords" content="CME, Commitment, Change, Clinician">
     <title>{% block title %}{% endblock title %}</title>
+    {% block static_styles %}
     {% include "commitments/base_styles.html" %}
+    {% endblock static_styles %}
 </head>
 <body>
 <header>
@@ -14,6 +16,8 @@
 <main>
     {% block page_content %}{% endblock page_content %}
 </main>
+{% block static_scripts %}
 {% include "commitments/base_scripts.html" %}
+{% endblock static_scripts %}
 </body>
 </html>
