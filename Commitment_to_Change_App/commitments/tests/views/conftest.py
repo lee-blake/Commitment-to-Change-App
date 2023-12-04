@@ -77,6 +77,16 @@ def fixture_enrolled_course(saved_provider_profile, saved_clinician_profile):
     course.students.add(saved_clinician_profile)
     return course
 
+@pytest.fixture(name="non_enrolled_course")
+def fixture_non_enrolled_course(saved_provider_profile):
+    course = Course.objects.create(
+        title="Non-enrolled Course Title",
+        description="Non-enrolled Course Description",
+        owner=saved_provider_profile,
+        join_code="CODE0002"
+    )
+    return course
+
 @pytest.fixture(name="commitment_template_1")
 def fixture_commitment_template_1(saved_provider_profile):
     return CommitmentTemplate.objects.create(

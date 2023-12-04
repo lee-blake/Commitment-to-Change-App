@@ -1,4 +1,3 @@
-import datetime
 import random
 import string
 
@@ -11,7 +10,6 @@ from django.shortcuts import render
 from django.views import View
 from django.urls import reverse
 
-import cme_accounts.forms
 import cme_accounts.models
 
 from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentTemplateForm, \
@@ -20,24 +18,17 @@ from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
 
-def commitment_remaining_time(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.show = commitment.deadline
-    context = {"commitment": commitment}
-    if commitment.deadline > datetime.date.today():
-        return render(request, "commitments/view_commitment.html", context)
-    else:
-        commitment.status = Commitment.CommitmentStatus.EXPIRED
+class ViewCommitmentView(View):
 
-
-def view_commitment(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.save_expired_if_past_deadline()
-    context = {"commitment": commitment}
-    if request.user.is_authenticated and request.user == commitment.owner.user:
-        return render(request, "commitments/view_owned_commitment.html", context)
-    else:
-        return render(request, "commitments/view_commitment.html", context)
+    @staticmethod
+    def get(request, commitment_id):
+        commitment = get_object_or_404(Commitment, id=commitment_id)
+        commitment.save_expired_if_past_deadline()
+        context = {"commitment": commitment}
+        if request.user.is_authenticated and request.user == commitment.owner.user:
+            return render(request, "commitments/view_owned_commitment.html", context)
+        else:
+            return render(request, "commitments/view_commitment.html", context)
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
@@ -237,7 +228,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         return HttpResponseNotAllowed(['POST'])
 
 
-class CreateCourseView(LoginRequiredMixin, View):
+class CreateCourseView(ProviderLoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
         form = CourseForm()
