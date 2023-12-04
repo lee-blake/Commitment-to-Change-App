@@ -1,4 +1,3 @@
-import datetime
 import random
 import string
 
@@ -19,24 +18,17 @@ from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
 
-def commitment_remaining_time(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.show = commitment.deadline
-    context = {"commitment": commitment}
-    if commitment.deadline > datetime.date.today():
-        return render(request, "commitments/view_commitment.html", context)
-    else:
-        commitment.status = Commitment.CommitmentStatus.EXPIRED
+class ViewCommitmentView(View):
 
-
-def view_commitment(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.save_expired_if_past_deadline()
-    context = {"commitment": commitment}
-    if request.user.is_authenticated and request.user == commitment.owner.user:
-        return render(request, "commitments/view_owned_commitment.html", context)
-    else:
-        return render(request, "commitments/view_commitment.html", context)
+    @staticmethod
+    def get(request, commitment_id):
+        commitment = get_object_or_404(Commitment, id=commitment_id)
+        commitment.save_expired_if_past_deadline()
+        context = {"commitment": commitment}
+        if request.user.is_authenticated and request.user == commitment.owner.user:
+            return render(request, "commitments/view_owned_commitment.html", context)
+        else:
+            return render(request, "commitments/view_commitment.html", context)
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):

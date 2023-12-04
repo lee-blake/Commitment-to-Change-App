@@ -9,7 +9,9 @@
             <div class="px-4 py-3 foreground round-corners default-form">
                 {% block form_header %}{% endblock form_header %}
                 
-                <form action="{% block form_url %}{% endblock form_url %}" method="post">
+                <form action="{% spaceless %}
+                {% block form_url %}{% endblock form_url %}
+                {% endspaceless %}" method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <div class="d-flex align-items-center justify-content-between">
