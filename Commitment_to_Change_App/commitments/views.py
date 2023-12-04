@@ -228,7 +228,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         return HttpResponseNotAllowed(['POST'])
 
 
-class CreateCourseView(LoginRequiredMixin, View):
+class CreateCourseView(ProviderLoginRequiredMixin, View):
     @staticmethod
     def get(request, *args, **kwargs):
         form = CourseForm()
