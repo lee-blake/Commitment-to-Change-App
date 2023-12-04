@@ -1,0 +1,2 @@
+Visit this link to verify:
+http://{{ request.get_host }}{% url 'activate account' activation_key=activation_key %}

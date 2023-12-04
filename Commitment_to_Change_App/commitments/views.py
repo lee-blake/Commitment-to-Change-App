@@ -1,7 +1,7 @@
-import datetime
 import random
 import string
 
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
     HttpResponseServerError, HttpResponseNotFound
@@ -10,7 +10,6 @@ from django.shortcuts import render
 from django.views import View
 from django.urls import reverse
 
-import cme_accounts.forms
 import cme_accounts.models
 
 from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentTemplateForm, \
@@ -19,24 +18,17 @@ from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
 
-def commitment_remaining_time(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.show = commitment.deadline
-    context = {"commitment": commitment}
-    if commitment.deadline > datetime.date.today():
-        return render(request, "commitments/view_commitment.html", context)
-    else:
-        commitment.status = Commitment.CommitmentStatus.EXPIRED
+class ViewCommitmentView(View):
 
-
-def view_commitment(request, commitment_id):
-    commitment = get_object_or_404(Commitment, id=commitment_id)
-    commitment.save_expired_if_past_deadline()
-    context = {"commitment": commitment}
-    if request.user.is_authenticated and request.user == commitment.owner.user:
-        return render(request, "commitments/view_owned_commitment.html", context)
-    else:
-        return render(request, "commitments/view_commitment.html", context)
+    @staticmethod
+    def get(request, commitment_id):
+        commitment = get_object_or_404(Commitment, id=commitment_id)
+        commitment.save_expired_if_past_deadline()
+        context = {"commitment": commitment}
+        if request.user.is_authenticated and request.user == commitment.owner.user:
+            return render(request, "commitments/view_owned_commitment.html", context)
+        else:
+            return render(request, "commitments/view_commitment.html", context)
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
@@ -191,12 +183,7 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
         if request.POST.get("complete") == "true":
             commitment.mark_complete()
             commitment.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
+            return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
                 "'complete' key must be set to 'true' to complete a commitment"
@@ -211,12 +198,7 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
         if request.POST.get("discontinue") == "true":
             commitment.mark_discontinued()
             commitment.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
+            return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
                 "'discontinue' key must be set to 'true' to discontinue a commitment"
@@ -235,12 +217,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         if request.POST.get("reopen") == "true":
             commitment.reopen()
             commitment.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
+            return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
                 "'reopen' key must be set to 'true' to reopen a commitment"
@@ -249,56 +226,6 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def get(request):
         return HttpResponseNotAllowed(['POST'])
-
-
-class RegisterTypeChoiceView(View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        return render(request, "commitments/register_choice.html")
-
-
-class RegisterClinicianView(View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "commitments/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm()
-        return render(request, "commitments/register_clinician.html", context={"form": form})
-
-    @staticmethod
-    def post(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "commitments/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.instance.is_clinician = True
-            user = form.save()
-            ClinicianProfile.objects.create(user=user)
-            return render(request, "commitments/register_successful.html")
-        else:
-            return render(request, "commitments/register_clinician.html", context={"form": form})
-
-
-class RegisterProviderView(View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "commitments/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm()
-        return render(request, "commitments/register_provider.html", context={"form": form})
-
-    @staticmethod
-    def post(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return render(request, "commitments/must_log_out.html")
-        form = cme_accounts.forms.CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            form.instance.is_provider = True
-            user = form.save()
-            ProviderProfile.objects.create(user=user)
-            return render(request, "commitments/register_successful.html")
-        else:
-            return render(request, "commitments/register_provider.html", context={"form": form})
 
 
 class CreateCourseView(ProviderLoginRequiredMixin, View):
@@ -413,10 +340,31 @@ class ViewCourseView(LoginRequiredMixin, View):
 
 
 class JoinCourseView(LoginRequiredMixin, View):
+
     @staticmethod
     def get(request, course_id, join_code):
         course = get_object_or_404(Course, id=course_id, join_code=join_code)
-        if request.user.is_clinician:
+        if request.user.is_provider:
+            profile = ProviderProfile.objects.get(user=request.user)
+            if not course.owner == profile:
+                raise PermissionDenied("Providers cannot join courses.")
+            return render(
+                request,
+                "commitments/join_course_view_provider.html",
+                context={"course": course}
+            )
+        return render(
+            request,
+            "commitments/join_course_view_clinician.html",
+            context={"course": course}
+        )
+        
+    @staticmethod
+    def post(request, course_id, join_code):
+        if not request.user.is_clinician:
+            raise PermissionDenied("Providers cannot join courses.")
+        if request.POST.get("join") == "true":
+            course = get_object_or_404(Course, id=course_id, join_code=join_code)
             profile = ClinicianProfile.objects.get(user=request.user)
             if not course.students.contains(profile):
                 course.students.add(profile)
@@ -426,13 +374,8 @@ class JoinCourseView(LoginRequiredMixin, View):
                     kwargs={"course_id": course.id}
                 )
             )
-        elif request.user.is_provider:
-            return HttpResponseRedirect(
-                reverse(
-                    "view course",
-                    kwargs={"course_id": course.id}
-                )
-            )
+        else:
+            return JoinCourseView.get(request, course_id, join_code)
 
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, View):

@@ -1,0 +1,28 @@
+{% extends "commitments/base.html" %}
+
+{% block title %} Join {{ course.title }} {% endblock title %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="container-fluid p-1 my-3 commitment-title round-corners primary-accent">
+        <h1>{{ course.title }}</h1>
+    </div>
+    <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
+        <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
+            <p>
+                Are you sure you want to join the course
+                <strong><em>{{ course.title }}</em></strong> 
+                offered by <strong><em>{{ course.owner.institution }}</em></strong>?
+                Your name will be visible to the course provider and other students 
+                enrolled in the course. Any commitments you associate with the course
+                will also be visible to the same set of people.
+            </p>
+
+        </div>
+        <a href="{% url "clinician dashboard" %}">
+            <button class="standard-button">Cancel</button>
+        </a>
+        {% include "commitments/post_buttons/join_course_confirm_button.html" %}
+    </div>
+</div>
+{% endblock page_content %}

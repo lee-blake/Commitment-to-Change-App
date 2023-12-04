@@ -1,0 +1,29 @@
+{% extends "commitments/base.html" %}
+
+{% block title %}CME Commitment to Change{% endblock title %}
+
+{% block page_content %}
+<div class="container-fluid px-5 pt-5 text-center background">
+    <div class="row g-5">
+        <div class="col">
+            <div class="px-4 py-3 foreground round-corners default-form">
+                {% block form_header %}{% endblock form_header %}
+                
+                <form action="{% spaceless %}
+                {% block form_url %}{% endblock form_url %}
+                {% endspaceless %}" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-flex align-items-center justify-content-between">
+                    <input type="submit" value="Submit">
+                    
+                    {% block form_extra_action_buttons %}{% endblock form_extra_action_buttons %}
+                    </div>
+                </form>
+                {% block form_footer %}{% endblock form_footer %}
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock page_content %}
