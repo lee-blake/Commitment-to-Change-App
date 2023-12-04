@@ -41,7 +41,7 @@ form {
 
 /* 
 -------------------------------------------------------------------
-    --- Colors --- 
+    --- Color Modifiers --- 
 ------------------------------------------------------------------- 
  */
 
@@ -71,10 +71,6 @@ form {
     --- Containers --- 
 ------------------------------------------------------------------- 
  */
-
-.main-container {
-    padding: 30px;
-}
 
 .small-box-container {
     max-width: 400px;
@@ -311,4 +307,17 @@ table.commitment-status-breakdown-table td {
 table.commitment-status-breakdown-table tr > td:nth-child(2),
 table.commitment-status-breakdown-table tr > th:nth-child(2) {
     text-align: right;
+}
+
+/* 
+-------------------------------------------------------------------
+    --- ID selector styling ---
+------------------------------------------------------------------- 
+ */
+
+#courseJoinLink
+{
+    font-weight: bold;
+    font-size: larger;
+    overflow-wrap: break-word;
 }
