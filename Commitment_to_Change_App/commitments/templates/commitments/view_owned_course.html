@@ -4,7 +4,7 @@
 <div class="text-center">Share this link to invite students to the course:
 	<div>
 	  <strong>
-		https://127.0.0.1:8000{% url 'join course' course_id=course.id join_code=course.join_code %}
+		http://{{ request.get_host }}{% url 'join course' course_id=course.id join_code=course.join_code %}
 	  </strong>
 	</div>
 </div>
@@ -17,3 +17,9 @@
   </button>
 </a>
 {% endblock edit_button %}
+
+{% block select_suggested_commitments_button %}
+<a href="{% url 'change Course suggested commitments' course_id=course.id %}">
+	<button>Select</button>
+</a>
+{% endblock select_suggested_commitments_button %}

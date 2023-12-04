@@ -1,0 +1,47 @@
+
+{% comment %} 
+--- IMPORTANT! ---
+    In order to properly extend this parent template, in the extending child template you must:
+
+    - Use {% with %} statements to define a UNIQUE value for modal_id.
+    - Place the {% with %} statements inside {% block modal_everything %}, wrapping around {{ block.super }}.
+
+    Failure to follow these instructions will result in a nonfunctional modal.
+{% endcomment %}
+
+{% block modal_everything %}
+<!-- Button -->
+{% with commitment_id=commitment.id %}
+<button type="button" class="standard-button primary-accent" data-bs-toggle="modal" 
+data-bs-target="#{{ modal_id }}">
+    {% block modal_open_button_text %}{% endblock modal_open_button_text %}
+</button>
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-labelledby="{{ modal_id }}Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="{{ modal_id }}Label">
+                    {% block modal_title_text %}{% endblock modal_title_text %}
+                </h1>
+                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">X</button>
+            </div>
+            <div class="modal-body">
+                <p> 
+                    {% block modal_body_text %} {% endblock modal_body_text %}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal">Cancel</button>
+                
+                {% block confirm_action %} {% endblock confirm_action %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endwith %}
+
+{% endblock modal_everything %}
