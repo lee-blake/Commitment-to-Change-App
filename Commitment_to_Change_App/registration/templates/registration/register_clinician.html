@@ -11,11 +11,73 @@
                 <div class="py-1 primary-accent round-corners text-center accent-text">
                     <h1>Register for a Clinician Account</h1>
                 </div>
-                <div class="py-5 foreground text-center default-form">
+                <div class="py-5 foreground text-center register-form">
                     <form action="{% url 'register clinician' %}" method="post">
                         {% csrf_token %}
-                        {{ form.as_p }}
-                        <input type="submit" value="Create Account">
+                        {{ form.non_field_errors }}
+                        <div>
+                            {{ form.username.label_tag }}
+                        </div>
+                        <div>
+                            {{ form.username.errors }}
+                            {{ form.username }}
+                        </div>
+                        <div>
+                            {{ form.email.label_tag }}
+                        </div>
+                        <div>
+                            {{ form.email.errors }}
+                            {{ form.email }}
+                        </div>
+                        <div>
+                            {{ form.password1.label_tag }}
+                        </div>
+                        <div>
+                            {{ form.password1.errors }}
+                            {{ form.password1 }}
+                            <span class="bi bi-eye-slash show-password-button" 
+                            id="show_password_icon1" 
+                            onclick="showPassword('id_password1', 'show_password_icon1')"></span>
+                        </div>
+                        <div>
+                            {{ form.password1.help_text }}
+                        </div>
+                        <div>
+                            {{ form.password2.label_tag }}
+                        </div>
+                        <div>
+                            {{ form.password2.errors }}
+                            {{ form.password2 }}
+                            <span class="bi bi-eye-slash show-password-button" 
+                            id="show_password_icon2" 
+                            onclick="showPassword('id_password2', 'show_password_icon2')"></span>
+                        </div>
+                        <div>
+                            {{ form.password2.help_text }}
+                        </div>
+                        <div>
+                            {{ form.first_name.label_tag }}
+                        </div>
+                        <div class="required">
+                            {{ form.first_name.errors }}
+                            {{ form.first_name }}
+                        </div>
+                        <div>
+                            {{ form.last_name.label_tag }}
+                        </div>
+                        <div class="required">
+                            {{ form.last_name.errors }}
+                            {{ form.last_name }}
+                        </div>
+                        <div>
+                            {{ form.institution.label_tag }}
+                        </div>
+                        <div class="required">
+                            {{ form.institution.errors }}
+                            {{ form.institution }}
+                        </div>
+                        <br>
+                        <input class="py-1" type="submit" value="Create Account">
                     </form>
                 </div>
             </div>

@@ -41,7 +41,7 @@ form {
 
 /* 
 -------------------------------------------------------------------
-    --- Colors --- 
+    --- Color Modifiers --- 
 ------------------------------------------------------------------- 
  */
 
@@ -71,10 +71,6 @@ form {
     --- Containers --- 
 ------------------------------------------------------------------- 
  */
-
-.main-container {
-    padding: 30px;
-}
 
 .small-box-container {
     max-width: 400px;
@@ -170,6 +166,10 @@ form {
      color: #FFFFFF;
      text-align: center;
  }
+ .show-password-button {
+    margin-left: -30px;
+    cursor: pointer;
+}
  .info-button
  {
     font-size: 32px;
@@ -220,6 +220,7 @@ form {
 ------------------------------------------------------------------- 
  */
 
+
  div.default-form input[type=submit]
  {
      background-color: var(--primary-accent);
@@ -240,6 +241,7 @@ form {
      display: inline-block;
      width: 100%;
  }
+
  div.edit-form input[type=submit]
  {
      background-color: var(--primary-accent);
@@ -252,6 +254,27 @@ form {
      display: block;
  }
  div.edit-form select, div.edit-form input
+ {
+     border: 1px solid grey;
+     border-radius: 4px;
+     box-sizing: border-box;
+     display: inline-block;
+     width: 100%;
+ }
+
+ div.register-form input[type=submit]
+ {
+     background-color: var(--primary-accent);
+     border-radius: 15px;
+     color: var(--accent-text);
+     max-width: 100%;
+ }
+ 
+ div.register-form label
+ {
+     display: block;
+ } 
+ div.register-form select, div.register-form input
  {
      border: 1px solid grey;
      border-radius: 4px;
@@ -284,4 +307,17 @@ table.commitment-status-breakdown-table td {
 table.commitment-status-breakdown-table tr > td:nth-child(2),
 table.commitment-status-breakdown-table tr > th:nth-child(2) {
     text-align: right;
+}
+
+/* 
+-------------------------------------------------------------------
+    --- ID selector styling ---
+------------------------------------------------------------------- 
+ */
+
+#courseJoinLink
+{
+    font-weight: bold;
+    font-size: larger;
+    overflow-wrap: break-word;
 }

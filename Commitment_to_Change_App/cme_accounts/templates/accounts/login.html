@@ -9,7 +9,25 @@
             <h2>Login</h2>
             <form action="{% url "login" %}"method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
+                {{ form.non_field_errors }}
+                    <p>
+                        {{ form.username.label_tag }}
+                    </p>
+                    <p>
+                        {{ form.username.errors }}
+                        {{ form.username }}
+                    </p>
+
+                    <p>
+                        {{ form.password.label_tag }}
+                    </p>
+                    <p>
+                        {{ form.password.errors }}
+                        {{ form.password }}
+                        <span class="bi bi-eye-slash show-password-button" 
+                        id="show_password_icon1" 
+                        onclick="showPassword('id_password', 'show_password_icon1')"></span>
+                    </p>
                 <div class="d-flex justify-content-center">
                     <button type="submit" class="standard-button">Log In</button>
                 </div>
