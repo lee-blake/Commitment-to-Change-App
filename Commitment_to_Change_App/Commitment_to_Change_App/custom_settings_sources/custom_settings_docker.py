@@ -10,14 +10,3 @@ These defaults are for the Docker replication instructions."""
 # python -c "import secrets; print(secrets.token_urlsafe())"
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ''
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
