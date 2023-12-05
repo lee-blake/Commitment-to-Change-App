@@ -21,3 +21,6 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+# TODO Decide on whether this is right for you - another option is aiosmtpd
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
