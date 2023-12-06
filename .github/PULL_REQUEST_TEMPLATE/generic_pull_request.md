@@ -11,6 +11,7 @@ If it only makes progress on the feature/issue:
 
 Part of [link to feature/issue]
 
+If there's not a corresponding feature/issue, either make one if that makes sense or note why this change is worth making.
 -->
 
 # Documentation
