@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpRespon
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
 
@@ -349,20 +350,16 @@ class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
         )
 
 
-class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
+    model = CommitmentTemplate
+    template_name = "commitments/view_commitment_template.html"
+    pk_url_kwarg = "commitment_template_id"
+    context_object_name = "commitment_template"
 
-    @staticmethod
-    def get(request, commitment_template_id):
-        profile = ProviderProfile.objects.get(user=request.user)
-        commitment_template= get_object_or_404(
-            CommitmentTemplate,
-            id=commitment_template_id,
-            owner=profile
-        )
-        return render(
-            request,
-            "commitments/view_commitment_template.html",
-            context={"commitment_template": commitment_template}
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return CommitmentTemplate.objects.filter(
+            owner=viewer
         )
 
 
