@@ -203,28 +203,24 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         return HttpResponseNotAllowed(['POST'])
 
 
-class CreateCourseView(ProviderLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        form = CourseForm()
-        return render(request, "commitments/create_course.html", context={"form": form})
+class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
+    form_class = CourseForm
+    template_name = "commitments/create_course.html"
 
-    @staticmethod
-    def post(request, *args, **kwargs):
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            form.instance.owner = ProviderProfile.objects.get(user=request.user)
-            form.instance.join_code = CreateCourseView.generate_random_join_code(8)
-            course = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view course",
-                    kwargs={"course_id": course.id}
-                )
-            )
-        else:
-            return render(request, "commitments/create_course.html", context={"form": form})
+    def form_valid(self, form):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        form.instance.owner = viewer
+        form.instance.join_code = CreateCourseView.generate_random_join_code(8)
+        return super().form_valid(form)
 
+    def get_success_url(self):
+        return reverse(
+            "view course",
+            kwargs={"course_id": self.object.id}
+        )
+
+    # TODO I moved this onto CourseLogic in another branch. When the merge happens,
+    # delete this and replace its call above with a call on the form.instance method.
     @staticmethod
     def generate_random_join_code(length):
         return ''.join(random.choice(string.ascii_uppercase) for i in range(0, length))
