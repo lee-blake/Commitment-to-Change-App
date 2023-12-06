@@ -231,43 +231,22 @@ class CreateCourseView(ProviderLoginRequiredMixin, View):
         return ''.join(random.choice(string.ascii_uppercase) for i in range(0, length))
 
 
-class EditCourseView(ProviderLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, course_id):
-        profile = ProviderProfile.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id, owner=profile)
-        form = CourseForm(instance=course)
-        return render(
-            request,
-            "commitments/edit_course.html", 
-            context= {
-                "course": course,
-                "form": form
-            }
+class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
+    form_class = CourseForm
+    template_name = "commitments/edit_course.html"
+    pk_url_kwarg = "course_id"
+
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return Course.objects.filter(
+            owner=viewer
         )
 
-    @staticmethod
-    def post(request, course_id):
-        profile = ProviderProfile.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id, owner=profile)
-        form = CourseForm(request.POST, instance=course)
-        if form.is_valid():
-            course = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view course",
-                    kwargs={"course_id": course.id}
-                )
-            )
-        else:
-            return render(
-                request,
-                "commitments/edit_course.html", 
-                context= {
-                    "course": course,
-                    "form": form
-                }
-            )
+    def get_success_url(self):
+        return reverse(
+            "view course",
+            kwargs={"course_id": self.object.id}
+        )
 
 
 class ViewCourseView(LoginRequiredMixin, View):
