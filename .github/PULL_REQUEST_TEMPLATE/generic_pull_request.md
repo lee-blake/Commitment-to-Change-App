@@ -2,7 +2,7 @@
 <!--- Describe what this PR will change -->
 
 # Feature/Issue
-<!--- Link to the feature/issue that this PR is related to. Github will automatically create a link between your issue/PR if you use the following syntax:
+<!--- Link to the feature/issue that this PR is related to. GitHub will automatically create a link between your issue/PR if you use the following syntax:
 
 Resolves [issue-path]
 
@@ -16,7 +16,7 @@ If your PR only makes partial progress on the feature/issue, use something like:
 
 Partially resolves [issue-path]
 
-DO NOT use an actual URL for the [issue-path]. If you do, gitHub will not correctly link the issue to your PR.
+DO NOT use an actual URL for the [issue-path]. If you do, GitHub will not correctly link the issue to your PR.
 
 If there's not a corresponding feature/issue, either make one if that makes sense or note why this change is worth making.
 -->
