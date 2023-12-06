@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpRespon
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
+from django.views.generic.edit import CreateView
 from django.urls import reverse
 
 import cme_accounts.models
@@ -86,29 +87,21 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, View):
         )
 
 
-class MakeCommitmentView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        form = CommitmentForm(profile=profile)
-        return render(request, "commitments/make_commitment.html", context={"form": form})
+class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
+    form_class = CommitmentForm
+    template_name = "commitments/make_commitment.html"
 
-    @staticmethod
-    def post(request, *args, **kwargs):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        form = CommitmentForm(request.POST, profile=profile)
-        if form.is_valid():
-            form.instance.owner = profile
-            form.instance.status = Commitment.CommitmentStatus.IN_PROGRESS
-            commitment = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
-        else:
-            return render(request, "commitments/make_commitment.html", context={"form": form})
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        profile = ClinicianProfile.objects.get(user=self.request.user)
+        kwargs.update({ "owner": profile })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse(
+            "view commitment",
+            kwargs={"commitment_id": self.object.id}
+        )
 
 
 class DeleteCommitmentView(ClinicianLoginRequiredMixin, View):
@@ -140,7 +133,7 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         commitment.save_expired_if_past_deadline()
-        form = CommitmentForm(instance=commitment, profile=profile)
+        form = CommitmentForm(instance=commitment, owner=profile)
         return render(
             request,
             "commitments/edit_commitment.html",
@@ -155,7 +148,7 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, View):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
         commitment.save_expired_if_past_deadline()
-        form = CommitmentForm(request.POST, instance=commitment, profile=profile)
+        form = CommitmentForm(request.POST, instance=commitment, owner=profile)
         if form.is_valid():
             commitment = form.save()
             return HttpResponseRedirect(
@@ -471,7 +464,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
             owner=viewer,
             associated_course=course
         )
-        form = CommitmentForm(instance=form_instance, profile=viewer)
+        form = CommitmentForm(instance=form_instance, owner=viewer)
         return render(
             request,
             "commitments/create_from_suggested_commitment.html",
@@ -492,7 +485,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
             associated_course=course,
             status=Commitment.CommitmentStatus.IN_PROGRESS
         )
-        form = CommitmentForm(request.POST, instance=form_instance, profile=viewer)
+        form = CommitmentForm(request.POST, instance=form_instance, owner=viewer)
         if form.is_valid():
             commitment = form.save()
             return HttpResponseRedirect(

@@ -24,9 +24,14 @@ class CommitmentForm(ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
-        profile = kwargs.pop("profile")
+        owner = kwargs.pop("owner")
         super(ModelForm, self).__init__(*args, **kwargs)
-        self.fields['associated_course'].queryset = profile.course_set.all()
+        if not hasattr(self.instance, 'owner') or not self.instance.owner:
+            self.instance.owner = owner
+        elif owner != self.instance.owner:
+            # TODO cover this
+            raise ValueError("Cannot change the owner of a commitment!")
+        self.fields['associated_course'].queryset = self.instance.owner.course_set.all()
 
 
 class DeleteCommitmentForm(ModelForm):
