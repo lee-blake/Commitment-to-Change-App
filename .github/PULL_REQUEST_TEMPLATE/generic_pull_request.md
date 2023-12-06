@@ -18,13 +18,13 @@ Part of [link to feature/issue]
 
 Changed in [link to documentation PR]
 
-Otherwise note they still need to be written.-->
+Otherwise note the general changes that still need to be written. -->
 
 # Special Considerations 
 <!--- This section can be discarded in none of the below headings are applicable. -->
 
 ## Migrations
-<!--- Will this trigger migrations? If so, note it here. If the migrations include one or more new fields that are required, provided a one-off default that will work for them. -->
+<!--- Will this trigger migrations? If so, note it here. If the migrations include one or more new fields that are required, provide a one-off default that will work for them. -->
 
 ## Testing
 <!--- Is anything special (beyond pytest) needed to test these changes? If so, note it here. -->
@@ -33,7 +33,10 @@ Otherwise note they still need to be written.-->
 <!--- Will merging this PR require anything special action from the team when they update their projects? If so, note it here. -->
 
 ## Additional dependencies 
-<!--- If there's a new Python module needed, be sure to update requirements.txt. You should also include it in this section so people know they need to update their environment. -->
+<!--- If there's a new Python module needed, be sure to update requirements.txt. You should also include it in this section so people know they need to update their environment. If it's something else, be sure to note it here with any required instructions. -->
+
+## Docker changes
+<!--- If team members need to rebuild their Docker containers, note it here. -->
 
 ## Do not merge immediately
 <!--- If you do not want someone to merge these changes as soon as reviews are done and tests pass, note it here with a quick sentence explaining why. -->
