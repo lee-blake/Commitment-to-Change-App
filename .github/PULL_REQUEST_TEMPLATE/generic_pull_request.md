@@ -2,14 +2,21 @@
 <!--- Describe what this PR will change -->
 
 # Feature/Issue
-<!--- Link to the feature/issue that this PR is related to. If it solves the feature/issue, put something like one of the following:
+<!--- Link to the feature/issue that this PR is related to. Github will automatically create a link between your issue/PR if you use the following syntax:
 
-Implements [link to feature]
-Solves [link to issue]
+Resolves [issue-path]
 
-If it only makes progress on the feature/issue:
+- If the issue and PR are in the same repository, just use [#issue-number] for the [issue-path]
+  - For example: Resolves #35
 
-Part of [link to feature/issue]
+- If the issue is in a different repository, use [repository-owner-name/repository-name#issue-number] for the [issue-path]
+  - For example: Resolves lee-blake/CME-Commitment-to-Change#35
+
+If your PR only makes partial progress on the feature/issue, use something like:
+
+Partially resolves [issue-path]
+
+DO NOT use an actual URL for the [issue-path]. If you do, gitHub will not correctly link the issue to your PR.
 
 If there's not a corresponding feature/issue, either make one if that makes sense or note why this change is worth making.
 -->
