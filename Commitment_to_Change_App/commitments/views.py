@@ -20,17 +20,15 @@ from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
 
-class ViewCommitmentView(View):
+class ViewCommitmentView(DetailView):
+    model = Commitment
+    pk_url_kwarg = "commitment_id"
 
-    @staticmethod
-    def get(request, commitment_id):
-        commitment = get_object_or_404(Commitment, id=commitment_id)
-        commitment.save_expired_if_past_deadline()
-        context = {"commitment": commitment}
-        if request.user.is_authenticated and request.user == commitment.owner.user:
-            return render(request, "commitments/view_owned_commitment.html", context)
+    def get_template_names(self):
+        if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
+            return ["commitments/view_owned_commitment.html"]
         else:
-            return render(request, "commitments/view_commitment.html", context)
+            return ["commitments/view_commitment.html"]
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
