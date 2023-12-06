@@ -354,35 +354,20 @@ class JoinCourseView(LoginRequiredMixin, View):
             return JoinCourseView.get(request, course_id, join_code)
 
 
-class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
+    form_class = CommitmentTemplateForm
+    template_name = "commitments/create_commitment_template.html"
 
-    @staticmethod
-    def get(request):
-        form = CommitmentTemplateForm()
-        return render(
-            request,
-            "commitments/create_commitment_template.html",
-            context={"form": form}
+    def form_valid(self, form):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        form.instance.owner = viewer
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "view CommitmentTemplate",
+            kwargs={"commitment_template_id": self.object.id}
         )
-
-    @staticmethod
-    def post(request):
-        form = CommitmentTemplateForm(request.POST)
-        if form.is_valid():
-            form.instance.owner = ProviderProfile.objects.get(user=request.user)
-            commitment_template = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view CommitmentTemplate", 
-                    kwargs={ "commitment_template_id": commitment_template.id }
-                )
-            )
-        else:
-            return render(
-                request,
-                "commitments/create_commitment_template.html",
-                context={"form": form}
-            )
 
 
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, View):
