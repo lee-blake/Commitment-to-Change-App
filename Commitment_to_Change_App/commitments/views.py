@@ -499,45 +499,20 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, View):
             return HttpResponseBadRequest("'delete' key must be set 'true' to be deleted")
 
 
-class EditCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
+    form_class = CommitmentTemplateForm
+    template_name = "commitments/edit_commitment_template.html"
+    pk_url_kwarg = "commitment_template_id"
+    context_object_name = "commitment_template"
 
-    @staticmethod
-    def get(request, commitment_template_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        commitment_template = get_object_or_404(
-            CommitmentTemplate, id=commitment_template_id, owner=viewer
-        )
-        form = CommitmentTemplateForm(instance=commitment_template)
-        return render(
-            request,
-            "commitments/edit_commitment_template.html",
-            context={
-                "commitment_template": commitment_template,
-                "form": form
-            }
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return CommitmentTemplate.objects.filter(
+            owner=viewer
         )
 
-    @staticmethod
-    def post(request, commitment_template_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        commitment_template = get_object_or_404(
-            CommitmentTemplate, id=commitment_template_id, owner=viewer
+    def get_success_url(self):
+        return reverse(
+            "view CommitmentTemplate",
+            kwargs={"commitment_template_id": self.object.id}
         )
-        form = CommitmentTemplateForm(request.POST, instance=commitment_template)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view CommitmentTemplate",
-                    kwargs={"commitment_template_id": commitment_template_id}
-                )
-            )
-        else:
-            return render(
-                request,
-                "commitments/edit_commitment_template.html",
-                context={
-                    "commitment_template": commitment_template,
-                    "form": form
-                }
-            )
