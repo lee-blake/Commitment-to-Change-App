@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.urls import reverse
 
 import cme_accounts.models
@@ -361,34 +361,22 @@ class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
         )
 
 
-class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, View):
+class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateView):
+    form_class = CourseSelectSuggestedCommitmentsForm
+    template_name = "commitments/course_change_suggested_commitments.html"
+    pk_url_kwarg = "course_id"
 
-    @staticmethod
-    def get(request, course_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id, owner=viewer)
-        form = CourseSelectSuggestedCommitmentsForm(instance=course)
-        return render(
-            request,
-            "commitments/course_change_suggested_commitments.html",
-            context={"course": course, "form": form}
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return Course.objects.filter(
+            owner=viewer
         )
 
-    @staticmethod
-    def post(request, course_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id, owner=viewer)
-        form = CourseSelectSuggestedCommitmentsForm(request.POST, instance=course)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view course", 
-                    kwargs={ "course_id": course.id }
-                )
-            )
-        else:
-            return CourseChangeSuggestedCommitmentsView.get(request, course_id)
+    def get_success_url(self):
+        return reverse(
+            "view course",
+            kwargs={"course_id": self.object.id}
+        )
 
 
 class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
