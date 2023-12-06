@@ -1,7 +1,5 @@
 import os
 
-from . import custom_settings
-
 """
 Django settings for Commitment_to_Change_App project.
 
@@ -21,9 +19,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = custom_settings.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -77,7 +72,6 @@ WSGI_APPLICATION = 'Commitment_to_Change_App.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = custom_settings.DATABASES
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -127,7 +121,23 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_HOST = custom_settings.EMAIL_HOST
-EMAIL_PORT = custom_settings.EMAIL_PORT
-
 ACCOUNT_ACTIVATION_DAYS = 7
+
+# These default settings are for Docker - override these in custom_settings.py
+# if you are not using docker replication
+EMAIL_HOST = "cme-ctc-mailcapture"
+EMAIL_PORT = 25
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'Insecure7',
+        'HOST': 'cme-ctc-db',
+        'PORT': '5432',
+    }
+}
+
+# Custom settings SHOULD overwrite this file's settings because this file is the default.
+# Pylint also lies about the imports being unused - they are used in other files.
+from .custom_settings import * #pylint: disable=wildcard-import, unused-wildcard-import

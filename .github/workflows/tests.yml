@@ -34,7 +34,7 @@ jobs:
 
       - name: Create custom_settings.py
         working-directory: ./Commitment_to_Change_App/Commitment_to_Change_App
-        run: cat custom_settings_default.py | sed "s/''/'$(python -c "import secrets; print(secrets.token_urlsafe())")'/" > custom_settings.py
+        run: cat custom_settings_sources/custom_settings_github.py | sed "s/SECRET_KEY = ''/SECRET_KEY = '$(python -c "import secrets; print(secrets.token_urlsafe())")'/" > custom_settings.py
 
       - name: Migrate
         working-directory: ./Commitment_to_Change_App
