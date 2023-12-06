@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
 
 import cme_accounts.models
