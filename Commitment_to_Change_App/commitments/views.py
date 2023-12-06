@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpRespon
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
 
 import cme_accounts.models
@@ -127,45 +127,28 @@ class DeleteCommitmentView(ClinicianLoginRequiredMixin, View):
             return HttpResponseBadRequest("'delete' key must be set 'true' to be deleted")
 
 
-class EditCommitmentView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        commitment.save_expired_if_past_deadline()
-        form = CommitmentForm(instance=commitment, owner=profile)
-        return render(
-            request,
-            "commitments/edit_commitment.html",
-            context={
-                "commitment": commitment,
-                "form": form
-            }
+class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
+    form_class = CommitmentForm
+    template_name = "commitments/edit_commitment.html"
+    pk_url_kwarg = "commitment_id"
+
+    def get_queryset(self):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        return Commitment.objects.filter(
+            owner=viewer
         )
 
-    @staticmethod
-    def post(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        commitment.save_expired_if_past_deadline()
-        form = CommitmentForm(request.POST, instance=commitment, owner=profile)
-        if form.is_valid():
-            commitment = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
-        else:
-            return render(
-                request,
-                "commitments/edit_commitment.html",
-                context={
-                    "commitment": commitment,
-                    "form": form
-                }
-            )
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        kwargs.update({"owner": viewer})
+        return kwargs
+
+    def get_success_url(self):
+        return reverse(
+            "view commitment",
+            kwargs={"commitment_id": self.object.id}
+        )
 
 
 class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
