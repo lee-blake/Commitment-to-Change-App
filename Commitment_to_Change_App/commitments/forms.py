@@ -29,7 +29,6 @@ class CommitmentForm(ModelForm):
         if not hasattr(self.instance, 'owner') or not self.instance.owner:
             self.instance.owner = owner
         elif owner != self.instance.owner:
-            # TODO cover this
             raise ValueError("Cannot change the owner of a commitment!")
         self.fields['associated_course'].queryset = self.instance.owner.course_set.all()
 
