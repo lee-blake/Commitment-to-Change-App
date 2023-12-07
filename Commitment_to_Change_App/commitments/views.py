@@ -110,7 +110,7 @@ class DeleteCommitmentView(ClinicianLoginRequiredMixin, View):
         form = DeleteCommitmentForm(instance=commitment)
         return render(
             request,
-            "commitments/delete_commitment.html",
+            "commitments/Commitment/delete_commitment.html",
             context={
                 "commitment": commitment,
                 "form": form})
