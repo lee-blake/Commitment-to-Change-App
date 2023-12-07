@@ -330,7 +330,7 @@ class JoinCourseView(LoginRequiredMixin, View):
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/create_commitment_template.html"
+    template_name = "commitments/Commitment/create_commitment_template.html"
 
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
