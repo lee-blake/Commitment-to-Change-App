@@ -28,7 +28,7 @@ class ViewCommitmentView(DetailView):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
             return ["commitments/view_owned_commitment.html"]
         else:
-            return ["commitments/view_commitment.html"]
+            return ["commitments/Commitment/view_commitment.html"]
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
