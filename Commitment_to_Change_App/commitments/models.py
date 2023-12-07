@@ -90,7 +90,10 @@ class Commitment(models.Model):
     owner = models.ForeignKey(ClinicianProfile, on_delete=models.CASCADE)
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
-    status = models.IntegerField(choices=CommitmentStatus.choices)
+    status = models.IntegerField(
+        choices=CommitmentStatus.choices,
+        default = CommitmentStatus.IN_PROGRESS
+    )
     deadline = models.DateField("Deadline", validators=[
         validators.date_is_not_in_past
     ])

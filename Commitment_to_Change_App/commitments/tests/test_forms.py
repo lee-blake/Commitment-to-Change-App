@@ -1,4 +1,21 @@
-from commitments.forms import CourseForm
+import pytest
+
+from commitments.forms import CommitmentForm, CourseForm
+from commitments.models import ClinicianProfile, Commitment
+
+
+class TestCommitmentForm:
+    """Tests for CommitmentForm"""
+
+    class TestInit:
+        """Tests for CommitmentForm.__init__"""
+
+        def test_switching_owners_raises_value_error(self):
+            original_owner = ClinicianProfile()
+            commitment = Commitment(owner=original_owner)
+            new_owner = ClinicianProfile()
+            with pytest.raises(ValueError):
+                CommitmentForm(instance=commitment, owner=new_owner)
 
 
 class TestCourseForm:
