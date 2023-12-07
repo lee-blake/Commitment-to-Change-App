@@ -128,7 +128,7 @@ class DeleteCommitmentView(ClinicianLoginRequiredMixin, View):
 
 class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
     form_class = CommitmentForm
-    template_name = "commitments/edit_commitment.html"
+    template_name = "commitments/Commitment/edit_commitment.html"
     pk_url_kwarg = "commitment_id"
 
     def get_queryset(self):
