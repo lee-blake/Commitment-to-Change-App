@@ -228,7 +228,7 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
 
 class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CourseForm
-    template_name = "commitments/edit_course.html"
+    template_name = "commitments/Course/edit_course.html"
     pk_url_kwarg = "course_id"
 
     def get_queryset(self):
