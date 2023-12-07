@@ -67,7 +67,7 @@ class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
             'enrolled_courses': enrolled_courses
         }
 
-        return render(request, "commitments/dashboard/dashboard_clinician.html", context)
+        return render(request, "commitments/Dashboard/dashboard_clinician.html", context)
 
 
 class ProviderDashboardView(ProviderLoginRequiredMixin, View):
@@ -78,7 +78,7 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, View):
         commitment_templates = CommitmentTemplate.objects.filter(owner=profile)
         return render(
             request,
-            "commitments/dashboard/dashboard_provider.html", 
+            "commitments/Dashboard/dashboard_provider.html", 
             {
                 "courses": courses,
                 "commitment_templates": commitment_templates
