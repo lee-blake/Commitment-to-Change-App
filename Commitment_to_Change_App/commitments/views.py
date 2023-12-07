@@ -8,6 +8,8 @@ from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpRespon
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView
 from django.urls import reverse
 
 import cme_accounts.models
@@ -18,17 +20,15 @@ from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
 
-class ViewCommitmentView(View):
+class ViewCommitmentView(DetailView):
+    model = Commitment
+    pk_url_kwarg = "commitment_id"
 
-    @staticmethod
-    def get(request, commitment_id):
-        commitment = get_object_or_404(Commitment, id=commitment_id)
-        commitment.save_expired_if_past_deadline()
-        context = {"commitment": commitment}
-        if request.user.is_authenticated and request.user == commitment.owner.user:
-            return render(request, "commitments/view_owned_commitment.html", context)
+    def get_template_names(self):
+        if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
+            return ["commitments/view_owned_commitment.html"]
         else:
-            return render(request, "commitments/view_commitment.html", context)
+            return ["commitments/view_commitment.html"]
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
@@ -86,29 +86,21 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, View):
         )
 
 
-class MakeCommitmentView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        form = CommitmentForm(profile=profile)
-        return render(request, "commitments/make_commitment.html", context={"form": form})
+class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
+    form_class = CommitmentForm
+    template_name = "commitments/make_commitment.html"
 
-    @staticmethod
-    def post(request, *args, **kwargs):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        form = CommitmentForm(request.POST, profile=profile)
-        if form.is_valid():
-            form.instance.owner = profile
-            form.instance.status = Commitment.CommitmentStatus.IN_PROGRESS
-            commitment = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
-        else:
-            return render(request, "commitments/make_commitment.html", context={"form": form})
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        profile = ClinicianProfile.objects.get(user=self.request.user)
+        kwargs.update({ "owner": profile })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse(
+            "view commitment",
+            kwargs={"commitment_id": self.object.id}
+        )
 
 
 class DeleteCommitmentView(ClinicianLoginRequiredMixin, View):
@@ -134,45 +126,28 @@ class DeleteCommitmentView(ClinicianLoginRequiredMixin, View):
             return HttpResponseBadRequest("'delete' key must be set 'true' to be deleted")
 
 
-class EditCommitmentView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        commitment.save_expired_if_past_deadline()
-        form = CommitmentForm(instance=commitment, profile=profile)
-        return render(
-            request,
-            "commitments/edit_commitment.html",
-            context={
-                "commitment": commitment,
-                "form": form
-            }
+class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
+    form_class = CommitmentForm
+    template_name = "commitments/edit_commitment.html"
+    pk_url_kwarg = "commitment_id"
+
+    def get_queryset(self):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        return Commitment.objects.filter(
+            owner=viewer
         )
 
-    @staticmethod
-    def post(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        commitment.save_expired_if_past_deadline()
-        form = CommitmentForm(request.POST, instance=commitment, profile=profile)
-        if form.is_valid():
-            commitment = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={"commitment_id": commitment.id}
-                )
-            )
-        else:
-            return render(
-                request,
-                "commitments/edit_commitment.html",
-                context={
-                    "commitment": commitment,
-                    "form": form
-                }
-            )
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        kwargs.update({"owner": viewer})
+        return kwargs
+
+    def get_success_url(self):
+        return reverse(
+            "view commitment",
+            kwargs={"commitment_id": self.object.id}
+        )
 
 
 class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
@@ -228,70 +203,45 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         return HttpResponseNotAllowed(['POST'])
 
 
-class CreateCourseView(ProviderLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        form = CourseForm()
-        return render(request, "commitments/create_course.html", context={"form": form})
+class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
+    form_class = CourseForm
+    template_name = "commitments/create_course.html"
 
-    @staticmethod
-    def post(request, *args, **kwargs):
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            form.instance.owner = ProviderProfile.objects.get(user=request.user)
-            form.instance.join_code = CreateCourseView.generate_random_join_code(8)
-            course = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view course",
-                    kwargs={"course_id": course.id}
-                )
-            )
-        else:
-            return render(request, "commitments/create_course.html", context={"form": form})
+    def form_valid(self, form):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        form.instance.owner = viewer
+        form.instance.join_code = CreateCourseView.generate_random_join_code(8)
+        return super().form_valid(form)
 
+    def get_success_url(self):
+        return reverse(
+            "view course",
+            kwargs={"course_id": self.object.id}
+        )
+
+    # TODO I moved this onto CourseLogic in another branch. When the merge happens,
+    # delete this and replace its call above with a call on the form.instance method.
     @staticmethod
     def generate_random_join_code(length):
         return ''.join(random.choice(string.ascii_uppercase) for i in range(0, length))
 
 
-class EditCourseView(ProviderLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, course_id):
-        profile = ProviderProfile.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id, owner=profile)
-        form = CourseForm(instance=course)
-        return render(
-            request,
-            "commitments/edit_course.html", 
-            context= {
-                "course": course,
-                "form": form
-            }
+class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
+    form_class = CourseForm
+    template_name = "commitments/edit_course.html"
+    pk_url_kwarg = "course_id"
+
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return Course.objects.filter(
+            owner=viewer
         )
 
-    @staticmethod
-    def post(request, course_id):
-        profile = ProviderProfile.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id, owner=profile)
-        form = CourseForm(request.POST, instance=course)
-        if form.is_valid():
-            course = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view course",
-                    kwargs={"course_id": course.id}
-                )
-            )
-        else:
-            return render(
-                request,
-                "commitments/edit_course.html", 
-                context= {
-                    "course": course,
-                    "form": form
-                }
-            )
+    def get_success_url(self):
+        return reverse(
+            "view course",
+            kwargs={"course_id": self.object.id}
+        )
 
 
 class ViewCourseView(LoginRequiredMixin, View):
@@ -378,82 +328,51 @@ class JoinCourseView(LoginRequiredMixin, View):
             return JoinCourseView.get(request, course_id, join_code)
 
 
-class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
+    form_class = CommitmentTemplateForm
+    template_name = "commitments/create_commitment_template.html"
 
-    @staticmethod
-    def get(request):
-        form = CommitmentTemplateForm()
-        return render(
-            request,
-            "commitments/create_commitment_template.html",
-            context={"form": form}
-        )
+    def form_valid(self, form):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        form.instance.owner = viewer
+        return super().form_valid(form)
 
-    @staticmethod
-    def post(request):
-        form = CommitmentTemplateForm(request.POST)
-        if form.is_valid():
-            form.instance.owner = ProviderProfile.objects.get(user=request.user)
-            commitment_template = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view CommitmentTemplate", 
-                    kwargs={ "commitment_template_id": commitment_template.id }
-                )
-            )
-        else:
-            return render(
-                request,
-                "commitments/create_commitment_template.html",
-                context={"form": form}
-            )
-
-
-class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, View):
-
-    @staticmethod
-    def get(request, commitment_template_id):
-        profile = ProviderProfile.objects.get(user=request.user)
-        commitment_template= get_object_or_404(
-            CommitmentTemplate,
-            id=commitment_template_id,
-            owner=profile
-        )
-        return render(
-            request,
-            "commitments/view_commitment_template.html",
-            context={"commitment_template": commitment_template}
+    def get_success_url(self):
+        return reverse(
+            "view CommitmentTemplate",
+            kwargs={"commitment_template_id": self.object.id}
         )
 
 
-class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, View):
+class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
+    model = CommitmentTemplate
+    template_name = "commitments/view_commitment_template.html"
+    pk_url_kwarg = "commitment_template_id"
+    context_object_name = "commitment_template"
 
-    @staticmethod
-    def get(request, course_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id, owner=viewer)
-        form = CourseSelectSuggestedCommitmentsForm(instance=course)
-        return render(
-            request,
-            "commitments/course_change_suggested_commitments.html",
-            context={"course": course, "form": form}
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return CommitmentTemplate.objects.filter(
+            owner=viewer
         )
 
-    @staticmethod
-    def post(request, course_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        course = get_object_or_404(Course, id=course_id, owner=viewer)
-        form = CourseSelectSuggestedCommitmentsForm(request.POST, instance=course)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view course", 
-                    kwargs={ "course_id": course.id }
-                )
-            )
-        else:
-            return CourseChangeSuggestedCommitmentsView.get(request, course_id)
+
+class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateView):
+    form_class = CourseSelectSuggestedCommitmentsForm
+    template_name = "commitments/course_change_suggested_commitments.html"
+    pk_url_kwarg = "course_id"
+
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return Course.objects.filter(
+            owner=viewer
+        )
+
+    def get_success_url(self):
+        return reverse(
+            "view course",
+            kwargs={"course_id": self.object.id}
+        )
 
 
 class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
@@ -471,7 +390,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
             owner=viewer,
             associated_course=course
         )
-        form = CommitmentForm(instance=form_instance, profile=viewer)
+        form = CommitmentForm(instance=form_instance, owner=viewer)
         return render(
             request,
             "commitments/create_from_suggested_commitment.html",
@@ -492,7 +411,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
             associated_course=course,
             status=Commitment.CommitmentStatus.IN_PROGRESS
         )
-        form = CommitmentForm(request.POST, instance=form_instance, profile=viewer)
+        form = CommitmentForm(request.POST, instance=form_instance, owner=viewer)
         if form.is_valid():
             commitment = form.save()
             return HttpResponseRedirect(
@@ -538,45 +457,20 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, View):
             return HttpResponseBadRequest("'delete' key must be set 'true' to be deleted")
 
 
-class EditCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
+    form_class = CommitmentTemplateForm
+    template_name = "commitments/edit_commitment_template.html"
+    pk_url_kwarg = "commitment_template_id"
+    context_object_name = "commitment_template"
 
-    @staticmethod
-    def get(request, commitment_template_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        commitment_template = get_object_or_404(
-            CommitmentTemplate, id=commitment_template_id, owner=viewer
-        )
-        form = CommitmentTemplateForm(instance=commitment_template)
-        return render(
-            request,
-            "commitments/edit_commitment_template.html",
-            context={
-                "commitment_template": commitment_template,
-                "form": form
-            }
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return CommitmentTemplate.objects.filter(
+            owner=viewer
         )
 
-    @staticmethod
-    def post(request, commitment_template_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        commitment_template = get_object_or_404(
-            CommitmentTemplate, id=commitment_template_id, owner=viewer
+    def get_success_url(self):
+        return reverse(
+            "view CommitmentTemplate",
+            kwargs={"commitment_template_id": self.object.id}
         )
-        form = CommitmentTemplateForm(request.POST, instance=commitment_template)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view CommitmentTemplate",
-                    kwargs={"commitment_template_id": commitment_template_id}
-                )
-            )
-        else:
-            return render(
-                request,
-                "commitments/edit_commitment_template.html",
-                context={
-                    "commitment_template": commitment_template,
-                    "form": form
-                }
-            )
