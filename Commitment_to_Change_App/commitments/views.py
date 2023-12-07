@@ -305,7 +305,7 @@ class JoinCourseView(LoginRequiredMixin, View):
             )
         return render(
             request,
-            "commitments/join_course_view_clinician.html",
+            "commitments/Course/join_course_view_clinician.html",
             context={"course": course}
         )
         
