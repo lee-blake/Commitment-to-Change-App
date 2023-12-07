@@ -438,7 +438,7 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, View):
         )
         return render(
             request,
-            "commitments/delete_commitment_template.html",
+            "commitments/Commitment/delete_commitment_template.html",
             {"commitment_template": commitment_template}
         )
 
