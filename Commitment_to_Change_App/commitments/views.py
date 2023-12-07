@@ -359,7 +359,7 @@ class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
 
 class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CourseSelectSuggestedCommitmentsForm
-    template_name = "commitments/course_change_suggested_commitments.html"
+    template_name = "commitments/Course/course_change_suggested_commitments.html"
     pk_url_kwarg = "course_id"
 
     def get_queryset(self):
