@@ -393,7 +393,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         form = CommitmentForm(instance=form_instance, owner=viewer)
         return render(
             request,
-            "commitments/create_from_suggested_commitment.html",
+            "commitments/Commitment/create_from_suggested_commitment.html",
             {"form": form, "course": course, "commitment_template": commitment_template}
         )
 
@@ -423,7 +423,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         else:
             return render(
                 request,
-                "commitments/create_from_suggested_commitment.html",
+                "commitments/Commitment/create_from_suggested_commitment.html",
                 {"form": form, "course": course, "commitment_template": commitment_template}
             )
 
