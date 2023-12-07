@@ -78,7 +78,7 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, View):
         commitment_templates = CommitmentTemplate.objects.filter(owner=profile)
         return render(
             request,
-            "commitments/dashboard_provider.html", 
+            "commitments/dashboard/dashboard_provider.html", 
             {
                 "courses": courses,
                 "commitment_templates": commitment_templates
