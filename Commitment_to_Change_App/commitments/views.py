@@ -88,7 +88,7 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, View):
 
 class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
     form_class = CommitmentForm
-    template_name = "commitments/make_commitment.html"
+    template_name = "commitments/Commitment/make_commitment.html"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
