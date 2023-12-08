@@ -305,7 +305,7 @@ class JoinCourseView(LoginRequiredMixin, View):
             )
         return render(
             request,
-            "commitments/Course/Course/join_course_view_clinician.html",
+            "commitments/Course/join_course_view_clinician.html",
             context={"course": course}
         )
         
@@ -459,7 +459,7 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, View):
 
 class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments//Commitment/edit_commitment_template.html"
+    template_name = "commitments/Commitment/edit_commitment_template.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
