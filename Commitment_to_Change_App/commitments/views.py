@@ -300,7 +300,7 @@ class JoinCourseView(LoginRequiredMixin, View):
                 raise PermissionDenied("Providers cannot join courses.")
             return render(
                 request,
-                "commitments/join_course_view_provider.html",
+                "commitments/Course/join_course_view_provider.html",
                 context={"course": course}
             )
         return render(
