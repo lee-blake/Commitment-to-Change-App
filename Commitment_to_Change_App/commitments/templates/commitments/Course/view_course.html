@@ -1,4 +1,4 @@
-{% extends "commitments/base.html" %}
+{% extends "commitments/common/base.html" %}
 {% block title %} {{ course.title }} {% endblock title %}
 
 {% block page_content %}
@@ -30,7 +30,7 @@
 					</div>
 					<ul>
 					{% for clinician in course.students.all %}
-						<li>{% include "commitments/inline_clinician_profile.html" %}</li>
+						<li>{% include "commitments/Course/inline_clinician_profile.html" %}</li>
 					{% endfor %}
 					</ul>
 				</div>
@@ -46,7 +46,7 @@
 						{% endblock select_suggested_commitments_button %}
 					</div>
 					{% for suggested_commitment in course.suggested_commitments.all %}
-						{% include "commitments/view_course_suggested_commitment.html" %}
+						{% include "commitments/Course/view_course_suggested_commitment.html" %}
 					{% endfor %}
 					<div class="text-center secondary-accent round-corners">
 						<h3>Status Breakdown</h3>
@@ -77,7 +77,7 @@
 						<h3>List of Commitments:</h3>
 					</div>
 					{% for commitment in associated_commitments %}
-						{% include "commitments/dashboard_unowned_commitment.html" %}
+						{% include "commitments/dashboard/dashboard_unowned_commitment.html" %}
 					{% endfor %}
 				</div>
 			</div>
