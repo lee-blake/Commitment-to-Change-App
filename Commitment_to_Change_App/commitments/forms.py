@@ -33,18 +33,6 @@ class CommitmentForm(ModelForm):
         self.fields['associated_course'].queryset = self.instance.owner.course_set.all()
 
 
-class DeleteCommitmentForm(ModelForm):
-    class Meta:
-        model = Commitment
-        fields = [
-            "title",
-            "deadline"
-        ]
-        widgets = {
-            "deadline": DateInput(attrs={"type": "date"})
-        }
-
-
 class CourseForm(ModelForm):
     class Meta:
         model = Course
