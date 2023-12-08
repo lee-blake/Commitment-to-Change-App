@@ -118,5 +118,5 @@ class ClinicianProfileForm(ModelForm):
             "institution"
         ]
 
-class DeleteCommitmentTemplateForm(Form):
+class GenericDeletePostKeySetForm(Form):
     delete = BooleanField()

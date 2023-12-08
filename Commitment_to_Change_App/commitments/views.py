@@ -15,7 +15,7 @@ from django.urls import reverse, reverse_lazy
 import cme_accounts.models
 
 from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentTemplateForm, \
-    CourseSelectSuggestedCommitmentsForm, DeleteCommitmentTemplateForm
+    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -107,7 +107,7 @@ class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
     # TODO Make the broken 400 on bad request work
     # Deferred until team consultation is complete
     model = Commitment
-    form_class = DeleteCommitmentTemplateForm
+    form_class = GenericDeletePostKeySetForm
     template_name = "commitments/Commitment/delete_commitment.html"
     pk_url_kwarg = "commitment_id"
     context_object_name = "commitment"
@@ -426,7 +426,7 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
     # TODO Make the broken 400 on bad request work
     # Deferred until team consultation is complete
     model = CommitmentTemplate
-    form_class = DeleteCommitmentTemplateForm
+    form_class = GenericDeletePostKeySetForm
     template_name = "commitments/Commitment/delete_commitment_template.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
