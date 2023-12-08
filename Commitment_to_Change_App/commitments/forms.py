@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput, ModelChoiceField, CheckboxSelectMultiple, \
-    ModelMultipleChoiceField
+    ModelMultipleChoiceField, BooleanField, Form
 
 from .models import ClinicianProfile, Commitment, Course, CommitmentTemplate, ProviderProfile
 
@@ -117,3 +117,6 @@ class ClinicianProfileForm(ModelForm):
             "last_name",
             "institution"
         ]
+
+class DeleteCommitmentTemplateForm(Form):
+    delete = BooleanField()
