@@ -102,8 +102,6 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
 
 
 class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
-    # TODO Make the broken 400 on bad request work
-    # Deferred until team consultation is complete
     model = Commitment
     form_class = GenericDeletePostKeySetForm
     template_name = "commitments/Commitment/delete_commitment.html"
@@ -421,8 +419,6 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
 
 
 class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
-    # TODO Make the broken 400 on bad request work
-    # Deferred until team consultation is complete
     model = CommitmentTemplate
     form_class = GenericDeletePostKeySetForm
     template_name = "commitments/Commitment/delete_commitment_template.html"
