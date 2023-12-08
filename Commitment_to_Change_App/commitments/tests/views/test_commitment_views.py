@@ -1279,6 +1279,26 @@ class TestDeleteCommitmentView:
             post_method_regex = re.compile(r"method=\"(post|POST)\"")
             assert post_method_regex.search(form_tag)
 
+        def test_hidden_delete_field_is_set(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            delete_input_regex = re.compile(
+                r"\<input[^\>]*name=\"delete\"[^\>]*\>"
+            )
+            delete_input_match = delete_input_regex.search(html)
+            assert delete_input_match
+            assert "type=\"hidden\"" in delete_input_match[0]
+            nonempty_value_regex = re.compile(
+                r"value=\"[^\"]+\""
+            )
+            assert nonempty_value_regex.search(delete_input_match[0])
+
 
     class TestPost:
         """Tests for DeleteCommitmentView.post"""
@@ -1305,7 +1325,7 @@ class TestDeleteCommitmentView:
             response = client.post(target_url)
             assert response.status_code == 404
 
-        def test_rejects_bad_request_with_400(
+        def test_invalid_request_returns_the_get_page_with_error_notes(
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
@@ -1313,8 +1333,15 @@ class TestDeleteCommitmentView:
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
-            response = client.post(target_url)
-            assert response.status_code == 400
+            html = client.post(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
 
         def test_valid_request_deletes_commitment_template(
             self, client, saved_clinician_profile, existing_commitment

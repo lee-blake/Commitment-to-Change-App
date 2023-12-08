@@ -11,6 +11,11 @@
         <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
             <p>Are you sure you want to delete {{ commitment_template.title }}?</p>
         </div>
+        {# Render the error notes for the implicit form so that bad requests made #}
+        {# during development will be easier to debug. Errors cannot occur during #}
+        {# normal use of this form.#}
+        {{ form.non_field_errors }}
+        {{ form.delete.errors }}
         <a href="{% url 'view CommitmentTemplate' commitment_template_id=commitment_template.id %}">
             <button>
             Cancel
