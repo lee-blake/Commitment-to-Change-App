@@ -300,7 +300,7 @@ class JoinCourseView(LoginRequiredMixin, View):
             "commitments/Course/join_course_view_clinician.html",
             context={"course": course}
         )
-        
+
     @staticmethod
     def post(request, course_id, join_code):
         if not request.user.is_clinician:

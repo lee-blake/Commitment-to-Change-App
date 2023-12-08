@@ -55,7 +55,7 @@ class CourseForm(ModelForm):
                 "The course start date must not be after the end date!",
                 code="invalid_date_range"
             )
-        
+
     def _start_date_not_after_end_date(self, cleaned_data):
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
@@ -71,6 +71,7 @@ class CommitmentTemplateForm(ModelForm):
             "title",
             "description"
         ]
+
 
 class CourseSelectSuggestedCommitmentsForm(ModelForm):
     class Meta:
@@ -105,6 +106,7 @@ class ClinicianProfileForm(ModelForm):
             "last_name",
             "institution"
         ]
+
 
 class GenericDeletePostKeySetForm(Form):
     delete = BooleanField()
