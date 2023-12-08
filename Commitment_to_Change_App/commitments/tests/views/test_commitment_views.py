@@ -1220,3 +1220,127 @@ class TestCompleteCommitmentView:
                 {"complete": "blah blah nonsense"}
             )
             assert response.status_code == 400
+
+
+
+@pytest.mark.django_db
+class TestDeleteCommitmentView:
+    """Tests for DeleteCommitmentView"""
+
+    @pytest.fixture(name="existing_commitment")
+    def fixture_existing_commitment(self, saved_clinician_profile):
+        return Commitment.objects.create(
+            title="Deletion target",
+            description="TBD",
+            deadline=date.today(),
+            owner=saved_clinician_profile
+        )
+
+    class TestGet:
+        """Tests for DeleteCommitmentView.get"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_provider_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_clinicians_with_404(
+            self, client, other_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client,saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+
+    class TestPost:
+        """Tests for DeleteCommitmentView.post"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_provider_user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_clinicians_with_404(
+            self, client, other_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_rejects_bad_request_with_400(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 400
+
+        def test_valid_request_deletes_commitment_template(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"delete": "true"}
+            )
+            assert not Commitment.objects.filter(id=existing_commitment.id).exists()
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {"delete": "true"}
+            )
+            assert response.status_code == 302
+            assert response.url == reverse("clinician dashboard")
