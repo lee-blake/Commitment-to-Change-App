@@ -322,7 +322,7 @@ class JoinCourseView(LoginRequiredMixin, View):
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/Commitment/create_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/create_commitment_template.html"
 
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
@@ -338,7 +338,7 @@ class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
 
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
     model = CommitmentTemplate
-    template_name = "commitments/Commitment/view_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/view_commitment_template.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
@@ -425,7 +425,7 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
     # Deferred until team consultation is complete
     model = CommitmentTemplate
     form_class = GenericDeletePostKeySetForm
-    template_name = "commitments/Commitment/delete_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/delete_commitment_template.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
     success_url = reverse_lazy("provider dashboard")
@@ -439,7 +439,7 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
 
 class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/Commitment/edit_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/edit_commitment_template.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
