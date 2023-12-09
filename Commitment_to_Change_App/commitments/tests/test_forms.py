@@ -6,8 +6,8 @@ from cme_accounts.models import User
 
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm,\
-     DiscontinueCommitmentForm, ReopenCommitmentForm
-from commitments.models import ClinicianProfile, Commitment
+     DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm
+from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course
 
 
 @pytest.fixture(name="unsaved_in_progress_commitment")
@@ -286,3 +286,60 @@ class TestReopenCommitmentForm:
             form.save(commit=True)
             reloaded_commitment = Commitment.objects.get(id=saved_discontinued_commitment.id)
             assert reloaded_commitment.status == CommitmentStatus.EXPIRED
+
+
+class TestCreateCommitmentFromSuggestedCommitmentForm:
+    """Tests for CreateCommitmentFromSuggestedCommitmentForm"""
+
+    class TestInit:
+        """Tests for CreateCommitmentFromSuggestedCommitmentForm.__init__"""
+
+        @pytest.fixture(name="commitment_owner")
+        def fixture_commitment_owner(self):
+            return ClinicianProfile(id=1)
+
+        @pytest.fixture(name="source_template", params=[
+            ("First title", "First description"),
+            ("Second title", "Second description")
+        ])
+        def fixture_source_template(self, request):
+            return CommitmentTemplate(
+                title=request.param[0],
+                description=request.param[1]
+            )
+
+        @pytest.fixture(name="source_course", params=[1, 2])
+        def fixture_source_course(self, request):
+            return Course(
+                id=request.param
+            )
+
+
+        def test_passing_existing_commitment_raises_type_error(
+            self, unsaved_in_progress_commitment, commitment_owner
+        ):
+            source_template = CommitmentTemplate()
+            source_course = Course()
+            with pytest.raises(TypeError):
+                CreateCommitmentFromSuggestedCommitmentForm(
+                    source_template,
+                    source_course,
+                    instance=unsaved_in_progress_commitment,
+                    owner=commitment_owner
+                )
+
+        def test_associated_course_is_set_automatically(self, source_course, commitment_owner):
+            form = CreateCommitmentFromSuggestedCommitmentForm(
+                CommitmentTemplate(),
+                source_course,
+                owner=commitment_owner
+            )
+            assert form.instance.associated_course == source_course
+
+        def test_title_is_set_automatically(self, source_template, commitment_owner):
+            form = CreateCommitmentFromSuggestedCommitmentForm(
+                source_template,
+                Course(),
+                owner=commitment_owner
+            )
+            assert form.instance.title == source_template.title

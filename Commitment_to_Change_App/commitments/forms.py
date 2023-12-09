@@ -33,6 +33,19 @@ class CommitmentForm(ModelForm):
         self.fields['associated_course'].queryset = self.instance.owner.course_set.all()
 
 
+class CreateCommitmentFromSuggestedCommitmentForm(CommitmentForm):
+    def __init__(self, suggested_commitment_template, source_course, *args, **kwargs):
+        if kwargs.get("instance"):
+            raise TypeError(
+                "CreateCommitmentFromSuggestedCommitmentForm is for creating new Commitments only!"
+            )
+        instance = Commitment()
+        instance.apply_commitment_template(suggested_commitment_template)
+        instance.associated_course = source_course
+        kwargs.update({"instance": instance})
+        super().__init__(*args, **kwargs )
+
+
 class CourseForm(ModelForm):
     class Meta:
         model = Course
