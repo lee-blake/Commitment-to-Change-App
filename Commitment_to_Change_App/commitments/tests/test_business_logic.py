@@ -2,9 +2,10 @@ import datetime
 
 import pytest
 
-from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic
+from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic
 from commitments.enums import CommitmentStatus
-from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData
+from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
+    FakeCourseData
 
 #pylint: disable=protected-access
 # Because Django fields are generally public, we make the DTO reference field on our business
@@ -181,3 +182,44 @@ class TestCommitmentTemplateLogic:
                 FakeCommitmentTemplateData(description=passed_description)
             )
             assert commitment_template.description == passed_description
+
+
+class TestCourseLogic:
+    """Tests for CourseLogic"""
+
+    class TestGenerateJoinCodeIfNoneExists:
+        """Tests for CourseLogic.generate_join_code_if_none_exists"""
+
+        @pytest.mark.parametrize("nonpositive_length", [-1, 0])
+        def test_nonpositive_values_throw_value_error(self, nonpositive_length):
+            course = CourseLogic(FakeCourseData())
+            with pytest.raises(ValueError):
+                course.generate_join_code_if_none_exists(nonpositive_length)
+
+        def test_does_not_overwrite_existing_code(self):
+            course = CourseLogic(
+                FakeCourseData(
+                    join_code="exists!"
+                )
+            )
+            course.generate_join_code_if_none_exists(1)
+            assert course._data.join_code == "exists!"
+
+        def test_replaces_none_code(self):
+            course = CourseLogic(
+                FakeCourseData(
+                    join_code=None
+                )
+            )
+            course.generate_join_code_if_none_exists(1)
+            assert course._data.join_code
+
+        @pytest.mark.parametrize("length", [5, 11])
+        def test_generates_with_right_lengths(self, length):
+            course = CourseLogic(
+                FakeCourseData(
+                    join_code=None
+                )
+            )
+            course.generate_join_code_if_none_exists(length)
+            assert len(course._data.join_code) == length

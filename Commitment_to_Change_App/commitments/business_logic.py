@@ -1,4 +1,6 @@
 import datetime
+import random
+import string
 
 from commitments.enums import CommitmentStatus
 
@@ -48,3 +50,16 @@ class CommitmentTemplateLogic:
     @property
     def description(self):
         return self._data.description
+
+
+class CourseLogic:
+    def __init__(self, data_object):
+        self._data = data_object
+
+    def generate_join_code_if_none_exists(self, length):
+        if length <= 0:
+            raise ValueError("Join codes must have a positive length!")
+        if not self._data.join_code:
+            self._data.join_code = ''.join(
+                random.choice(string.ascii_uppercase) for i in range(0, length)
+            )
