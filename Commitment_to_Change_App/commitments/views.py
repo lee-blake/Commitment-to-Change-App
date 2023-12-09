@@ -24,7 +24,7 @@ class ViewCommitmentView(DetailView):
 
     def get_template_names(self):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
-            return ["commitments/Commitment/view_owned_commitment.html"]
+            return ["commitments/Commitment/commitment_view_owned_page.html"]
         else:
             return ["commitments/Commitment/commitment_view_page.html"]
 
