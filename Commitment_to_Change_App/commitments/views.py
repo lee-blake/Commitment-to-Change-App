@@ -186,10 +186,6 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
                 "'reopen' key must be set to 'true' to reopen a commitment"
             )
 
-    @staticmethod
-    def get(request):
-        return HttpResponseNotAllowed(['POST'])
-
 
 class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
     form_class = CourseForm
