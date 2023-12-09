@@ -3,6 +3,7 @@ import datetime
 from django.db import models
 
 import cme_accounts.models
+import commitments.enums
 
 from . import validators
 
@@ -64,23 +65,8 @@ class Course(models.Model):
 
 
 class Commitment(models.Model):
-    class CommitmentStatus(models.IntegerChoices):
-        IN_PROGRESS = 0
-        COMPLETE = 1
-        EXPIRED = 2
-        DISCONTINUED = 3
-
-        def __str__(self):
-            match self:
-                case 0:
-                    return "In Progress"
-                case 1:
-                    return "Complete"
-                case 2:
-                    return "Past Due"
-                case 3:
-                    return "Discontinued"
-
+    # TODO This is a ompatibility fix to avoid changing usages until logic is fully extracted.
+    CommitmentStatus = commitments.enums.CommitmentStatus
 
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
