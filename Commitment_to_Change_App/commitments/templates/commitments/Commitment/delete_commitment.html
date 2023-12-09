@@ -13,7 +13,7 @@
             that finishes on {{ commitment.deadline }}?</p>
         </div>
         <a href="{% url 'edit commitment' commitment_id=commitment.id %}">Cancel</a>
-        {% include "commitments/post_buttons/delete_commitment_confirm_button.html" %}
+        {% include "commitments/Commitment/delete_commitment_confirm_button.html" %}
     </div>
 </div>
 {% endblock page_content %}
