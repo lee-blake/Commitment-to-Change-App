@@ -106,7 +106,7 @@ class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
     # Deferred until team consultation is complete
     model = Commitment
     form_class = GenericDeletePostKeySetForm
-    template_name = "commitments/Commitment/delete_commitment.html"
+    template_name = "commitments/Commitment/commitment_delete_page.html"
     pk_url_kwarg = "commitment_id"
     context_object_name = "commitment"
     success_url = reverse_lazy("clinician dashboard")
