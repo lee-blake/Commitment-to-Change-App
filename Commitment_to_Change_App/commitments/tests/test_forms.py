@@ -5,7 +5,8 @@ import pytest
 from cme_accounts.models import User
 
 from commitments.enums import CommitmentStatus
-from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm
+from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm,\
+     DiscontinueCommitmentForm
 from commitments.models import ClinicianProfile, Commitment
 
 
@@ -162,3 +163,63 @@ class TestCompleteCommitmentForm:
             form.save(commit=True)
             reloaded_commitment = Commitment.objects.get(id=saved_commitment.id)
             assert reloaded_commitment.status == CommitmentStatus.COMPLETE
+
+
+class TestDiscontinueCommitmentForm:
+    """Tests for DiscontinueCommitmentForm"""
+
+    @pytest.fixture(name="unsaved_commitment")
+    def fixture_unsaved_commitment(self):
+        return Commitment(
+            title="test title",
+            description="test description",
+            deadline=datetime.date.today(),
+            status=CommitmentStatus.IN_PROGRESS,
+            owner=ClinicianProfile(
+                user=User(
+                    username="username",
+                    email="fake@email.com",
+                    password="password"
+                )
+            )
+        )
+
+    @pytest.fixture(name="saved_commitment")
+    def fixture_saved_commitment(self, unsaved_commitment):
+        unsaved_commitment.owner.user.save()
+        unsaved_commitment.owner.save()
+        unsaved_commitment.save()
+        return unsaved_commitment
+
+    class TestIsValid:
+        """Tests for DiscontinueCommitmentForm.is_valid"""
+
+        def test_no_discontinue_key_is_not_valid(self, unsaved_commitment):
+            form = DiscontinueCommitmentForm({}, instance=unsaved_commitment)
+            assert not form.is_valid()
+
+        def test_discontinue_key_present_at_all_is_valid(self, unsaved_commitment):
+            form = DiscontinueCommitmentForm(
+                {"discontinue": "present"}, instance=unsaved_commitment
+            )
+            assert form.is_valid()
+
+
+    class TestSave:
+        """Tests for DiscontinueCommitmentForm.save"""
+
+        def test_save_without_commit_marks_discontinued(self, unsaved_commitment):
+            form = DiscontinueCommitmentForm(
+                {"discontinue": "present"}, instance=unsaved_commitment
+            )
+            form.save(commit=False)
+            assert unsaved_commitment.status == CommitmentStatus.DISCONTINUED
+
+        @pytest.mark.django_db
+        def test_save_with_commit_saves_discontinued(self, saved_commitment):
+            form = DiscontinueCommitmentForm(
+                {"discontinue": "present"}, instance=saved_commitment
+            )
+            form.save(commit=True)
+            reloaded_commitment = Commitment.objects.get(id=saved_commitment.id)
+            assert reloaded_commitment.status == CommitmentStatus.DISCONTINUED

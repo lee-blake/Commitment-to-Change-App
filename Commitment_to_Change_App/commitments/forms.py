@@ -122,3 +122,15 @@ class CompleteCommitmentForm(ModelForm):
     def save(self, commit=True):
         self.instance.mark_complete()
         super().save(commit=commit)
+
+
+class DiscontinueCommitmentForm(ModelForm):
+    class Meta:
+        model = Commitment
+        fields = []
+
+    discontinue = BooleanField(initial=True, widget=HiddenInput())
+
+    def save(self, commit=True):
+        self.instance.mark_discontinued()
+        super().save(commit=commit)
