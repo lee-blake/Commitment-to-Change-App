@@ -2,10 +2,10 @@ from commitments.enums import CommitmentStatus
 
 
 class TestCommitmentStatus:
-    """Tests for Commitment.CommitmentStatus"""
+    """Tests for CommitmentStatus"""
 
     class TestToStr:
-        """Tests for Commitment.CommitmentStatus.__str__"""
+        """Tests for CommitmentStatus.__str__"""
 
         def test_in_progress_gives_correct_string(self):
             assert str(CommitmentStatus.IN_PROGRESS) == "In Progress"

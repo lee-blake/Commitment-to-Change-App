@@ -3,6 +3,7 @@ from datetime import date
 import pytest
 
 from cme_accounts.models import User
+from commitments.enums import CommitmentStatus
 from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, ProviderProfile
 
 
@@ -46,11 +47,11 @@ class TestCommitment:
                 title="Test title",
                 description="Test description",
                 deadline=past_deadline,
-                status=Commitment.CommitmentStatus.IN_PROGRESS
+                status=CommitmentStatus.IN_PROGRESS
             )
             commitment.save_expired_if_past_deadline()
             reloaded_commitment = Commitment.objects.get(id=commitment.id)
-            assert reloaded_commitment.status == Commitment.CommitmentStatus.EXPIRED
+            assert reloaded_commitment.status == CommitmentStatus.EXPIRED
 
         def test_no_status_change_if_future_deadline_and_in_progress(self, saved_commitment_owner):
             commitment = Commitment.objects.create(
@@ -58,11 +59,11 @@ class TestCommitment:
                 title="Test title",
                 description="Test description",
                 deadline=date.today(),
-                status=Commitment.CommitmentStatus.IN_PROGRESS
+                status=CommitmentStatus.IN_PROGRESS
             )
             commitment.save_expired_if_past_deadline()
             reloaded_commitment = Commitment.objects.get(id=commitment.id)
-            assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
+            assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
 
         def test_no_status_change_if_not_in_progress(self, saved_commitment_owner):
             today = date.today()
@@ -72,11 +73,11 @@ class TestCommitment:
                 title="Test title",
                 description="Test description",
                 deadline=past_deadline,
-                status=Commitment.CommitmentStatus.COMPLETE
+                status=CommitmentStatus.COMPLETE
             )
             commitment.save_expired_if_past_deadline()
             reloaded_commitment = Commitment.objects.get(id=commitment.id)
-            assert reloaded_commitment.status == Commitment.CommitmentStatus.COMPLETE
+            assert reloaded_commitment.status == CommitmentStatus.COMPLETE
 
         def test_no_database_touch_if_not_changed(self, saved_commitment_owner):
             today = date.today()
@@ -86,7 +87,7 @@ class TestCommitment:
                 title="Test title",
                 description="Test description",
                 deadline=past_deadline,
-                status=Commitment.CommitmentStatus.COMPLETE
+                status=CommitmentStatus.COMPLETE
             )
             last_modification_before_method_call = commitment.last_updated
             commitment.save_expired_if_past_deadline()

@@ -8,6 +8,7 @@ import pytest
 
 from django.urls import reverse
 
+from commitments.enums import CommitmentStatus
 from commitments.models import Commitment
 
 
@@ -506,7 +507,7 @@ class TestCreateFromSuggestedCommitmentView:
                 deadline=date.today(),
                 associated_course=enrolled_course.id
             )
-            assert commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
+            assert commitment.status == CommitmentStatus.IN_PROGRESS
             assert commitment.owner == saved_clinician_profile
             assert commitment.source_template == commitment_template_1
 
@@ -555,7 +556,7 @@ class TestEditCommitmentView:
             title="Existing title",
             description="Existing description",
             deadline=date.today(),
-            status=Commitment.CommitmentStatus.IN_PROGRESS
+            status=CommitmentStatus.IN_PROGRESS
         )
 
 
@@ -920,7 +921,7 @@ class TestViewCommitmentView:
             description="This is the first description",
             deadline=date.today(),
             owner=saved_clinician_profile,
-            status=Commitment.CommitmentStatus.IN_PROGRESS
+            status=CommitmentStatus.IN_PROGRESS
         )
 
     @pytest.fixture(name="viewable_commitment_2")
@@ -930,7 +931,7 @@ class TestViewCommitmentView:
             description="This is the second description",
             deadline=date.fromisoformat("2000-01-01"),
             owner=saved_clinician_profile,
-            status=Commitment.CommitmentStatus.EXPIRED
+            status=CommitmentStatus.EXPIRED
         )
 
 
@@ -1135,7 +1136,7 @@ class TestCompleteCommitmentView:
                 title="Test title",
                 description="Test description",
                 deadline=date.today(),
-                status=Commitment.CommitmentStatus.IN_PROGRESS
+                status=CommitmentStatus.IN_PROGRESS
             )
 
         def test_good_request_marks_complete(
@@ -1153,7 +1154,7 @@ class TestCompleteCommitmentView:
                 {"complete": "true"}
             )
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
-            assert reloaded_commitment.status == Commitment.CommitmentStatus.COMPLETE
+            assert reloaded_commitment.status == CommitmentStatus.COMPLETE
 
         def test_rejects_non_owner_with_no_changes(
             self, client,saved_completable_commitment, other_clinician_profile
@@ -1170,7 +1171,7 @@ class TestCompleteCommitmentView:
                 {"complete": "true"}
             )
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
-            assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
+            assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
 
         def test_rejects_non_owner_with_404(
             self, client, saved_completable_commitment, other_clinician_profile
@@ -1203,7 +1204,7 @@ class TestCompleteCommitmentView:
                 {"complete": "blah blah nonsense"}
             )
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
-            assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
+            assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
 
         def test_rejects_bad_request_body_with_400(
             self, client, saved_completable_commitment, saved_clinician_profile

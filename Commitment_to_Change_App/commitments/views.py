@@ -12,6 +12,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse, reverse_lazy
 
+from commitments.enums import CommitmentStatus
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
@@ -247,13 +248,13 @@ class ViewCourseView(LoginRequiredMixin, View):
         for commitment in associated_commitments:
             total += 1
             match commitment.status:
-                case Commitment.CommitmentStatus.IN_PROGRESS:
+                case CommitmentStatus.IN_PROGRESS:
                     in_progress += 1
-                case Commitment.CommitmentStatus.COMPLETE:
+                case CommitmentStatus.COMPLETE:
                     complete += 1
-                case Commitment.CommitmentStatus.EXPIRED:
+                case CommitmentStatus.EXPIRED:
                     past_due += 1
-                case Commitment.CommitmentStatus.DISCONTINUED:
+                case CommitmentStatus.DISCONTINUED:
                     discontinued += 1
 
         context = {
@@ -399,7 +400,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         form_instance = commitment_template.into_commitment(
             owner=viewer,
             associated_course=course,
-            status=Commitment.CommitmentStatus.IN_PROGRESS
+            status=CommitmentStatus.IN_PROGRESS
         )
         form = CommitmentForm(request.POST, instance=form_instance, owner=viewer)
         if form.is_valid():

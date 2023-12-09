@@ -7,6 +7,7 @@ import pytest
 
 from django.urls import reverse
 
+from commitments.enums import CommitmentStatus
 from commitments.models import Commitment, Course
 
 
@@ -25,21 +26,21 @@ class TestClinicianDashboardView:
                     title="First owned commitment",
                     description="First commitment to test the dashboard with",
                     deadline=datetime.date.today(),
-                    status=Commitment.CommitmentStatus.IN_PROGRESS
+                    status=CommitmentStatus.IN_PROGRESS
                 ),
                 Commitment.objects.create(
                     owner=saved_clinician_profile,
                     title="Another dashboard commitment",
                     description="Second commitment to test the dashboard with",
                     deadline=datetime.date.today(),
-                    status=Commitment.CommitmentStatus.COMPLETE
+                    status=CommitmentStatus.COMPLETE
                 ),
                 Commitment.objects.create(
                     owner=saved_clinician_profile,
                     title="Last chance commitment to break the dashboard",
                     description="Third commitment to test the dashboard with",
                     deadline=datetime.date.today(),
-                    status=Commitment.CommitmentStatus.DISCONTINUED
+                    status=CommitmentStatus.DISCONTINUED
                 ),
             )
 
