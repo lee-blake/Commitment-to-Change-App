@@ -271,7 +271,7 @@ class ViewCourseView(LoginRequiredMixin, View):
         }
         if request.user.is_provider and \
                 course.owner == ProviderProfile.objects.get(user=request.user):
-            return render(request, "commitments/Course/view_owned_course.html", context)
+            return render(request, "commitments/Course/course_view_owned_page.html", context)
         elif request.user.is_clinician and course.students.contains(
             ClinicianProfile.objects.get(user=request.user)
         ):
