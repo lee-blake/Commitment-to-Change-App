@@ -1,10 +1,11 @@
 [run]
 data_file = .coverage_cache/.coverage
 omit = 
-	# Tests
+	# Tests and fixtures
 	*/test_*
 	*/*_test.py
 	*/tests.py
+	*/conftest.py
 	# Main settings files
 	Commitment_to_Change_App/*settings.py
 	Commitment_to_Change_App/*settings_default.py
