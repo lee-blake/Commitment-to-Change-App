@@ -36,6 +36,9 @@ jobs:
         working-directory: ./Commitment_to_Change_App/Commitment_to_Change_App
         run: cat custom_settings_sources/custom_settings_github.py | sed "s/SECRET_KEY = ''/SECRET_KEY = '$(python -c "import secrets; print(secrets.token_urlsafe())")'/" > custom_settings.py
 
+      - name: Overwrite test settings
+        run: export DJANGO_SETTINGS_MODULE="Commitment_to_Change_App.settings"
+
       - name: Migrate
         working-directory: ./Commitment_to_Change_App
         run: |
