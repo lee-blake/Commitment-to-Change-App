@@ -10,6 +10,30 @@ from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm
 from commitments.models import ClinicianProfile, Commitment
 
 
+@pytest.fixture(name="unsaved_in_progress_commitment")
+def fixture_unsaved_in_progress_commitment():
+    return Commitment(
+        title="test title",
+        description="test description",
+        deadline=datetime.date.today(),
+        status=CommitmentStatus.IN_PROGRESS,
+        owner=ClinicianProfile(
+            user=User(
+                username="username",
+                email="fake@email.com",
+                password="password"
+            )
+        )
+    )
+
+@pytest.fixture(name="saved_commitment")
+def fixture_saved_commitment(unsaved_in_progress_commitment):
+    unsaved_in_progress_commitment.owner.user.save()
+    unsaved_in_progress_commitment.owner.save()
+    unsaved_in_progress_commitment.save()
+    return unsaved_in_progress_commitment
+
+
 class TestCommitmentForm:
     """Tests for CommitmentForm"""
 
@@ -108,39 +132,16 @@ class TestCourseForm:
 class TestCompleteCommitmentForm:
     """Tests for CompleteCommitmentForm"""
 
-    @pytest.fixture(name="unsaved_commitment")
-    def fixture_unsaved_commitment(self):
-        return Commitment(
-            title="test title",
-            description="test description",
-            deadline=datetime.date.today(),
-            status=CommitmentStatus.IN_PROGRESS,
-            owner=ClinicianProfile(
-                user=User(
-                    username="username",
-                    email="fake@email.com",
-                    password="password"
-                )
-            )
-        )
-
-    @pytest.fixture(name="saved_commitment")
-    def fixture_saved_commitment(self, unsaved_commitment):
-        unsaved_commitment.owner.user.save()
-        unsaved_commitment.owner.save()
-        unsaved_commitment.save()
-        return unsaved_commitment
-
     class TestIsValid:
         """Tests for CompleteCommitmentForm.is_valid"""
 
-        def test_no_complete_key_is_not_valid(self, unsaved_commitment):
-            form = CompleteCommitmentForm({}, instance=unsaved_commitment)
+        def test_no_complete_key_is_not_valid(self, unsaved_in_progress_commitment):
+            form = CompleteCommitmentForm({}, instance=unsaved_in_progress_commitment)
             assert not form.is_valid()
 
-        def test_complete_key_present_at_all_is_valid(self, unsaved_commitment):
+        def test_complete_key_present_at_all_is_valid(self, unsaved_in_progress_commitment):
             form = CompleteCommitmentForm(
-                {"complete": "present"}, instance=unsaved_commitment
+                {"complete": "present"}, instance=unsaved_in_progress_commitment
             )
             assert form.is_valid()
 
@@ -148,12 +149,12 @@ class TestCompleteCommitmentForm:
     class TestSave:
         """Tests for CompleteCommitmentForm.save"""
 
-        def test_save_without_commit_marks_complete(self, unsaved_commitment):
+        def test_save_without_commit_marks_complete(self, unsaved_in_progress_commitment):
             form = CompleteCommitmentForm(
-                {"complete": "present"}, instance=unsaved_commitment
+                {"complete": "present"}, instance=unsaved_in_progress_commitment
             )
             form.save(commit=False)
-            assert unsaved_commitment.status == CommitmentStatus.COMPLETE
+            assert unsaved_in_progress_commitment.status == CommitmentStatus.COMPLETE
 
         @pytest.mark.django_db
         def test_save_with_commit_saves_complete(self, saved_commitment):
@@ -168,39 +169,16 @@ class TestCompleteCommitmentForm:
 class TestDiscontinueCommitmentForm:
     """Tests for DiscontinueCommitmentForm"""
 
-    @pytest.fixture(name="unsaved_commitment")
-    def fixture_unsaved_commitment(self):
-        return Commitment(
-            title="test title",
-            description="test description",
-            deadline=datetime.date.today(),
-            status=CommitmentStatus.IN_PROGRESS,
-            owner=ClinicianProfile(
-                user=User(
-                    username="username",
-                    email="fake@email.com",
-                    password="password"
-                )
-            )
-        )
-
-    @pytest.fixture(name="saved_commitment")
-    def fixture_saved_commitment(self, unsaved_commitment):
-        unsaved_commitment.owner.user.save()
-        unsaved_commitment.owner.save()
-        unsaved_commitment.save()
-        return unsaved_commitment
-
     class TestIsValid:
         """Tests for DiscontinueCommitmentForm.is_valid"""
 
-        def test_no_discontinue_key_is_not_valid(self, unsaved_commitment):
-            form = DiscontinueCommitmentForm({}, instance=unsaved_commitment)
+        def test_no_discontinue_key_is_not_valid(self, unsaved_in_progress_commitment):
+            form = DiscontinueCommitmentForm({}, instance=unsaved_in_progress_commitment)
             assert not form.is_valid()
 
-        def test_discontinue_key_present_at_all_is_valid(self, unsaved_commitment):
+        def test_discontinue_key_present_at_all_is_valid(self, unsaved_in_progress_commitment):
             form = DiscontinueCommitmentForm(
-                {"discontinue": "present"}, instance=unsaved_commitment
+                {"discontinue": "present"}, instance=unsaved_in_progress_commitment
             )
             assert form.is_valid()
 
@@ -208,12 +186,12 @@ class TestDiscontinueCommitmentForm:
     class TestSave:
         """Tests for DiscontinueCommitmentForm.save"""
 
-        def test_save_without_commit_marks_discontinued(self, unsaved_commitment):
+        def test_save_without_commit_marks_discontinued(self, unsaved_in_progress_commitment):
             form = DiscontinueCommitmentForm(
-                {"discontinue": "present"}, instance=unsaved_commitment
+                {"discontinue": "present"}, instance=unsaved_in_progress_commitment
             )
             form.save(commit=False)
-            assert unsaved_commitment.status == CommitmentStatus.DISCONTINUED
+            assert unsaved_in_progress_commitment.status == CommitmentStatus.DISCONTINUED
 
         @pytest.mark.django_db
         def test_save_with_commit_saves_discontinued(self, saved_commitment):
