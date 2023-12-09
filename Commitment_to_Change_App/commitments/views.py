@@ -338,7 +338,7 @@ class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
 
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
     model = CommitmentTemplate
-    template_name = "commitments/CommitmentTemplate/view_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_view.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
