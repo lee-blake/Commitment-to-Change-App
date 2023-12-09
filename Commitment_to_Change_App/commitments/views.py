@@ -3,8 +3,8 @@ import string
 
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
-    HttpResponseServerError, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError, \
+    HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
@@ -12,8 +12,10 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse, reverse_lazy
 
+from commitments.enums import CommitmentStatus
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
-    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm
+    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
+    DiscontinueCommitmentForm, ReopenCommitmentForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -145,13 +147,13 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        if request.POST.get("complete") == "true":
-            commitment.mark_complete()
-            commitment.save()
+        form = CompleteCommitmentForm(request.POST, instance=commitment)
+        if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
-                "'complete' key must be set to 'true' to complete a commitment"
+                "'complete' key must be nonempty to complete a commitment"
             )
 
 
@@ -160,18 +162,14 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        if request.POST.get("discontinue") == "true":
-            commitment.mark_discontinued()
-            commitment.save()
+        form = DiscontinueCommitmentForm(request.POST, instance=commitment)
+        if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
-                "'discontinue' key must be set to 'true' to discontinue a commitment"
+                "'discontinue' key must be nonempty to discontinue a commitment"
             )
-
-    @staticmethod
-    def get(request):
-        return HttpResponseNotAllowed(['POST'])
 
 
 class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
@@ -179,18 +177,14 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        if request.POST.get("reopen") == "true":
-            commitment.reopen()
-            commitment.save()
+        form = ReopenCommitmentForm(request.POST, instance=commitment)
+        if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
-                "'reopen' key must be set to 'true' to reopen a commitment"
+                "'reopen' key must be nonempty to reopen a commitment"
             )
-
-    @staticmethod
-    def get(request):
-        return HttpResponseNotAllowed(['POST'])
 
 
 class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
@@ -247,13 +241,13 @@ class ViewCourseView(LoginRequiredMixin, View):
         for commitment in associated_commitments:
             total += 1
             match commitment.status:
-                case Commitment.CommitmentStatus.IN_PROGRESS:
+                case CommitmentStatus.IN_PROGRESS:
                     in_progress += 1
-                case Commitment.CommitmentStatus.COMPLETE:
+                case CommitmentStatus.COMPLETE:
                     complete += 1
-                case Commitment.CommitmentStatus.EXPIRED:
+                case CommitmentStatus.EXPIRED:
                     past_due += 1
-                case Commitment.CommitmentStatus.DISCONTINUED:
+                case CommitmentStatus.DISCONTINUED:
                     discontinued += 1
 
         context = {
@@ -399,7 +393,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         form_instance = commitment_template.into_commitment(
             owner=viewer,
             associated_course=course,
-            status=Commitment.CommitmentStatus.IN_PROGRESS
+            status=CommitmentStatus.IN_PROGRESS
         )
         form = CommitmentForm(request.POST, instance=form_instance, owner=viewer)
         if form.is_valid():
