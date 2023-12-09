@@ -51,7 +51,25 @@ class TestCommitmentForm:
 class TestCourseForm:
     """Tests for CourseForm"""
 
-    # TODO add more tests for old functionality
+    class TestInit:
+        """Tests for CourseForm.__init__"""
+
+        def test_does_not_overwrite_instance_join_code(self):
+            form = CourseForm(
+                instance=Course(
+                    join_code="JOINCODE"
+                )
+            )
+            assert form.instance.join_code == "JOINCODE"
+
+        def test_sets_join_code_if_not_present(self):
+            form = CourseForm(
+                instance=Course(
+                    join_code=None
+                )
+            )
+            assert form.instance.join_code
+
 
     class TestIsValid:
         """Tests for CourseForm.is_valid"""
