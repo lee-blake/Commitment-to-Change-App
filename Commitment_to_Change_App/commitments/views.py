@@ -153,7 +153,7 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
-                "'complete' key must be set to 'true' to complete a commitment"
+                "'complete' key must be nonempty to complete a commitment"
             )
 
 
@@ -168,7 +168,7 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
-                "'discontinue' key must be set to 'true' to discontinue a commitment"
+                "'discontinue' key must be nonempty to discontinue a commitment"
             )
 
 
@@ -183,7 +183,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
-                "'reopen' key must be set to 'true' to reopen a commitment"
+                "'reopen' key must be nonempty to reopen a commitment"
             )
 
 
