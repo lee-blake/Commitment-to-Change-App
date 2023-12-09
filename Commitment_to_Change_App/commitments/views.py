@@ -195,7 +195,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
 
 class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
     form_class = CourseForm
-    template_name = "commitments/Course/course_provider_create_page.html"
+    template_name = "commitments/Course/course_create_page.html"
 
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
@@ -218,7 +218,7 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
 
 class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CourseForm
-    template_name = "commitments/Course/course_provider_edit_page.html"
+    template_name = "commitments/Course/course_edit_page.html"
     pk_url_kwarg = "course_id"
 
     def get_queryset(self):
