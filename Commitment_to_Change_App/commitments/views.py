@@ -170,10 +170,6 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
                 "'discontinue' key must be set to 'true' to discontinue a commitment"
             )
 
-    @staticmethod
-    def get(request):
-        return HttpResponseNotAllowed(['POST'])
-
 
 class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
