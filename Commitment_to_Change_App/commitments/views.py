@@ -3,8 +3,8 @@ import string
 
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
-    HttpResponseServerError, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError, \
+    HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
