@@ -30,7 +30,7 @@
 					</div>
 					<ul>
 					{% for clinician in course.students.all %}
-						<li>{% include "commitments/Course/inline_clinician_profile.html" %}</li>
+						<li>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</li>
 					{% endfor %}
 					</ul>
 				</div>
