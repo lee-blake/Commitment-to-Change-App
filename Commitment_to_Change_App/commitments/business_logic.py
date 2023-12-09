@@ -56,6 +56,9 @@ class CourseLogic:
     def __init__(self, data_object):
         self._data = data_object
 
+    def __str__(self):
+        return self._data.title.__str__()
+
     def generate_join_code_if_none_exists(self, length):
         if length <= 0:
             raise ValueError("Join codes must have a positive length!")

@@ -4,7 +4,8 @@ import pytest
 
 from cme_accounts.models import User
 from commitments.enums import CommitmentStatus
-from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, ProviderProfile
+from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, \
+    ProviderProfile, Course
 
 class TestClinicianProfile:
     """Tests for ClinicianProfile"""
@@ -209,3 +210,16 @@ class TestCommitmentTemplate:
                 description="also irrelevant"
             )
             assert str(template) == "not the same"
+
+
+class TestCourse:
+    """Tests for Course"""
+
+    class TestStr:
+        """Tests for Course.__str__"""
+
+        @pytest.mark.parametrize("title", ["First title", "Second title"])
+        def test_returns_title(self, title):
+            course = Course(title=title)
+            assert str(course) == title
+        

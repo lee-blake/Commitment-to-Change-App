@@ -187,6 +187,19 @@ class TestCommitmentTemplateLogic:
 class TestCourseLogic:
     """Tests for CourseLogic"""
 
+    class TestStr:
+        """Tests for CourseLogic.__str__"""
+
+        @pytest.mark.parametrize("title", ["First title", "Second title"])
+        def test_returns_title(self, title):
+            course = CourseLogic(
+                FakeCourseData(
+                    title=title
+                )
+            )
+            assert str(course) == title
+
+
     class TestGenerateJoinCodeIfNoneExists:
         """Tests for CourseLogic.generate_join_code_if_none_exists"""
 
