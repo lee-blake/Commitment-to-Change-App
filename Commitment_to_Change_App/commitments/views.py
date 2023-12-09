@@ -14,7 +14,8 @@ from django.urls import reverse, reverse_lazy
 
 from commitments.enums import CommitmentStatus
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
-    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm
+    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
+    DiscontinueCommitmentForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -161,9 +162,9 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        if request.POST.get("discontinue") == "true":
-            commitment.mark_discontinued()
-            commitment.save()
+        form = DiscontinueCommitmentForm(request.POST, instance=commitment)
+        if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
