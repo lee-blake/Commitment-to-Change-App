@@ -4,7 +4,7 @@ from django.db import models
 
 import cme_accounts.models
 
-from commitments.business_logic import CommitmentLogic
+from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic
 from commitments.enums import CommitmentStatus
 from . import validators
 
@@ -29,12 +29,16 @@ class ProviderProfile(models.Model):
     institution = models.CharField("Institution name", max_length=250)
 
 
-class CommitmentTemplate(models.Model):
+class CommitmentTemplate(CommitmentTemplateLogic, models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
     owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
     title = models.CharField("Title", max_length=200)
     description = models.TextField("Description", max_length=2000)
+
+    def __init__(self, *args, **kwargs):
+        CommitmentTemplateLogic.__init__(self, data_object=self)
+        models.Model.__init__(self, *args, **kwargs)
 
     def __str__(self):
         return str(self.title)

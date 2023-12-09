@@ -330,7 +330,7 @@ class TestCreateFromSuggestedCommitmentView:
             client.force_login(saved_clinician_user)
             html = client.get(target_url).content.decode()
             form_regex = re.compile(
-                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+                r"\<form[^\>]*action=\"\"[^\>]*\>"
             )
             match = form_regex.search(html)
             assert match
@@ -476,7 +476,7 @@ class TestCreateFromSuggestedCommitmentView:
                 {}
             ).content.decode()
             form_regex = re.compile(
-                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+                r"\<form[^\>]*action=\"\"[^\>]*\>"
             )
             assert form_regex.search(html)
 
