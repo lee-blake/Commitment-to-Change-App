@@ -425,7 +425,7 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
     # Deferred until team consultation is complete
     model = CommitmentTemplate
     form_class = GenericDeletePostKeySetForm
-    template_name = "commitments/CommitmentTemplate/delete_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_delete_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
     success_url = reverse_lazy("provider dashboard")
