@@ -65,7 +65,7 @@ class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
             'enrolled_courses': enrolled_courses
         }
 
-        return render(request, "commitments/dashboard/clinician/dashboard_clinician.html", context)
+        return render(request, "commitments/dashboard/clinician/dashboard_clinician_page.html", context)
 
 
 class ProviderDashboardView(ProviderLoginRequiredMixin, View):
