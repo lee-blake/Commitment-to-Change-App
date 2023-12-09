@@ -11,11 +11,11 @@ class CommitmentStatus(IntegerChoices):
 
     def __str__(self):
         match self:
-            case 0:
+            case CommitmentStatus.IN_PROGRESS:
                 return "In Progress"
-            case 1:
+            case CommitmentStatus.COMPLETE:
                 return "Complete"
-            case 2:
+            case CommitmentStatus.EXPIRED:
                 return "Past Due"
-            case 3:
+            case CommitmentStatus.DISCONTINUED:
                 return "Discontinued"
