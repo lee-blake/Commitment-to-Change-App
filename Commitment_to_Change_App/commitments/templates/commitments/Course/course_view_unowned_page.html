@@ -5,7 +5,7 @@
 <div class="container-fluid p-4 ">
 	<div class="container-xxl px-5 round-corners foreground">
 		<div class="py-1 primary-accent-only round-corners text-center">
-			<span class="h1 accent-text">{{ course.title }}</span> <span>{% include "commitments/Course/course_clinician_help_modal.html" %}</span>
+			<span class="h1 accent-text">{{ course.title }}</span> <span>{% include "commitments/Course/course_student_help_modal.html" %}</span>
 			
 		</div>
 		<div class="py-1 secondary-accent round-corners text-center">
@@ -77,7 +77,7 @@
 						<h3>List of Commitments:</h3>
 					</div>
 					{% for commitment in associated_commitments %}
-						{% include "commitments/Course/course_related_commitments_panel.html" %}
+						{% include "commitments/Course/course_associated_commitments_panel.html" %}
 					{% endfor %}
 				</div>
 			</div>

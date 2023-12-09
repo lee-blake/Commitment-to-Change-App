@@ -274,7 +274,7 @@ class ViewCourseView(LoginRequiredMixin, View):
             ClinicianProfile.objects.get(user=request.user)
         ):
             return render(
-                request, "commitments/Course/course_view_page.html", context)
+                request, "commitments/Course/course_view_unowned_page.html", context)
         else:
             return HttpResponseNotFound("<h1>404</h1")
 
@@ -290,12 +290,12 @@ class JoinCourseView(LoginRequiredMixin, View):
                 raise PermissionDenied("Providers cannot join courses.")
             return render(
                 request,
-                "commitments/Course/course_provider_join_page.html",
+                "commitments/Course/course_owner_join_page.html",
                 context={"course": course}
             )
         return render(
             request,
-            "commitments/Course/course_clinician_join_page.html",
+            "commitments/Course/course_student_join_page.html",
             context={"course": course}
         )
 
