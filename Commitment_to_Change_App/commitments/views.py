@@ -439,7 +439,7 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
 
 class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/CommitmentTemplate/edit_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_edit_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
