@@ -14,3 +14,6 @@ class CommitmentLogic:
 
     def mark_complete(self):
         self._data.status = CommitmentStatus.COMPLETE
+
+    def mark_discontinued(self):
+        self._data.status = CommitmentStatus.DISCONTINUED

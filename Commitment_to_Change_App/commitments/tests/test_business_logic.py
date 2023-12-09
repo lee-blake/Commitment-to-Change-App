@@ -50,3 +50,14 @@ class TestCommitmentLogic:
             )
             commitment.mark_complete()
             assert commitment._data.status == CommitmentStatus.COMPLETE
+
+
+    class TestMarkDiscontinued:
+        """Tests for CommitmentLogic.mark_discontinued"""
+
+        def test_marks_discontinued(self):
+            commitment = CommitmentLogic(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            commitment.mark_discontinued()
+            assert commitment._data.status == CommitmentStatus.DISCONTINUED
