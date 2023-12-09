@@ -18,7 +18,7 @@
         {{ form.non_field_errors }}
         {{ form.delete.errors }}
         <a href="{% url 'edit commitment' commitment_id=commitment.id %}">Cancel</a>
-        {% include "commitments/Commitment/delete_commitment_confirm_button.html" %}
+        {% include "commitments/Commitment/commitment_delete_button.html" %}
     </div>
 </div>
 {% endblock page_content %}
