@@ -5,6 +5,7 @@ from django.db import models
 import cme_accounts.models
 import commitments.enums
 
+from commitments.business_logic import CommitmentLogic
 from . import validators
 
 
@@ -64,7 +65,7 @@ class Course(models.Model):
         return self.title.__str__()
 
 
-class Commitment(models.Model):
+class Commitment(CommitmentLogic, models.Model):
     # TODO This is a ompatibility fix to avoid changing usages until logic is fully extracted.
     CommitmentStatus = commitments.enums.CommitmentStatus
 
@@ -90,9 +91,9 @@ class Commitment(models.Model):
         default=None
     )
 
-    @property
-    def status_text(self):
-        return Commitment.CommitmentStatus.__str__(self.status)
+    def __init__(self, *args, **kwargs):
+        CommitmentLogic.__init__(self, data_object=self)
+        models.Model.__init__(self, *args, **kwargs)
 
     def save_expired_if_past_deadline(self):
         today = datetime.date.today()

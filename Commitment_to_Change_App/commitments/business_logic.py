@@ -1,0 +1,13 @@
+from commitments.enums import CommitmentStatus
+
+
+class CommitmentLogic:
+    def __init__(self, data_object):
+        self._data = data_object
+
+    @property
+    def status_text(self):
+        # We must explicitly return this string representation based because when
+        # Django loads them from the database, they are primitive integers and will
+        # convert to their literal values when str() is called on them
+        return CommitmentStatus.__str__(self._data.status)
