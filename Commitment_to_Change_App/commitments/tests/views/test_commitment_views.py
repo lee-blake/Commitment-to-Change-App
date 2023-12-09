@@ -8,6 +8,7 @@ import pytest
 
 from django.urls import reverse
 
+from commitments.enums import CommitmentStatus
 from commitments.models import Commitment
 
 
@@ -506,7 +507,7 @@ class TestCreateFromSuggestedCommitmentView:
                 deadline=date.today(),
                 associated_course=enrolled_course.id
             )
-            assert commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
+            assert commitment.status == CommitmentStatus.IN_PROGRESS
             assert commitment.owner == saved_clinician_profile
             assert commitment.source_template == commitment_template_1
 
@@ -555,7 +556,7 @@ class TestEditCommitmentView:
             title="Existing title",
             description="Existing description",
             deadline=date.today(),
-            status=Commitment.CommitmentStatus.IN_PROGRESS
+            status=CommitmentStatus.IN_PROGRESS
         )
 
 
@@ -920,7 +921,7 @@ class TestViewCommitmentView:
             description="This is the first description",
             deadline=date.today(),
             owner=saved_clinician_profile,
-            status=Commitment.CommitmentStatus.IN_PROGRESS
+            status=CommitmentStatus.IN_PROGRESS
         )
 
     @pytest.fixture(name="viewable_commitment_2")
@@ -930,7 +931,7 @@ class TestViewCommitmentView:
             description="This is the second description",
             deadline=date.fromisoformat("2000-01-01"),
             owner=saved_clinician_profile,
-            status=Commitment.CommitmentStatus.EXPIRED
+            status=CommitmentStatus.EXPIRED
         )
 
 
@@ -1126,7 +1127,7 @@ class TestCompleteCommitmentView:
 
 
     class TestPost:
-        """Tests for CompletCommitmentView.post"""
+        """Tests for CompleteCommitmentView.post"""
 
         @pytest.fixture(name="saved_completable_commitment")
         def fixture_saved_completable_commitment(self, saved_clinician_profile):
@@ -1135,7 +1136,7 @@ class TestCompleteCommitmentView:
                 title="Test title",
                 description="Test description",
                 deadline=date.today(),
-                status=Commitment.CommitmentStatus.IN_PROGRESS
+                status=CommitmentStatus.IN_PROGRESS
             )
 
         def test_good_request_marks_complete(
@@ -1153,7 +1154,7 @@ class TestCompleteCommitmentView:
                 {"complete": "true"}
             )
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
-            assert reloaded_commitment.status == Commitment.CommitmentStatus.COMPLETE
+            assert reloaded_commitment.status == CommitmentStatus.COMPLETE
 
         def test_rejects_non_owner_with_no_changes(
             self, client,saved_completable_commitment, other_clinician_profile
@@ -1170,7 +1171,7 @@ class TestCompleteCommitmentView:
                 {"complete": "true"}
             )
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
-            assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
+            assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
 
         def test_rejects_non_owner_with_404(
             self, client, saved_completable_commitment, other_clinician_profile
@@ -1200,10 +1201,10 @@ class TestCompleteCommitmentView:
             client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
-                {"complete": "blah blah nonsense"}
+                {}
             )
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
-            assert reloaded_commitment.status == Commitment.CommitmentStatus.IN_PROGRESS
+            assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
 
         def test_rejects_bad_request_body_with_400(
             self, client, saved_completable_commitment, saved_clinician_profile
@@ -1217,10 +1218,264 @@ class TestCompleteCommitmentView:
             client.force_login(saved_clinician_profile.user)
             response = client.post(
                 target_url,
-                {"complete": "blah blah nonsense"}
+                {}
             )
             assert response.status_code == 400
 
+
+@pytest.mark.django_db
+class TestDiscontinueCommitmentView:
+    """Tests for DiscontinueCommitmentView"""
+
+    class TestGet:
+        """Tests for DiscontinueCommitmentView.get
+        
+        get does not exist. The only test here verifies that it returns an appropriate error.
+        """
+
+        def test_get_returns_405(self, client, saved_clinician_profile):
+            target_url = reverse("discontinue commitment", kwargs={"commitment_id": 1})
+            client.force_login(saved_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 405
+
+
+    class TestPost:
+        """Tests for DiscontinueCommitmentView.post"""
+
+        @pytest.fixture(name="saved_discontinueable_commitment")
+        def fixture_saved_discontinueable_commitment(self, saved_clinician_profile):
+            return Commitment.objects.create(
+                owner=saved_clinician_profile,
+                title="Test title",
+                description="Test description",
+                deadline=date.today(),
+                status=CommitmentStatus.IN_PROGRESS
+            )
+
+        def test_good_request_marks_discontinued(
+            self, client, saved_discontinueable_commitment, saved_clinician_profile
+        ):
+            target_url = reverse(
+                "discontinue commitment", 
+                kwargs={
+                    "commitment_id": saved_discontinueable_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"discontinue": "true"}
+            )
+            reloaded_commitment = Commitment.objects.get(id=saved_discontinueable_commitment.id)
+            assert reloaded_commitment.status == CommitmentStatus.DISCONTINUED
+
+        def test_rejects_non_owner_with_no_changes(
+            self, client,saved_discontinueable_commitment, other_clinician_profile
+        ):
+            target_url = reverse(
+                "discontinue commitment", 
+                kwargs={
+                    "commitment_id": saved_discontinueable_commitment.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            client.post(
+                target_url,
+                {"discontinue": "true"}
+            )
+            reloaded_commitment = Commitment.objects.get(id=saved_discontinueable_commitment.id)
+            assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
+
+        def test_rejects_non_owner_with_404(
+            self, client, saved_discontinueable_commitment, other_clinician_profile
+        ):
+            target_url = reverse(
+                "discontinue commitment", 
+                kwargs={
+                    "commitment_id": saved_discontinueable_commitment.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {"discontinue": "true"}
+            )
+            assert response.status_code == 404
+
+        def test_rejects_bad_request_body_with_no_changes(
+            self, client, saved_discontinueable_commitment, saved_clinician_profile
+        ):
+            target_url = reverse(
+                "discontinue commitment", 
+                kwargs={
+                    "commitment_id": saved_discontinueable_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {}
+            )
+            reloaded_commitment = Commitment.objects.get(id=saved_discontinueable_commitment.id)
+            assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
+
+        def test_rejects_bad_request_body_with_400(
+            self, client, saved_discontinueable_commitment, saved_clinician_profile
+        ):
+            target_url = reverse(
+                "discontinue commitment", 
+                kwargs={
+                    "commitment_id": saved_discontinueable_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {}
+            )
+            assert response.status_code == 400
+
+
+@pytest.mark.django_db
+class TestReopenCommitmentView:
+    """Tests for ReopenCommitmentView"""
+
+    class TestGet:
+        """Tests for ReopenCommitmentView.get
+        
+        get does not exist. The only test here verifies that it returns an appropriate error.
+        """
+
+        def test_get_returns_405(self, client, saved_clinician_profile):
+            target_url = reverse("reopen commitment", kwargs={"commitment_id": 1})
+            client.force_login(saved_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 405
+
+
+    class TestPost:
+        """Tests for ReopenCommitmentView.post"""
+
+        @pytest.fixture(name="saved_complete_commitment")
+        def fixture_saved_complete_commitment(self, saved_clinician_profile):
+            return Commitment.objects.create(
+                owner=saved_clinician_profile,
+                title="Test title",
+                description="Test description",
+                deadline=date.today(),
+                status=CommitmentStatus.COMPLETE
+            )
+
+        @pytest.fixture(name="saved_discontinued_commitment")
+        def fixture_saved_discontinued_commitment(self, saved_clinician_profile):
+            return Commitment.objects.create(
+                owner=saved_clinician_profile,
+                title="Test title",
+                description="Test description",
+                deadline=date.fromisoformat("2000-01-01"),
+                status=CommitmentStatus.DISCONTINUED
+            )
+
+        def test_good_request_reopens_non_expired_completed_commitment(
+            self, client, saved_complete_commitment, saved_clinician_profile
+        ):
+            target_url = reverse(
+                "reopen commitment", 
+                kwargs={
+                    "commitment_id": saved_complete_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"reopen": "true"}
+            )
+            reloaded_commitment = Commitment.objects.get(id=saved_complete_commitment.id)
+            assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
+
+        def test_good_request_reopens_exired_discontinued_commitment(
+            self, client, saved_discontinued_commitment, saved_clinician_profile
+        ):
+            target_url = reverse(
+                "reopen commitment", 
+                kwargs={
+                    "commitment_id": saved_discontinued_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"reopen": "true"}
+            )
+            reloaded_commitment = Commitment.objects.get(id=saved_discontinued_commitment.id)
+            assert reloaded_commitment.status == CommitmentStatus.EXPIRED
+
+        def test_rejects_non_owner_with_no_changes(
+            self, client,saved_complete_commitment, other_clinician_profile
+        ):
+            target_url = reverse(
+                "reopen commitment", 
+                kwargs={
+                    "commitment_id": saved_complete_commitment.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            client.post(
+                target_url,
+                {"reopen": "true"}
+            )
+            reloaded_commitment = Commitment.objects.get(id=saved_complete_commitment.id)
+            assert reloaded_commitment.status == CommitmentStatus.COMPLETE
+
+        def test_rejects_non_owner_with_404(
+            self, client, saved_complete_commitment, other_clinician_profile
+        ):
+            target_url = reverse(
+                "reopen commitment", 
+                kwargs={
+                    "commitment_id": saved_complete_commitment.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {"reopen": "true"}
+            )
+            assert response.status_code == 404
+
+        def test_rejects_bad_request_body_with_no_changes(
+            self, client, saved_complete_commitment, saved_clinician_profile
+        ):
+            target_url = reverse(
+                "reopen commitment", 
+                kwargs={
+                    "commitment_id": saved_complete_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {}
+            )
+            reloaded_commitment = Commitment.objects.get(id=saved_complete_commitment.id)
+            assert reloaded_commitment.status == CommitmentStatus.COMPLETE
+
+        def test_rejects_bad_request_body_with_400(
+            self, client, saved_complete_commitment, saved_clinician_profile
+        ):
+            target_url = reverse(
+                "reopen commitment", 
+                kwargs={
+                    "commitment_id": saved_complete_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {}
+            )
+            assert response.status_code == 400
 
 
 @pytest.mark.django_db

@@ -4,6 +4,8 @@ from django.db import models
 
 import cme_accounts.models
 
+from commitments.business_logic import CommitmentLogic
+from commitments.enums import CommitmentStatus
 from . import validators
 
 
@@ -63,25 +65,7 @@ class Course(models.Model):
         return self.title.__str__()
 
 
-class Commitment(models.Model):
-    class CommitmentStatus(models.IntegerChoices):
-        IN_PROGRESS = 0
-        COMPLETE = 1
-        EXPIRED = 2
-        DISCONTINUED = 3
-
-        def __str__(self):
-            match self:
-                case 0:
-                    return "In Progress"
-                case 1:
-                    return "Complete"
-                case 2:
-                    return "Past Due"
-                case 3:
-                    return "Discontinued"
-
-
+class Commitment(CommitmentLogic, models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
     source_template = models.ForeignKey(
@@ -104,29 +88,12 @@ class Commitment(models.Model):
         default=None
     )
 
-    @property
-    def status_text(self):
-        return Commitment.CommitmentStatus.__str__(self.status)
+    def __init__(self, *args, **kwargs):
+        CommitmentLogic.__init__(self, data_object=self)
+        models.Model.__init__(self, *args, **kwargs)
 
     def save_expired_if_past_deadline(self):
         today = datetime.date.today()
-        if self.deadline < today and self.status == Commitment.CommitmentStatus.IN_PROGRESS:
-            self.status = Commitment.CommitmentStatus.EXPIRED
+        if self.deadline < today and self.status == CommitmentStatus.IN_PROGRESS:
+            self.status = CommitmentStatus.EXPIRED
             self.save()
-
-    def mark_complete(self):
-        self.status = Commitment.CommitmentStatus.COMPLETE
-
-    def mark_discontinued(self):
-        self.status = Commitment.CommitmentStatus.DISCONTINUED
-
-    def reopen(self):
-        if self.status in {
-            Commitment.CommitmentStatus.COMPLETE,
-            Commitment.CommitmentStatus.DISCONTINUED
-            }:
-            today = datetime.date.today()
-            if self.deadline >= today:
-                self.status = Commitment.CommitmentStatus.IN_PROGRESS
-            else:
-                self.status = Commitment.CommitmentStatus.EXPIRED

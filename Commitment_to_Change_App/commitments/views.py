@@ -3,8 +3,8 @@ import string
 
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseNotAllowed, \
-    HttpResponseServerError, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError, \
+    HttpResponseNotFound
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
@@ -12,8 +12,10 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse, reverse_lazy
 
+from commitments.enums import CommitmentStatus
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
-    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm
+    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
+    DiscontinueCommitmentForm, ReopenCommitmentForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -24,9 +26,9 @@ class ViewCommitmentView(DetailView):
 
     def get_template_names(self):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
-            return ["commitments/Commitment/view_owned_commitment.html"]
+            return ["commitments/Commitment/commitment_view_owned_page.html"]
         else:
-            return ["commitments/Commitment/view_commitment.html"]
+            return ["commitments/Commitment/commitment_view_unowned_page.html"]
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
@@ -65,7 +67,7 @@ class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
             'enrolled_courses': enrolled_courses
         }
 
-        return render(request, "commitments/dashboard/dashboard_clinician.html", context)
+        return render(request, "commitments/dashboard/clinician/dashboard_clinician_page.html", context)
 
 
 class ProviderDashboardView(ProviderLoginRequiredMixin, View):
@@ -76,7 +78,7 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, View):
         commitment_templates = CommitmentTemplate.objects.filter(owner=profile)
         return render(
             request,
-            "commitments/dashboard/dashboard_provider.html", 
+            "commitments/dashboard/provider/dashboard_provider_page.html", 
             {
                 "courses": courses,
                 "commitment_templates": commitment_templates
@@ -104,7 +106,7 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
 class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
     model = Commitment
     form_class = GenericDeletePostKeySetForm
-    template_name = "commitments/Commitment/delete_commitment.html"
+    template_name = "commitments/Commitment/commitment_delete_page.html"
     pk_url_kwarg = "commitment_id"
     context_object_name = "commitment"
     success_url = reverse_lazy("clinician dashboard")
@@ -118,7 +120,7 @@ class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
 
 class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
     form_class = CommitmentForm
-    template_name = "commitments/Commitment/edit_commitment.html"
+    template_name = "commitments/Commitment/commitment_edit_page.html"
     pk_url_kwarg = "commitment_id"
 
     def get_queryset(self):
@@ -145,13 +147,13 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        if request.POST.get("complete") == "true":
-            commitment.mark_complete()
-            commitment.save()
+        form = CompleteCommitmentForm(request.POST, instance=commitment)
+        if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
-                "'complete' key must be set to 'true' to complete a commitment"
+                "'complete' key must be nonempty to complete a commitment"
             )
 
 
@@ -160,18 +162,14 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        if request.POST.get("discontinue") == "true":
-            commitment.mark_discontinued()
-            commitment.save()
+        form = DiscontinueCommitmentForm(request.POST, instance=commitment)
+        if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
-                "'discontinue' key must be set to 'true' to discontinue a commitment"
+                "'discontinue' key must be nonempty to discontinue a commitment"
             )
-
-    @staticmethod
-    def get(request):
-        return HttpResponseNotAllowed(['POST'])
 
 
 class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
@@ -179,23 +177,19 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        if request.POST.get("reopen") == "true":
-            commitment.reopen()
-            commitment.save()
+        form = ReopenCommitmentForm(request.POST, instance=commitment)
+        if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
-                "'reopen' key must be set to 'true' to reopen a commitment"
+                "'reopen' key must be nonempty to reopen a commitment"
             )
-
-    @staticmethod
-    def get(request):
-        return HttpResponseNotAllowed(['POST'])
 
 
 class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
     form_class = CourseForm
-    template_name = "commitments/Course/create_course.html"
+    template_name = "commitments/Course/course_create_page.html"
 
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
@@ -218,7 +212,7 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
 
 class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CourseForm
-    template_name = "commitments/Course/edit_course.html"
+    template_name = "commitments/Course/course_edit_page.html"
     pk_url_kwarg = "course_id"
 
     def get_queryset(self):
@@ -247,13 +241,13 @@ class ViewCourseView(LoginRequiredMixin, View):
         for commitment in associated_commitments:
             total += 1
             match commitment.status:
-                case Commitment.CommitmentStatus.IN_PROGRESS:
+                case CommitmentStatus.IN_PROGRESS:
                     in_progress += 1
-                case Commitment.CommitmentStatus.COMPLETE:
+                case CommitmentStatus.COMPLETE:
                     complete += 1
-                case Commitment.CommitmentStatus.EXPIRED:
+                case CommitmentStatus.EXPIRED:
                     past_due += 1
-                case Commitment.CommitmentStatus.DISCONTINUED:
+                case CommitmentStatus.DISCONTINUED:
                     discontinued += 1
 
         context = {
@@ -269,12 +263,12 @@ class ViewCourseView(LoginRequiredMixin, View):
         }
         if request.user.is_provider and \
                 course.owner == ProviderProfile.objects.get(user=request.user):
-            return render(request, "commitments/Course/view_owned_course.html", context)
+            return render(request, "commitments/Course/course_view_owned_page.html", context)
         elif request.user.is_clinician and course.students.contains(
             ClinicianProfile.objects.get(user=request.user)
         ):
             return render(
-                request, "commitments/Course/view_course.html", context)
+                request, "commitments/Course/course_view_unowned_page.html", context)
         else:
             return HttpResponseNotFound("<h1>404</h1")
 
@@ -290,12 +284,12 @@ class JoinCourseView(LoginRequiredMixin, View):
                 raise PermissionDenied("Providers cannot join courses.")
             return render(
                 request,
-                "commitments/Course/join_course_view_provider.html",
+                "commitments/Course/course_owner_join_page.html",
                 context={"course": course}
             )
         return render(
             request,
-            "commitments/Course/join_course_view_clinician.html",
+            "commitments/Course/course_student_join_page.html",
             context={"course": course}
         )
 
@@ -320,7 +314,7 @@ class JoinCourseView(LoginRequiredMixin, View):
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/CommitmentTemplate/create_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_create_page.html"
 
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
@@ -336,7 +330,7 @@ class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
 
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
     model = CommitmentTemplate
-    template_name = "commitments/CommitmentTemplate/view_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_view_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
@@ -383,7 +377,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         form = CommitmentForm(instance=form_instance, owner=viewer)
         return render(
             request,
-            "commitments/Commitment/create_from_suggested_commitment.html",
+            "commitments/Commitment/commitment_create_from_suggested_commitment.html",
             {"form": form, "course": course, "commitment_template": commitment_template}
         )
 
@@ -399,7 +393,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         form_instance = commitment_template.into_commitment(
             owner=viewer,
             associated_course=course,
-            status=Commitment.CommitmentStatus.IN_PROGRESS
+            status=CommitmentStatus.IN_PROGRESS
         )
         form = CommitmentForm(request.POST, instance=form_instance, owner=viewer)
         if form.is_valid():
@@ -413,7 +407,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         else:
             return render(
                 request,
-                "commitments/Commitment/create_from_suggested_commitment.html",
+                "commitments/Commitment/commitment_create_from_suggested_commitment.html",
                 {"form": form, "course": course, "commitment_template": commitment_template}
             )
 
@@ -421,7 +415,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
 class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
     model = CommitmentTemplate
     form_class = GenericDeletePostKeySetForm
-    template_name = "commitments/CommitmentTemplate/delete_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_delete_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
     success_url = reverse_lazy("provider dashboard")
@@ -435,7 +429,7 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
 
 class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/CommitmentTemplate/edit_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_edit_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 

@@ -7,6 +7,7 @@ import pytest
 
 from django.urls import reverse
 
+from commitments.enums import CommitmentStatus
 from commitments.models import Commitment, Course
 
 
@@ -704,7 +705,7 @@ class TestViewCourseView:
                 title="First associated test commitment",
                 description="This is the first commitment to commitment display for a course.",
                 deadline=datetime.date.today(),
-                status=Commitment.CommitmentStatus.IN_PROGRESS,
+                status=CommitmentStatus.IN_PROGRESS,
                 associated_course=enrolled_course
             ),
             Commitment.objects.create(
@@ -712,7 +713,7 @@ class TestViewCourseView:
                 title="First associated test commitment",
                 description="This is the second commitment to commitment display for a course.",
                 deadline=datetime.date.today(),
-                status=Commitment.CommitmentStatus.IN_PROGRESS,
+                status=CommitmentStatus.IN_PROGRESS,
                 associated_course=enrolled_course
             ),
             Commitment.objects.create(
@@ -720,7 +721,7 @@ class TestViewCourseView:
                 title="Third associated test commitment",
                 description="This is the third commitment to commitment display for a course.",
                 deadline=datetime.date.today(),
-                status=Commitment.CommitmentStatus.IN_PROGRESS,
+                status=CommitmentStatus.IN_PROGRESS,
                 associated_course=enrolled_course
             ),
         )
@@ -732,7 +733,7 @@ class TestViewCourseView:
                 title="Not associate",
                 description="This isn't associated with a course",
                 deadline=datetime.date.today(),
-                status=Commitment.CommitmentStatus.IN_PROGRESS,
+                status=CommitmentStatus.IN_PROGRESS,
         )
 
 
@@ -825,11 +826,11 @@ class TestViewCourseView:
             enrolled_course, associated_commitments
         ):
             # Test data: 1 IN_PROGRESS, 1 COMPLETE, 1 DISCONTINUED
-            associated_commitments[0].status = Commitment.CommitmentStatus.IN_PROGRESS
+            associated_commitments[0].status = CommitmentStatus.IN_PROGRESS
             associated_commitments[0].save()
-            associated_commitments[1].status = Commitment.CommitmentStatus.COMPLETE
+            associated_commitments[1].status = CommitmentStatus.COMPLETE
             associated_commitments[1].save()
-            associated_commitments[2].status = Commitment.CommitmentStatus.DISCONTINUED
+            associated_commitments[2].status = CommitmentStatus.DISCONTINUED
             associated_commitments[2].save()
             client.force_login(saved_provider_profile.user)
             html = client.get(
@@ -848,9 +849,9 @@ class TestViewCourseView:
         ):
             # Fill in the gaps for the statistics to prevent hardcoding/faking the table.
             # Test data: 2 EXPIRED
-            associated_commitments[0].status = Commitment.CommitmentStatus.EXPIRED
+            associated_commitments[0].status = CommitmentStatus.EXPIRED
             associated_commitments[0].save()
-            associated_commitments[1].status = Commitment.CommitmentStatus.EXPIRED
+            associated_commitments[1].status = CommitmentStatus.EXPIRED
             associated_commitments[1].save()
             associated_commitments[2].delete()
             client.force_login(saved_provider_profile.user)
@@ -944,11 +945,11 @@ class TestViewCourseView:
             enrolled_course, associated_commitments
         ):
             # Test data: 1 IN_PROGRESS, 1 COMPLETE, 1 DISCONTINUED
-            associated_commitments[0].status = Commitment.CommitmentStatus.IN_PROGRESS
+            associated_commitments[0].status = CommitmentStatus.IN_PROGRESS
             associated_commitments[0].save()
-            associated_commitments[1].status = Commitment.CommitmentStatus.COMPLETE
+            associated_commitments[1].status = CommitmentStatus.COMPLETE
             associated_commitments[1].save()
-            associated_commitments[2].status = Commitment.CommitmentStatus.DISCONTINUED
+            associated_commitments[2].status = CommitmentStatus.DISCONTINUED
             associated_commitments[2].save()
             client.force_login(saved_clinician_profile.user)
             html = client.get(
