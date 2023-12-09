@@ -197,7 +197,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
 
 class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
     form_class = CourseForm
-    template_name = "commitments/Course/create_course.html"
+    template_name = "commitments/Course/course_provider_create_page.html"
 
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
