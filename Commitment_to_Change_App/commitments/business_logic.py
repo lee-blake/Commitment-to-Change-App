@@ -30,3 +30,21 @@ class CommitmentLogic:
                 self._data.status = CommitmentStatus.IN_PROGRESS
             else:
                 self._data.status = CommitmentStatus.EXPIRED
+
+    def apply_commitment_template(self, commitment_template):
+        self._data.title = commitment_template.title
+        self._data.description = commitment_template.description
+        self._data.source_template = commitment_template
+
+
+class CommitmentTemplateLogic:
+    def __init__(self, data_object):
+        self._data = data_object
+
+    @property
+    def title(self):
+        return self._data.title
+
+    @property
+    def description(self):
+        return self._data.description
