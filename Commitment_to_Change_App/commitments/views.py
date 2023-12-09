@@ -26,9 +26,9 @@ class ViewCommitmentView(DetailView):
 
     def get_template_names(self):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
-            return ["commitments/Commitment/view_owned_commitment.html"]
+            return ["commitments/Commitment/commitment_view_owned_page.html"]
         else:
-            return ["commitments/Commitment/view_commitment.html"]
+            return ["commitments/Commitment/commitment_view_unowned_page.html"]
 
     def get_object(self, queryset=None):
         commitment = super().get_object(queryset=queryset)
@@ -72,7 +72,7 @@ class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
             'enrolled_courses': enrolled_courses
         }
 
-        return render(request, "commitments/dashboard/dashboard_clinician.html", context)
+        return render(request, "commitments/dashboard/clinician/dashboard_clinician_page.html", context)
 
 
 class ProviderDashboardView(ProviderLoginRequiredMixin, View):
@@ -83,7 +83,7 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, View):
         commitment_templates = CommitmentTemplate.objects.filter(owner=profile)
         return render(
             request,
-            "commitments/dashboard/dashboard_provider.html", 
+            "commitments/dashboard/provider/dashboard_provider_page.html", 
             {
                 "courses": courses,
                 "commitment_templates": commitment_templates
@@ -111,7 +111,7 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
 class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
     model = Commitment
     form_class = GenericDeletePostKeySetForm
-    template_name = "commitments/Commitment/delete_commitment.html"
+    template_name = "commitments/Commitment/commitment_delete_page.html"
     pk_url_kwarg = "commitment_id"
     context_object_name = "commitment"
     success_url = reverse_lazy("clinician dashboard")
@@ -125,7 +125,7 @@ class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
 
 class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
     form_class = CommitmentForm
-    template_name = "commitments/Commitment/edit_commitment.html"
+    template_name = "commitments/Commitment/commitment_edit_page.html"
     pk_url_kwarg = "commitment_id"
 
     def get_queryset(self):
@@ -194,7 +194,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
 
 class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
     form_class = CourseForm
-    template_name = "commitments/Course/create_course.html"
+    template_name = "commitments/Course/course_create_page.html"
 
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
@@ -217,7 +217,7 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
 
 class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CourseForm
-    template_name = "commitments/Course/edit_course.html"
+    template_name = "commitments/Course/course_edit_page.html"
     pk_url_kwarg = "course_id"
 
     def get_queryset(self):
@@ -268,12 +268,12 @@ class ViewCourseView(LoginRequiredMixin, View):
         }
         if request.user.is_provider and \
                 course.owner == ProviderProfile.objects.get(user=request.user):
-            return render(request, "commitments/Course/view_owned_course.html", context)
+            return render(request, "commitments/Course/course_view_owned_page.html", context)
         elif request.user.is_clinician and course.students.contains(
             ClinicianProfile.objects.get(user=request.user)
         ):
             return render(
-                request, "commitments/Course/view_course.html", context)
+                request, "commitments/Course/course_view_unowned_page.html", context)
         else:
             return HttpResponseNotFound("<h1>404</h1")
 
@@ -289,12 +289,12 @@ class JoinCourseView(LoginRequiredMixin, View):
                 raise PermissionDenied("Providers cannot join courses.")
             return render(
                 request,
-                "commitments/Course/join_course_view_provider.html",
+                "commitments/Course/course_owner_join_page.html",
                 context={"course": course}
             )
         return render(
             request,
-            "commitments/Course/join_course_view_clinician.html",
+            "commitments/Course/course_student_join_page.html",
             context={"course": course}
         )
 
@@ -319,7 +319,7 @@ class JoinCourseView(LoginRequiredMixin, View):
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/CommitmentTemplate/create_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_create_page.html"
 
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
@@ -335,7 +335,7 @@ class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
 
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
     model = CommitmentTemplate
-    template_name = "commitments/CommitmentTemplate/view_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_view_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
@@ -382,7 +382,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         form = CommitmentForm(instance=form_instance, owner=viewer)
         return render(
             request,
-            "commitments/Commitment/create_from_suggested_commitment.html",
+            "commitments/Commitment/commitment_create_from_suggested_commitment.html",
             {"form": form, "course": course, "commitment_template": commitment_template}
         )
 
@@ -412,7 +412,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         else:
             return render(
                 request,
-                "commitments/Commitment/create_from_suggested_commitment.html",
+                "commitments/Commitment/commitment_create_from_suggested_commitment.html",
                 {"form": form, "course": course, "commitment_template": commitment_template}
             )
 
@@ -420,7 +420,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
 class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
     model = CommitmentTemplate
     form_class = GenericDeletePostKeySetForm
-    template_name = "commitments/CommitmentTemplate/delete_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_delete_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
     success_url = reverse_lazy("provider dashboard")
@@ -434,7 +434,7 @@ class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
 
 class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/CommitmentTemplate/edit_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/commitment_template_edit_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
