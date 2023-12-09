@@ -1,6 +1,11 @@
+import datetime
+
 import pytest
 
-from commitments.forms import CommitmentForm, CourseForm
+from cme_accounts.models import User
+
+from commitments.enums import CommitmentStatus
+from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm
 from commitments.models import ClinicianProfile, Commitment
 
 
@@ -97,3 +102,63 @@ class TestCourseForm:
                 }
             )
             assert not form.is_valid()
+
+
+class TestCompleteCommitmentForm:
+    """Tests for CompleteCommitmentForm"""
+
+    @pytest.fixture(name="unsaved_commitment")
+    def fixture_unsaved_commitment(self):
+        return Commitment(
+            title="test title",
+            description="test description",
+            deadline=datetime.date.today(),
+            status=CommitmentStatus.IN_PROGRESS,
+            owner=ClinicianProfile(
+                user=User(
+                    username="username",
+                    email="fake@email.com",
+                    password="password"
+                )
+            )
+        )
+
+    @pytest.fixture(name="saved_commitment")
+    def fixture_saved_commitment(self, unsaved_commitment):
+        unsaved_commitment.owner.user.save()
+        unsaved_commitment.owner.save()
+        unsaved_commitment.save()
+        return unsaved_commitment
+
+    class TestIsValid:
+        """Tests for CompleteCommitmentForm.is_valid"""
+
+        def test_no_complete_key_is_not_valid(self, unsaved_commitment):
+            form = CompleteCommitmentForm({}, instance=unsaved_commitment)
+            assert not form.is_valid()
+
+        def test_complete_key_present_at_all_is_valid(self, unsaved_commitment):
+            form = CompleteCommitmentForm(
+                {"complete": "present"}, instance=unsaved_commitment
+            )
+            assert form.is_valid()
+
+
+    class TestSave:
+        """Tests for CompleteCommitmentForm.save"""
+
+        def test_save_without_commit_marks_complete(self, unsaved_commitment):
+            form = CompleteCommitmentForm(
+                {"complete": "present"}, instance=unsaved_commitment
+            )
+            form.save(commit=False)
+            assert unsaved_commitment.status == CommitmentStatus.COMPLETE
+
+        @pytest.mark.django_db
+        def test_save_with_commit_saves_complete(self, saved_commitment):
+            form = CompleteCommitmentForm(
+                {"complete": "present"}, instance=saved_commitment
+            )
+            form.save(commit=True)
+            reloaded_commitment = Commitment.objects.get(id=saved_commitment.id)
+            assert reloaded_commitment.status == CommitmentStatus.COMPLETE
