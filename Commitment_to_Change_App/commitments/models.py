@@ -100,14 +100,3 @@ class Commitment(CommitmentLogic, models.Model):
         if self.deadline < today and self.status == Commitment.CommitmentStatus.IN_PROGRESS:
             self.status = Commitment.CommitmentStatus.EXPIRED
             self.save()
-
-    def reopen(self):
-        if self.status in {
-            Commitment.CommitmentStatus.COMPLETE,
-            Commitment.CommitmentStatus.DISCONTINUED
-            }:
-            today = datetime.date.today()
-            if self.deadline >= today:
-                self.status = Commitment.CommitmentStatus.IN_PROGRESS
-            else:
-                self.status = Commitment.CommitmentStatus.EXPIRED

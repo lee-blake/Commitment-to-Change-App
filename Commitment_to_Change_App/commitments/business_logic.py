@@ -1,3 +1,5 @@
+import datetime
+
 from commitments.enums import CommitmentStatus
 
 
@@ -17,3 +19,14 @@ class CommitmentLogic:
 
     def mark_discontinued(self):
         self._data.status = CommitmentStatus.DISCONTINUED
+
+    def reopen(self):
+        if self._data.status in {
+            CommitmentStatus.COMPLETE,
+            CommitmentStatus.DISCONTINUED
+            }:
+            today = datetime.date.today()
+            if self._data.deadline >= today:
+                self._data.status = CommitmentStatus.IN_PROGRESS
+            else:
+                self._data.status = CommitmentStatus.EXPIRED
