@@ -276,7 +276,7 @@ class ViewCourseView(LoginRequiredMixin, View):
             ClinicianProfile.objects.get(user=request.user)
         ):
             return render(
-                request, "commitments/Course/view_course.html", context)
+                request, "commitments/Course/course_view_page.html", context)
         else:
             return HttpResponseNotFound("<h1>404</h1")
 
