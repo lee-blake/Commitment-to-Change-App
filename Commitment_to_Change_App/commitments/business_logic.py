@@ -11,3 +11,6 @@ class CommitmentLogic:
         # Django loads them from the database, they are primitive integers and will
         # convert to their literal values when str() is called on them
         return CommitmentStatus.__str__(self._data.status)
+
+    def mark_complete(self):
+        self._data.status = CommitmentStatus.COMPLETE

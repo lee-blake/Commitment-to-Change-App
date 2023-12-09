@@ -101,9 +101,6 @@ class Commitment(CommitmentLogic, models.Model):
             self.status = Commitment.CommitmentStatus.EXPIRED
             self.save()
 
-    def mark_complete(self):
-        self.status = Commitment.CommitmentStatus.COMPLETE
-
     def mark_discontinued(self):
         self.status = Commitment.CommitmentStatus.DISCONTINUED
 
