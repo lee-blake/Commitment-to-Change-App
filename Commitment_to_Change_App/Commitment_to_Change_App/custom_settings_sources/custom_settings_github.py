@@ -22,4 +22,5 @@ DATABASES = {
     }
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# Memory-only since console printing is not needed for the CI
+EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
