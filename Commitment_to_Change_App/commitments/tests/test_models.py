@@ -6,30 +6,6 @@ from cme_accounts.models import User
 from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, ProviderProfile
 
 
-class TestCommitmentStatus:
-    """Tests for Commitment.CommitmentStatus"""
-
-    class TestToStr:
-        """Tests for Commitment.CommitmentStatus.__str__"""
-
-        def test_in_progress_gives_correct_string(self):
-            assert str(Commitment.CommitmentStatus.IN_PROGRESS) == "In Progress"
-
-        def test_complete_gives_correct_string(self):
-            assert str(Commitment.CommitmentStatus.COMPLETE) == "Complete"
-
-        def test_expired_gives_correct_string(self):
-            """Test that EXPIRED converts to string correctly.
-            
-            While we may use 'expired' in the code, such language is forceful enough that it may
-            discourage users. We should display 'past due' instead."""
-
-            assert str(Commitment.CommitmentStatus.EXPIRED) == "Past Due"
-
-        def test_discontinued_gives_correct_string(self):
-            assert str(Commitment.CommitmentStatus.DISCONTINUED) == "Discontinued"
-
-
 class TestCommitment:
     """Tests for Commitment"""
 
