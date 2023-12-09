@@ -1,14 +1,18 @@
-<div>
-    {% if request.user.is_provider %}
-    <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
+<div class="d-flex justify-content-between">
+    <ul>
+        {% if request.user.is_provider %}
+        <li>
+            <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
+                {{ suggested_commitment }}
+            </a>
+        </li>
+        {% elif request.user.is_clinician %}
         {{ suggested_commitment }}
-    </a>
-    {% elif request.user.is_clinician %}
-        {{ suggested_commitment }} 
-        <a 
-        href="{% url 'create Commitment from suggested commitment' course_id=course.id commitment_template_id=suggested_commitment.id %}"
-        >
-            <button>Make This Commitment</button>
-        </a>
-    {% endif %}
+        <li>
+            <a href="{% url 'create Commitment from suggested commitment' course_id=course.id commitment_template_id=suggested_commitment.id %}">
+                <button class="standard-button">Make This Commitment</button>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
 </div>
