@@ -134,3 +134,15 @@ class DiscontinueCommitmentForm(ModelForm):
     def save(self, commit=True):
         self.instance.mark_discontinued()
         super().save(commit=commit)
+
+
+class ReopenCommitmentForm(ModelForm):
+    class Meta:
+        model = Commitment
+        fields = []
+
+    reopen = BooleanField(initial=True, widget=HiddenInput())
+
+    def save(self, commit=True):
+        self.instance.reopen()
+        super().save(commit=commit)
