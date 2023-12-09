@@ -30,6 +30,11 @@ class ViewCommitmentView(DetailView):
         else:
             return ["commitments/Commitment/view_commitment.html"]
 
+    def get_object(self, queryset=None):
+        commitment = super().get_object(queryset=queryset)
+        commitment.save_expired_if_past_deadline()
+        return commitment
+
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
     @staticmethod
