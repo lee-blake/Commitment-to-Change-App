@@ -9,13 +9,11 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView
-from django.urls import reverse
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.urls import reverse, reverse_lazy
 
-import cme_accounts.models
-
-from .forms import CommitmentForm, DeleteCommitmentForm, CourseForm, CommitmentTemplateForm, \
-    CourseSelectSuggestedCommitmentsForm
+from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
+    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -103,27 +101,21 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
         )
 
 
-class DeleteCommitmentView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, commitment_id):
-        commitment = get_object_or_404(Commitment, id=commitment_id)
-        form = DeleteCommitmentForm(instance=commitment)
-        return render(
-            request,
-            "commitments/Commitment/delete_commitment.html",
-            context={
-                "commitment": commitment,
-                "form": form})
+class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
+    # TODO Make the broken 400 on bad request work
+    # Deferred until team consultation is complete
+    model = Commitment
+    form_class = GenericDeletePostKeySetForm
+    template_name = "commitments/Commitment/delete_commitment.html"
+    pk_url_kwarg = "commitment_id"
+    context_object_name = "commitment"
+    success_url = reverse_lazy("clinician dashboard")
 
-    @staticmethod
-    def post(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        if request.POST.get("delete") == "true":
-            commitment.delete()
-            return HttpResponseRedirect("/app/dashboard")
-        else:
-            return HttpResponseBadRequest("'delete' key must be set 'true' to be deleted")
+    def get_queryset(self):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        return Commitment.objects.filter(
+            owner=viewer
+        )
 
 
 class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
@@ -308,7 +300,7 @@ class JoinCourseView(LoginRequiredMixin, View):
             "commitments/Course/join_course_view_clinician.html",
             context={"course": course}
         )
-        
+
     @staticmethod
     def post(request, course_id, join_code):
         if not request.user.is_clinician:
@@ -330,7 +322,7 @@ class JoinCourseView(LoginRequiredMixin, View):
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/Commitment/create_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/create_commitment_template.html"
 
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
@@ -346,7 +338,7 @@ class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
 
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
     model = CommitmentTemplate
-    template_name = "commitments/Commitment/view_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/view_commitment_template.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
@@ -428,38 +420,26 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
             )
 
 
-class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, View):
+class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
+    # TODO Make the broken 400 on bad request work
+    # Deferred until team consultation is complete
+    model = CommitmentTemplate
+    form_class = GenericDeletePostKeySetForm
+    template_name = "commitments/CommitmentTemplate/delete_commitment_template.html"
+    pk_url_kwarg = "commitment_template_id"
+    context_object_name = "commitment_template"
+    success_url = reverse_lazy("provider dashboard")
 
-    @staticmethod
-    def get(request, commitment_template_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        commitment_template = get_object_or_404(
-            CommitmentTemplate, id=commitment_template_id, owner=viewer
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return CommitmentTemplate.objects.filter(
+            owner=viewer
         )
-        return render(
-            request,
-            "commitments/Commitment/delete_commitment_template.html",
-            {"commitment_template": commitment_template}
-        )
-
-    @staticmethod
-    def post(request, commitment_template_id):
-        viewer = ProviderProfile.objects.get(user=request.user)
-        commitment_template = get_object_or_404(
-            CommitmentTemplate, id=commitment_template_id, owner=viewer
-        )
-        if request.POST.get("delete") == "true":
-            commitment_template.delete()
-            return HttpResponseRedirect(
-                reverse("provider dashboard")
-            )
-        else:
-            return HttpResponseBadRequest("'delete' key must be set 'true' to be deleted")
 
 
 class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CommitmentTemplateForm
-    template_name = "commitments/Commitment/edit_commitment_template.html"
+    template_name = "commitments/CommitmentTemplate/edit_commitment_template.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
