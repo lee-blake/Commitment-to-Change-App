@@ -1201,7 +1201,7 @@ class TestCompleteCommitmentView:
             client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
-                {"complete": "blah blah nonsense"}
+                {}
             )
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
             assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
@@ -1218,7 +1218,7 @@ class TestCompleteCommitmentView:
             client.force_login(saved_clinician_profile.user)
             response = client.post(
                 target_url,
-                {"complete": "blah blah nonsense"}
+                {}
             )
             assert response.status_code == 400
 

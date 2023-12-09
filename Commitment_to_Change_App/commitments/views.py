@@ -14,7 +14,7 @@ from django.urls import reverse, reverse_lazy
 
 from commitments.enums import CommitmentStatus
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
-    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm
+    CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -146,9 +146,9 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
     def post(request, commitment_id):
         profile = ClinicianProfile.objects.get(user=request.user)
         commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
-        if request.POST.get("complete") == "true":
-            commitment.mark_complete()
-            commitment.save()
+        form = CompleteCommitmentForm(request.POST, instance=commitment)
+        if form.is_valid():
+            form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
         else:
             return HttpResponseBadRequest(
