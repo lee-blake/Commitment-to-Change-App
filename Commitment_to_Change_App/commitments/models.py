@@ -19,6 +19,9 @@ class ClinicianProfile(models.Model):
 
     @property
     def username(self):
+        # This property is here because we need to split the authentication user from
+        # the different account types. See cme_accounts.models.User for details. As such,
+        # the username is stored on the User object.
         return self.user.username
 
 
