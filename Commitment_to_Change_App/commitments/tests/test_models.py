@@ -6,6 +6,23 @@ from cme_accounts.models import User
 from commitments.enums import CommitmentStatus
 from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, ProviderProfile
 
+class TestClinicianProfile:
+    """Tests for ClinicianProfile"""
+
+    class TestUsername:
+        """Tests for ClinicianProfile.username"""
+
+        @pytest.fixture(name="created_user", params=["One", "Two"])
+        def fixture_created_user(self, request):
+            return User(
+                id=1,
+                username=request.param
+            )
+
+        def test_shows_username(self, created_user):
+            profile = ClinicianProfile(user=created_user)
+            assert profile.username == created_user.username
+
 
 class TestCommitment:
     """Tests for Commitment"""
