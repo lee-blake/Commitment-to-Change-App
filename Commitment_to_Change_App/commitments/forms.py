@@ -119,14 +119,6 @@ class CompleteCommitmentForm(ModelForm):
 
     complete = BooleanField(initial=True, widget=HiddenInput())
 
-    def __init__(self, *args, **kwargs):
-        #if not isinstance(kwargs.get("instance"), self.Meta.model):
-        #    raise TypeError(
-        #        f"A {type(self).__name__} must be constructed with an " + \
-        #            f"instance of the appropriate model {self.Meta.model}!"
-        #        )
-        super().__init__(*args, **kwargs)
-
     def save(self, commit=True):
         self.instance.mark_complete()
         super().save(commit=commit)
