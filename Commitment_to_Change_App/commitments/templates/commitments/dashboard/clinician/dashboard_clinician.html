@@ -16,7 +16,7 @@
                     <div class="py-1 background round-corners">
 
                         {% for commitment in in_progress_commitments %}
-                        {% include "commitments/dashboard/dashboard_active_commitment.html" %}
+                        {% include "commitments/dashboard/clinician/dashboard_active_commitment.html" %}
                         {% endfor %}
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                     <div class="py-1 background round-corners">
 
                         {% for commitment in expired_commitments %}
-                        {% include "commitments/dashboard/dashboard_active_commitment.html" %}
+                        {% include "commitments/dashboard/clinician/dashboard_active_commitment.html" %}
                         {% endfor %}
                     </div>
                 </div>
