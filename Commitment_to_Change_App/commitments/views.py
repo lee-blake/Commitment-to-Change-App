@@ -26,7 +26,7 @@ class ViewCommitmentView(DetailView):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
             return ["commitments/Commitment/commitment_view_owned_page.html"]
         else:
-            return ["commitments/Commitment/commitment_view_page.html"]
+            return ["commitments/Commitment/commitment_view_unowned_page.html"]
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
@@ -383,7 +383,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         form = CommitmentForm(instance=form_instance, owner=viewer)
         return render(
             request,
-            "commitments/Commitment/commitment_create_from_template.html",
+            "commitments/Commitment/commitment_create_from_suggested_commitment.html",
             {"form": form, "course": course, "commitment_template": commitment_template}
         )
 
@@ -413,7 +413,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
         else:
             return render(
                 request,
-                "commitments/Commitment/commitment_create_from_template.html",
+                "commitments/Commitment/commitment_create_from_suggested_commitment.html",
                 {"form": form, "course": course, "commitment_template": commitment_template}
             )
 
