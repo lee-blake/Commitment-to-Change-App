@@ -3,9 +3,9 @@ import datetime
 from django.db import models
 
 import cme_accounts.models
-import commitments.enums
 
 from commitments.business_logic import CommitmentLogic
+from commitments.enums import CommitmentStatus
 from . import validators
 
 
@@ -66,9 +66,6 @@ class Course(models.Model):
 
 
 class Commitment(CommitmentLogic, models.Model):
-    # TODO This is a ompatibility fix to avoid changing usages until logic is fully extracted.
-    CommitmentStatus = commitments.enums.CommitmentStatus
-
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
     source_template = models.ForeignKey(
@@ -97,6 +94,6 @@ class Commitment(CommitmentLogic, models.Model):
 
     def save_expired_if_past_deadline(self):
         today = datetime.date.today()
-        if self.deadline < today and self.status == commitments.enums.CommitmentStatus.IN_PROGRESS:
-            self.status = commitments.enums.CommitmentStatus.EXPIRED
+        if self.deadline < today and self.status == CommitmentStatus.IN_PROGRESS:
+            self.status = CommitmentStatus.EXPIRED
             self.save()
