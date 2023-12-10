@@ -62,7 +62,7 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, TemplateView):
         return context
 
 
-class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
+class CreateCommitmentView(ClinicianLoginRequiredMixin, CreateView):
     form_class = CommitmentForm
     template_name = "commitments/Commitment/make_commitment.html"
 

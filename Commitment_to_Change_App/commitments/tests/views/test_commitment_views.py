@@ -14,11 +14,11 @@ from commitments.tests.helpers import convert_date_to_general_regex
 
 
 @pytest.mark.django_db
-class TestMakeCommitmentView:
-    """Tests for MakeCommitmentView"""
+class TestCreateCommitmentView:
+    """Tests for CreateCommitmentView"""
 
     class TestGet:
-        """Tests for MakeCommitmentView.get"""
+        """Tests for CreateCommitmentView.get"""
 
         def test_rejects_provider_accounts_with_403(self, client, saved_provider_user):
             target_url = reverse("create Commitment")
@@ -82,7 +82,7 @@ class TestMakeCommitmentView:
 
 
     class TestPost:
-        """Tests for MakeCommitmentView.post"""
+        """Tests for CreateCommitmentView.post"""
 
         def test_rejects_provider_accounts_with_403(self, client, saved_provider_user):
             target_url = reverse("create Commitment")

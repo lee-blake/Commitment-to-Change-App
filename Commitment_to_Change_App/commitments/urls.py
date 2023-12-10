@@ -21,7 +21,7 @@ urlpatterns = [
 
      path(
           "commitment/make/",
-          views.MakeCommitmentView.as_view(),
+          views.CreateCommitmentView.as_view(),
           name="create Commitment"
      ),
      path(
