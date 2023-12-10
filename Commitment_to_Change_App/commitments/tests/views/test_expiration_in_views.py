@@ -33,7 +33,7 @@ class TestViewCommitmentViewExpiration:
         client.force_login(saved_clinician_profile.user)
         client.get(
             reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": commitment_to_expire.id}
             )
         )
@@ -46,7 +46,7 @@ class TestViewCommitmentViewExpiration:
         client.force_login(saved_clinician_profile.user)
         html = client.get(
             reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": commitment_to_expire.id}
             )
         ).content.decode()

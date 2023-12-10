@@ -89,7 +89,7 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse(
-            "view commitment",
+            "view Commitment",
             kwargs={"commitment_id": self.object.id}
         )
 
@@ -128,7 +128,7 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
-            "view commitment",
+            "view Commitment",
             kwargs={"commitment_id": self.object.id}
         )
 
@@ -333,7 +333,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, CreateView)
 
     def get_success_url(self):
         return reverse(
-            "view commitment",
+            "view Commitment",
             kwargs={"commitment_id": self.object.id}
         )
 

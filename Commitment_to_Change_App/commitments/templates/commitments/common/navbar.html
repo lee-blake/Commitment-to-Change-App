@@ -12,7 +12,7 @@
               {% if request.user.is_authenticated %}
               {% if request.user.is_clinician %}
               <li class="nav-item">
-                  <a class="nav-link" href="{% url 'make commitment' %}">Make a commitment</a>
+                  <a class="nav-link" href="{% url "create Commitment" %}">Make a commitment</a>
               </li>
               {% endif %}
 

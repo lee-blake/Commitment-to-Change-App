@@ -22,22 +22,22 @@ urlpatterns = [
      path(
           "commitment/make/",
           views.MakeCommitmentView.as_view(),
-          name="make commitment"
+          name="create Commitment"
      ),
      path(
           "commitment/<int:commitment_id>/view/", 
           views.ViewCommitmentView.as_view(),
-          name="view commitment"
+          name="view Commitment"
      ),
      path(
           "commitment/<int:commitment_id>/edit/",
           views.EditCommitmentView.as_view(),
-          name="edit commitment"
+          name="edit Commitment"
      ),
      path(
           "commitment/<int:commitment_id>/delete/",
           views.DeleteCommitmentView.as_view(),
-          name="delete commitment"
+          name="delete Commitment"
      ),
      path(
           "commitment/<int:commitment_id>/complete/",

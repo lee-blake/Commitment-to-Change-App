@@ -78,7 +78,7 @@ class TestClinicianDashboardView:
             html = client.get(reverse("clinician dashboard")).content.decode()
             for commitment in commitments_owned_by_saved_clinician_profile:
                 commitment_view_url = reverse(
-                    "view commitment",
+                    "view Commitment",
                     kwargs={"commitment_id": commitment.id}
                 )
                 commitment_view_link = f"href=\"{commitment_view_url}\""
@@ -91,7 +91,7 @@ class TestClinicianDashboardView:
             html = client.get(reverse("clinician dashboard")).content.decode()
             for commitment in commitments_owned_by_saved_clinician_profile:
                 commitment_view_url = reverse(
-                    "view commitment",
+                    "view Commitment",
                     kwargs={"commitment_id": commitment.id}
                 )
                 commitment_view_link = f"href=\"{commitment_view_url}\""
@@ -103,7 +103,7 @@ class TestClinicianDashboardView:
         ):
             client.force_login(saved_clinician_profile.user)
             html = client.get(reverse("clinician dashboard")).content.decode()
-            make_commitment_url = reverse("make commitment")
+            make_commitment_url = reverse("create Commitment")
             make_commitment_link = f"href=\"{make_commitment_url}\""
             assert make_commitment_link in html
 
