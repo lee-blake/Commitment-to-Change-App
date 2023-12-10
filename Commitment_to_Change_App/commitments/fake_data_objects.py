@@ -34,6 +34,7 @@ class FakeCourseData:
     suggested_commitments = []
     join_code = ""
     students = []
+    associated_commitments_list = []
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
