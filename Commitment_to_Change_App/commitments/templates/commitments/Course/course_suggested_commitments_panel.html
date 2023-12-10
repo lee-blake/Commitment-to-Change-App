@@ -1,14 +1,18 @@
-<div>
-    {% if request.user.is_provider %}
-    <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
-        {{ suggested_commitment }}
-    </a>
-    {% elif request.user.is_clinician %}
-        {{ suggested_commitment }} 
-        <a 
-        href="{% url 'create Commitment from suggested commitment' course_id=course.id commitment_template_id=suggested_commitment.id %}"
-        >
-            <button>Make This Commitment</button>
-        </a>
-    {% endif %}
-</div>
+
+        {% if request.user.is_provider %}
+        <span>
+            <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
+                {{ suggested_commitment }}
+            </a>
+        </span>
+        
+        {% elif request.user.is_clinician %}
+        <span>
+            {{ suggested_commitment }}
+        </span>
+        <span>
+            <a href="{% url 'create Commitment from suggested commitment' course_id=course.id commitment_template_id=suggested_commitment.id %}">
+                <button class="standard-button">Make This Commitment</button>
+            </a>
+        </span>
+        {% endif %}
