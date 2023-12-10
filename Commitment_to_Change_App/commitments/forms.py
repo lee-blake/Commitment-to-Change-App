@@ -45,6 +45,9 @@ class CommitmentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         owner = kwargs.pop("owner")
         super(ModelForm, self).__init__(*args, **kwargs)
+        self._set_owner_enrolled_courses_as_associated_course_options(owner)
+
+    def _set_owner_enrolled_courses_as_associated_course_options(self, owner):
         if not hasattr(self.instance, 'owner') or not self.instance.owner:
             self.instance.owner = owner
         elif owner != self.instance.owner:
@@ -189,4 +192,7 @@ class CommitmentTemplateForm(ModelForm):
 
 
 class GenericDeletePostKeySetForm(Form):
+    """A generic form that can be used for DeleteViews. It requires that the POST key 'delete'
+    be nonempty, which helps ensure that POST requests to delete are intentional."""
+
     delete = BooleanField(initial=True, widget=HiddenInput())
