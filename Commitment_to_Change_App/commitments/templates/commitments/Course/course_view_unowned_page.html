@@ -49,7 +49,9 @@
                         </div>
                         <div class="px-3">
                             {% for suggested_commitment in course.suggested_commitments.all %}
+							<div class="div-list">
                             {% include "commitments/Course/course_suggested_commitments_panel.html" %}
+							</div>
                             {% endfor %}
 							<div class="text-center pt-1">
 								{% block select_suggested_commitments_button %}
@@ -96,11 +98,11 @@
                         <div class="text-center secondary-accent round-corners">
                             <h3>Commitments Made in This Course:</h3>
                         </div>
+						<ul>
                         {% for commitment in associated_commitments %}
-                        <ul>
                             <li>{% include "commitments/Course/course_associated_commitments_panel.html" %}</li>
-                        </ul>
                         {% endfor %}
+					</ul>
                     </div>
                 </div>
             </div>
