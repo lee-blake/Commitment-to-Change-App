@@ -1,0 +1,39 @@
+{% extends "commitments/common/base_help_modal.html" %}
+
+{% block modal_title %} 
+Course View
+{% endblock modal_title %}
+
+{% block icon_color %}white{% endblock icon_color %}
+
+{% block modal_body_text %}
+This is your Course View page. Here, you can:
+<ul>
+    <li>
+        Copy your course's invite link to share with your students. Students can simply click on the link or paste it into their browser to join your course.
+    </li>
+    <li>
+        Select Suggested Commitment Templates for students in your course to make together.
+    </li>
+    <li>
+        View a list of students in your course. Click on a student's name for more information.
+    </li>
+    <li>
+        View the commitments that have been made in this course and their statuses.
+    </li>
+</ul>
+
+{% endblock modal_body_text %}
+
+{% comment %} 
+    Surrounding the extended template content (modal_everything) with these {% with %} statements 
+    is necessary to allow the parent template to access our modal_id variable.
+    Two with statements are necessary in order to first fetch and format the current 
+    commitment_id, and then prepend our action string to create a unique modal_id for the modal to use.
+{% endcomment %}
+
+{% block modal_everything %}
+        {% with modal_id="course_view_owned_page_help_modal" %}
+            {{ block.super }}
+        {% endwith %}
+{% endblock modal_everything %}

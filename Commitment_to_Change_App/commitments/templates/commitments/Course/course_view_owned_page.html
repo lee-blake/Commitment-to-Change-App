@@ -1,5 +1,9 @@
 {% extends "commitments/Course/course_view_unowned_page.html" %}
 
+{% block course_help_modal %} 
+    {% include "commitments/Course/course_view_owned_page_help_modal.html" %}
+{% endblock course_help_modal %}
+
 {% block join_link %}
 <div class="text-center foreground round-corners mt-3 mx-3 py-2">
 	Share this link to invite students to the course:

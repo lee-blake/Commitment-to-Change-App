@@ -7,8 +7,19 @@ Welcome to the "{{ course.title }}" dashboard
 {% block icon_color %}white{% endblock icon_color %}
 
 {% block modal_body_text %}
-To get started, choose a commitment you would like to make from the "Suggested Commitments" section, then click "Make This Commitment". 
-You can then modify the commitment to fit your specific goals.
+Here you can:
+<ul>
+    <li>
+        Make a suggested commitment for this course by clicking the "Select Templates" button in the "Suggested Commitments" section.
+    </li>
+    <li>
+        View a list of students in the course. Click on a student's name for more information.
+    </li>
+    <li>
+        View the commitments that have been made in this course and their statuses.
+    </li>
+</ul>
+
 {% endblock modal_body_text %}
 
 {% comment %} 
@@ -19,7 +30,7 @@ You can then modify the commitment to fit your specific goals.
 {% endcomment %}
 
 {% block modal_everything %}
-        {% with modal_id="course_student_help_modal" %}
+        {% with modal_id="course_view_help_modal" %}
             {{ block.super }}
         {% endwith %}
 {% endblock modal_everything %}
