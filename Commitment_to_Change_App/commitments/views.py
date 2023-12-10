@@ -3,11 +3,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
-from django.views import View
+from django.views.generic.base import View, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse, reverse_lazy
 
+from commitments.enums import CommitmentStatus
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
     DiscontinueCommitmentForm, ReopenCommitmentForm, \
@@ -45,46 +46,35 @@ class DashboardRedirectingView(LoginRequiredMixin, View):
             )
 
 
-class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitments = Commitment.objects.filter(owner=profile)
+class ClinicianDashboardView(ClinicianLoginRequiredMixin, TemplateView):
+    template_name = "commitments/dashboard/clinician/dashboard_clinician_page.html"
+
+    def get_context_data(self, **kwargs):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        commitments = Commitment.objects.filter(owner=viewer)
+        # We need to auto-expire them to make sure they are grouped correctly.
         for commitment in commitments:
             commitment.save_expired_if_past_deadline()
-
-        in_progress = list(filter(lambda x: x.status == 0, commitments))
-        completed = list(filter(lambda x: x.status == 1, commitments))
-        expired = list(filter(lambda x: x.status == 2, commitments))
-        discontinued = list(filter(lambda x: x.status == 3, commitments))
-
-        enrolled_courses = profile.course_set.all()
-
-        context = {
-            'in_progress_commitments': in_progress,
-            'expired_commitments': expired,
-            'completed_commitments': completed,
-            'discontinued_commitments': discontinued,
-            'enrolled_courses': enrolled_courses
+        context = super().get_context_data(**kwargs)
+        context["enrolled_courses"] = viewer.course_set.all()
+        context["commitments"] = {
+            "in_progress": commitments.filter(status=CommitmentStatus.IN_PROGRESS),
+            "completed": commitments.filter(status=CommitmentStatus.COMPLETE),
+            "expired": commitments.filter(status=CommitmentStatus.EXPIRED),
+            "discontinued": commitments.filter(status=CommitmentStatus.DISCONTINUED)
         }
+        return context
 
-        return render(request, "commitments/dashboard/clinician/dashboard_clinician_page.html", context)
 
+class ProviderDashboardView(ProviderLoginRequiredMixin, TemplateView):
+    template_name = "commitments/dashboard/provider/dashboard_provider_page.html"
 
-class ProviderDashboardView(ProviderLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        profile = ProviderProfile.objects.get(user=request.user)
-        courses = Course.objects.filter(owner=profile)
-        commitment_templates = CommitmentTemplate.objects.filter(owner=profile)
-        return render(
-            request,
-            "commitments/dashboard/provider/dashboard_provider_page.html", 
-            {
-                "courses": courses,
-                "commitment_templates": commitment_templates
-            }
-        )
+    def get_context_data(self, **kwargs):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        context = super().get_context_data(**kwargs)
+        context["courses"] = Course.objects.filter(owner=viewer)
+        context["commitment_templates"] = CommitmentTemplate.objects.filter(owner=viewer)
+        return context
 
 
 class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
