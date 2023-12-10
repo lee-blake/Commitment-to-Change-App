@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from commitments import views
 
 urlpatterns = [
     path("dashboard/", views.DashboardRedirectingView.as_view(), name="dashboard"),

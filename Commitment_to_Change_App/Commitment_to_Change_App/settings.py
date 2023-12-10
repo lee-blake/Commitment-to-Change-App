@@ -1,5 +1,3 @@
-import os
-
 """
 Django settings for Commitment_to_Change_App project.
 
@@ -11,6 +9,8 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+
+import os
 
 from pathlib import Path
 
@@ -140,4 +140,4 @@ DATABASES = {
 
 # Custom settings SHOULD overwrite this file's settings because this file is the default.
 # Pylint also lies about the imports being unused - they are used in other files.
-from .custom_settings import * #pylint: disable=wildcard-import, unused-wildcard-import
+from .custom_settings import * #pylint: disable=wildcard-import, unused-wildcard-import, C0413

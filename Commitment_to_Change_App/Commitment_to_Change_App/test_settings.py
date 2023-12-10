@@ -1,4 +1,6 @@
-from Commitment_to_Change_App.settings import *
+"""Settings specifically for local testing. Generally sets memory backends."""
+
+from Commitment_to_Change_App.settings import * #pylint: disable=W0401, W0614
 
 DATABASES = {
     "default": {

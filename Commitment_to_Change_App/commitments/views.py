@@ -1,20 +1,21 @@
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse, reverse_lazy
 from django.views.generic.base import View, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.urls import reverse, reverse_lazy
+
 
 from commitments.enums import CommitmentStatus
-from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
+from commitments.forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
-    DiscontinueCommitmentForm, ReopenCommitmentForm, \
-    CreateCommitmentFromSuggestedCommitmentForm, JoinCourseForm
-from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
-from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
+    DiscontinueCommitmentForm, ReopenCommitmentForm, JoinCourseForm, \
+    CreateCommitmentFromSuggestedCommitmentForm
+from commitments.mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
+from commitments.models import Commitment, ClinicianProfile, ProviderProfile, Course, \
+    CommitmentTemplate
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
