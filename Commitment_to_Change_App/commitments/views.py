@@ -68,8 +68,8 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        profile = ClinicianProfile.objects.get(user=self.request.user)
-        kwargs.update({ "owner": profile })
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        kwargs.update({ "owner": viewer })
         return kwargs
 
     def get_success_url(self):
@@ -164,8 +164,8 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, CreateView)
 class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def post(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        viewer = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=viewer)
         form = CompleteCommitmentForm(request.POST, instance=commitment)
         if form.is_valid():
             form.save()
@@ -179,8 +179,8 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
 class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def post(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        viewer = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=viewer)
         form = DiscontinueCommitmentForm(request.POST, instance=commitment)
         if form.is_valid():
             form.save()
@@ -194,8 +194,8 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
 class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def post(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        viewer = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=viewer)
         form = ReopenCommitmentForm(request.POST, instance=commitment)
         if form.is_valid():
             form.save()
