@@ -1,6 +1,3 @@
-import random
-import string
-
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError, \
@@ -199,7 +196,6 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
     def form_valid(self, form):
         viewer = ProviderProfile.objects.get(user=self.request.user)
         form.instance.owner = viewer
-        form.instance.join_code = CreateCourseView.generate_random_join_code(8)
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -207,12 +203,6 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
             "view course",
             kwargs={"course_id": self.object.id}
         )
-
-    # TODO I moved this onto CourseLogic in another branch. When the merge happens,
-    # delete this and replace its call above with a call on the form.instance method.
-    @staticmethod
-    def generate_random_join_code(length):
-        return ''.join(random.choice(string.ascii_uppercase) for i in range(0, length))
 
 
 class EditCourseView(ProviderLoginRequiredMixin, UpdateView):

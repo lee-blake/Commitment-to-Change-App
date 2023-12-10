@@ -61,6 +61,12 @@ class CourseForm(ModelForm):
             "end_date": DateInput(attrs={"type": "date"})
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.generate_join_code_if_none_exists(
+            Course.DEFAULT_JOIN_CODE_LENGTH
+        )
+
     def clean(self):
         cleaned_data = super().clean()
         if not self._start_date_not_after_end_date(cleaned_data):

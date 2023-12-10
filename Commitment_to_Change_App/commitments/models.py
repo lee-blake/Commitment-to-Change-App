@@ -4,7 +4,7 @@ from django.db import models
 
 import cme_accounts.models
 
-from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic
+from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic
 from commitments.enums import CommitmentStatus
 from . import validators
 
@@ -19,6 +19,9 @@ class ClinicianProfile(models.Model):
 
     @property
     def username(self):
+        # This property is here because we need to split the authentication user from
+        # the different account types. See cme_accounts.models.User for details. As such,
+        # the username is stored on the User object.
         return self.user.username
 
 
@@ -52,7 +55,9 @@ class CommitmentTemplate(CommitmentTemplateLogic, models.Model):
         )
 
 
-class Course(models.Model):
+class Course(CourseLogic, models.Model):
+    DEFAULT_JOIN_CODE_LENGTH = 8
+
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
     last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
     owner = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE)
@@ -65,8 +70,9 @@ class Course(models.Model):
     join_code = models.CharField("Join code", max_length=100)
     students = models.ManyToManyField(ClinicianProfile)
 
-    def __str__(self):
-        return self.title.__str__()
+    def __init__(self, *args, **kwargs):
+        CourseLogic.__init__(self, data_object=self)
+        models.Model.__init__(self, *args, **kwargs)
 
 
 class Commitment(CommitmentLogic, models.Model):

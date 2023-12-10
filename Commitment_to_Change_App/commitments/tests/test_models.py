@@ -4,7 +4,25 @@ import pytest
 
 from cme_accounts.models import User
 from commitments.enums import CommitmentStatus
-from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, ProviderProfile
+from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, \
+    ProviderProfile, Course
+
+class TestClinicianProfile:
+    """Tests for ClinicianProfile"""
+
+    class TestUsername:
+        """Tests for ClinicianProfile.username"""
+
+        @pytest.fixture(name="created_user", params=["One", "Two"])
+        def fixture_created_user(self, request):
+            return User(
+                id=1,
+                username=request.param
+            )
+
+        def test_shows_username(self, created_user):
+            profile = ClinicianProfile(user=created_user)
+            assert profile.username == created_user.username
 
 
 class TestCommitment:
@@ -192,3 +210,16 @@ class TestCommitmentTemplate:
                 description="also irrelevant"
             )
             assert str(template) == "not the same"
+
+
+class TestCourse:
+    """Tests for Course"""
+
+    class TestStr:
+        """Tests for Course.__str__"""
+
+        @pytest.mark.parametrize("title", ["First title", "Second title"])
+        def test_returns_title(self, title):
+            course = Course(title=title)
+            assert str(course) == title
+        
