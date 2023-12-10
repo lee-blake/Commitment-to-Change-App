@@ -3,89 +3,116 @@
 
 {% block page_content %}
 <div class="container-fluid p-4 ">
-	<div class="container-xxl px-5 round-corners foreground">
-		<div class="py-1 primary-accent-only round-corners text-center">
-			<span class="h1 accent-text">{{ course.title }}</span> <span>{% include "commitments/Course/course_student_help_modal.html" %}</span>
-			
-		</div>
-		<div class="py-1 secondary-accent round-corners text-center">
-			<h2>{{ course.owner.institution }}</h2>
-		</div>
-		
-		<div class="row py-3 g-5">
-			<div class="col-md-6 p-3">
-				<div class="background round-corners pb-3">
-					<div class="text-center secondary-accent round-corners">
-						<h2>Description</h2>
-					</div>
-					<div class="text-center p-3">
-						<p>{{ course.description }}</p>
-					</div>
-					<div class="text-center secondary-accent round-corners">
-						<h2>Students</h2>
-					</div>
-					{% block join_link %} {% endblock join_link %}
-					<div class="text-center secondary-accent round-corners">
-						<h3>List of Students Enrolled:</h3>
-					</div>
-					<ul>
-					{% for clinician in course.students.all %}
-						<li>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</li>
-					{% endfor %}
+    <div class="container-xxl px-5 round-corners foreground">
+        <div class="py-1 primary-accent-only round-corners text-center">
+            <span class="h1 accent-text">{{ course.title }}</span> <span>{% include "commitments/Course/course_student_help_modal.html" %}</span>
+
+        </div>
+        <div class="py-1 secondary-accent round-corners text-center">
+            <h2>{{ course.owner.institution }}</h2>
+        </div>
+
+        <div class="row py-3 g-5">
+            <div class="col-md-6 p-3">
+                <div class="background round-corners pb-3">
+                    <div class="text-center primary-accent round-corners">
+                        <h2>Description</h2>
+                    </div>
+                    <div class="text-center foreground p-1 round-corners mt-3 mx-3">
+                        <p>{{ course.description }}</p>
+                    </div>
+                    <div class="text-center primary-accent round-corners mt-3">
+                        <h2>Students</h2>
+                    </div>
+
+                    {% block join_link %} {% endblock join_link %}
+                    <div class="foreground round-corners mt-3 mx-3 pb-2">
+                        <div class="text-center secondary-accent round-corners">
+                            <h3>List of Students Enrolled:</h3>
+                        </div>
+                        <ul>
+                            {% for clinician in course.students.all %}
+                            <li>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 p-3">
+                <div class="background round-corners pb-3">
+                    <div class="text-center primary-accent round-corners">
+                        <h2>Commitments in This Course</h2>
+                    </div>
+                    <div class="foreground round-corners pb-3 mt-3 mx-3">
+                        <div class="text-center secondary-accent round-corners">
+                            <h3>Suggested Commitments</h3>
+                        </div>
+                        <div class="px-4">
+                            <div class="list-group">
+                                {% for suggested_commitment in course.suggested_commitments.all %}
+                                <div class="d-flex justify-content-between list-group-item">
+                                    {% include "commitments/Course/course_suggested_commitments_panel.html" %}
+                                </div>
+                            {% endfor %}
+                        </ul>
+							<div class="text-center pt-1">
+								{% block select_suggested_commitments_button %}
+								{% endblock select_suggested_commitments_button %}
+							</div>
+                        </div>
+                    </div>
+                    <div class="foreground round-corners pb-3 mt-3 mx-3">
+                        <div class="text-center secondary-accent round-corners">
+                            <h3>Status Breakdown</h3>
+                        </div>
+                        <div class="table-responsive pt-3 px-4">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Commitment Status:</th>
+                                        <th scope="col">Count:</th>
+                                    </tr>
+                                </thead>
+                                <tr>
+                                    <td>In progress:</td>
+                                    <td>{{ status_breakdown.in_progress }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Completed:</td>
+                                    <td>{{ status_breakdown.complete }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Past Due:</td>
+                                    <td>{{ status_breakdown.past_due }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Discontinued:</td>
+                                    <td>{{ status_breakdown.discontinued }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Total:</th>
+                                    <th>{{ status_breakdown.total }}</th>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="foreground round-corners pb-3 mt-3 mx-3">
+                        <div class="text-center secondary-accent round-corners">
+                            <h3>Commitments Made in This Course:</h3>
+                        </div>
+						<ul>
+                        {% for commitment in associated_commitments %}
+                            <li>{% include "commitments/Course/course_associated_commitments_panel.html" %}</li>
+                        {% endfor %}
 					</ul>
-				</div>
-			</div>
-			<div class="col-md-6 p-3">
-				<div class="background round-corners pb-3">
-					<div class="text-center secondary-accent round-corners">
-						<h2>Associated Commitments</h2>
-					</div>
-					<div class="text-center secondary-accent round-corners">
-						<h3>Suggested Commitments</h3>
-						{% block select_suggested_commitments_button %}
-						{% endblock select_suggested_commitments_button %}
-					</div>
-					{% for suggested_commitment in course.suggested_commitments.all %}
-						{% include "commitments/Course/course_suggested_commitments_panel.html" %}
-					{% endfor %}
-					<div class="text-center secondary-accent round-corners">
-						<h3>Status Breakdown</h3>
-					</div>
-					<div>
-					<table class="commitment-status-breakdown-table">
-						<tr>
-							<th>Status</th><th>Count</th>
-						</tr>
-						<tr>
-							<td>In progress</td><td>{{ status_breakdown.in_progress }}</td>
-						</tr>
-						<tr>
-							<td>Completed</td><td>{{ status_breakdown.complete }}</td>
-						</tr>
-						<tr>
-							<td>Past Due</td><td>{{ status_breakdown.past_due }}</td>
-						</tr>
-						<tr>
-							<td>Discontinued</td><td>{{ status_breakdown.discontinued }}</td>
-						</tr>
-						<tr>
-							<th>Total</th><th>{{ status_breakdown.total }}</th>
-						</tr>
-					</table>
-					</div>
-					<div class="text-center secondary-accent round-corners">
-						<h3>List of Commitments:</h3>
-					</div>
-					{% for commitment in associated_commitments %}
-						{% include "commitments/Course/course_associated_commitments_panel.html" %}
-					{% endfor %}
-				</div>
-			</div>
-		</div>
-		<div class="container-fluid py-3 text-center">
-			{% block edit_button %} {% endblock edit_button %}
-			{% block delete_button %} {% endblock delete_button %}
-		  </div>
-	</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid py-3 text-center">
+            {% block edit_button %} {% endblock edit_button %}
+            {% block delete_button %} {% endblock delete_button %}
+        </div>
+    </div>
 </div>
 {% endblock page_content %}
