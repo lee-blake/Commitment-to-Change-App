@@ -8,14 +8,14 @@
 <div class="text-center foreground round-corners mt-3 mx-3 py-2">
     Share this link to invite students to the course:
     <div>
-        <p id="courseJoinLink">http://{{ request.get_host }}{% url 'join course' course_id=course.id join_code=course.join_code %}</p>
+        <p id="courseJoinLink">http://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}</p>
         <p><a href="#" class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</a></p>
     </div>
 </div>
 {% endblock join_link %}
 
 {% block edit_button %}
-<a href="{% url 'edit course' course_id=course.id %}">
+<a href="{% url "edit Course" course_id=course.id %}">
     <button class="standard-button primary-accent" type="submit">
         Edit Course
     </button>

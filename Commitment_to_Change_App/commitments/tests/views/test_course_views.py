@@ -21,12 +21,12 @@ class TestCreateCourseView:
         def test_rejects_clinician_accounts_with_403(self, client, saved_clinician_user):
             client.force_login(saved_clinician_user)
             response = client.get(
-                reverse("create course")
+                reverse("create Course")
             )
             assert response.status_code == 403
 
         def test_shows_post_form_pointing_to_this_view(self, client, saved_provider_user):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_user)
             html = client.get(target_url).content.decode()
             form_regex = re.compile(
@@ -39,7 +39,7 @@ class TestCreateCourseView:
             assert post_method_regex.search(form_tag)
 
         def test_shows_required_title_field(self, client, saved_provider_user):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_user)
             html = client.get(target_url).content.decode()
             title_input_tag_regex = re.compile(
@@ -52,7 +52,7 @@ class TestCreateCourseView:
             assert required_attribute_regex.search(title_input_tag)
 
         def test_shows_required_description_field(self, client, saved_provider_user):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_user)
             html = client.get(target_url).content.decode()
             description_input_tag_regex = re.compile(
@@ -67,7 +67,7 @@ class TestCreateCourseView:
         def test_non_required_unique_identifier_input_shows_in_page(
             self, client, saved_provider_profile
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             identifier_input_tag_regex = re.compile(
@@ -82,7 +82,7 @@ class TestCreateCourseView:
         def test_non_required_start_date_input_shows_in_page(
             self, client, saved_provider_profile
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             start_date_input_tag_regex = re.compile(
@@ -97,7 +97,7 @@ class TestCreateCourseView:
         def test_non_required_end_date_input_shows_in_page(
             self, client, saved_provider_profile
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             end_date_input_tag_regex = re.compile(
@@ -116,14 +116,14 @@ class TestCreateCourseView:
         def test_rejects_clinician_accounts_with_403(self, client, saved_clinician_user):
             client.force_login(saved_clinician_user)
             response = client.get(
-                reverse("create course")
+                reverse("create Course")
             )
             assert response.status_code == 403
 
         def test_invalid_request_returns_the_get_page_with_error_notes(
             self, client, saved_provider_user
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_user)
             html = client.post(
                 target_url,
@@ -141,7 +141,7 @@ class TestCreateCourseView:
         def test_missing_title_does_not_create_course(
             self, client, saved_provider_user
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_user)
             client.post(
                 target_url,
@@ -154,7 +154,7 @@ class TestCreateCourseView:
         def test_missing_description_does_not_create_course(
             self, client, saved_provider_user
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_user)
             client.post(
                 target_url,
@@ -169,7 +169,7 @@ class TestCreateCourseView:
         ):
             client.force_login(saved_provider_profile.user)
             client.post(
-                reverse("create course"),
+                reverse("create Course"),
                 {
                     "title": "new course", 
                     "description": "made for checking valid requests to CreateCourseView"
@@ -186,7 +186,7 @@ class TestCreateCourseView:
         ):
             client.force_login(saved_provider_profile.user)
             response = client.post(
-                reverse("create course"),
+                reverse("create Course"),
                 {
                     "title": "new course", 
                     "description": "made for checking valid requests to CreateCourseView"
@@ -198,14 +198,14 @@ class TestCreateCourseView:
             )
             assert response.status_code == 302
             assert response.url == reverse(
-                "view course", 
+                "view Course", 
                 kwargs={ "course_id": course.id }
             )
         
         def test_set_unique_identifier_shows_on_created_course(
             self, client, saved_provider_profile
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_profile.user)
             client.post(
                 target_url,
@@ -224,7 +224,7 @@ class TestCreateCourseView:
         def test_not_set_unique_identifier_shows_none_on_created_course(
             self, client, saved_provider_profile
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_profile.user)
             client.post(
                 target_url,
@@ -242,7 +242,7 @@ class TestCreateCourseView:
         def test_set_start_date_shows_on_created_course(
             self, client, saved_provider_profile
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_profile.user)
             client.post(
                 target_url,
@@ -261,7 +261,7 @@ class TestCreateCourseView:
         def test_not_set_start_date_shows_none_on_created_course(
             self, client, saved_provider_profile
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_profile.user)
             client.post(
                 target_url,
@@ -279,7 +279,7 @@ class TestCreateCourseView:
         def test_set_end_date_shows_on_created_course(
             self, client, saved_provider_profile
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_profile.user)
             client.post(
                 target_url,
@@ -298,7 +298,7 @@ class TestCreateCourseView:
         def test_not_set_end_date_shows_none_on_created_course(
             self, client, saved_provider_profile
         ):
-            target_url = reverse("create course")
+            target_url = reverse("create Course")
             client.force_login(saved_provider_profile.user)
             client.post(
                 target_url,
@@ -365,7 +365,7 @@ class TestViewCourseView:
             self, client, other_clinician_profile, enrolled_course
         ):
             target_url = reverse(
-                "view course",
+                "view Course",
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(other_clinician_profile.user)
@@ -376,7 +376,7 @@ class TestViewCourseView:
             self, client, other_provider_profile, enrolled_course
         ):
             target_url = reverse(
-                "view course", 
+                "view Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(other_provider_profile.user)
@@ -392,7 +392,7 @@ class TestViewCourseView:
         ):
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             assert enrolled_course.title in html
             assert enrolled_course.description in html
@@ -408,7 +408,7 @@ class TestViewCourseView:
             )
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": new_course.id })
+                reverse("view Course", kwargs={ "course_id": new_course.id })
             ).content.decode()
             assert new_course.title in html
             assert new_course.description in html
@@ -418,10 +418,10 @@ class TestViewCourseView:
         ):
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             join_link = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": enrolled_course.id,
                     "join_code": enrolled_course.join_code
@@ -435,7 +435,7 @@ class TestViewCourseView:
         ):
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             # For now it is always username display. When we change that, we should
             # alter this test to check that the new display method is also respected.
@@ -455,7 +455,7 @@ class TestViewCourseView:
             associated_commitments[2].save()
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             # This can change if we do something other than a table.
             assert re.compile(r"<td>In progress:</td>\s*<td>1</td>").search(html)
@@ -477,7 +477,7 @@ class TestViewCourseView:
             associated_commitments[2].delete()
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             # This can change if we do something other than a table.
             assert re.compile(r"<td>In progress:</td>\s*<td>0</td>").search(html)
@@ -492,7 +492,7 @@ class TestViewCourseView:
         ):
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             assert saved_provider_profile.institution in html
 
@@ -501,7 +501,7 @@ class TestViewCourseView:
         ):
             client.force_login(saved_clinician_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             assert enrolled_course.owner.institution in html
 
@@ -514,7 +514,7 @@ class TestViewCourseView:
             )
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             assert commitment_template_1.title in html
             assert commitment_template_2.title in html
@@ -524,7 +524,7 @@ class TestViewCourseView:
         ):
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             select_suggested_commitments_link_url = reverse(
                 "change Course suggested commitments",
@@ -541,7 +541,7 @@ class TestViewCourseView:
         ):
             client.force_login(saved_provider_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             for commitment in associated_commitments:
                 assert commitment.title in html
@@ -556,7 +556,7 @@ class TestViewCourseView:
         ):
             client.force_login(saved_clinician_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             assert enrolled_course.title in html
             assert enrolled_course.description in html
@@ -574,7 +574,7 @@ class TestViewCourseView:
             associated_commitments[2].save()
             client.force_login(saved_clinician_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             # This can change if we do something other than a table.
             assert re.compile(r"<td>In progress:</td>\s*<td>1</td>").search(html)
@@ -592,7 +592,7 @@ class TestViewCourseView:
             )
             client.force_login(saved_clinician_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             assert commitment_template_1.title in html
             assert commitment_template_2.title in html
@@ -606,7 +606,7 @@ class TestViewCourseView:
             )
             client.force_login(saved_clinician_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             create_from_link_url_1 = reverse(
                 "create Commitment from suggested commitment", 
@@ -637,7 +637,7 @@ class TestViewCourseView:
         ):
             client.force_login(saved_clinician_profile.user)
             html = client.get(
-                reverse("view course", kwargs={ "course_id": enrolled_course.id })
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             for commitment in associated_commitments:
                 assert commitment.title in html
@@ -652,7 +652,7 @@ class TestViewCourseView:
         ):
             client.force_login(saved_provider_profile.user)
             target_url = reverse(
-                "view course",
+                "view Course",
                 kwargs={"course_id": enrolled_course.id}
             )
             response = client.post(
@@ -684,7 +684,7 @@ class TestEditCourseView:
             self, client, saved_clinician_user, enrolled_course
         ):
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(saved_clinician_user)
@@ -695,7 +695,7 @@ class TestEditCourseView:
             self, client, other_provider_profile, enrolled_course
         ):
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(other_provider_profile.user)
@@ -706,7 +706,7 @@ class TestEditCourseView:
             self, client,saved_provider_profile, enrolled_course
         ):
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(saved_provider_profile.user)
@@ -724,7 +724,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, enrolled_course
         ):
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(saved_provider_profile.user)
@@ -746,7 +746,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -765,7 +765,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -784,7 +784,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -807,7 +807,7 @@ class TestEditCourseView:
             self, client, saved_clinician_user, enrolled_course
         ):
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(saved_clinician_user)
@@ -818,7 +818,7 @@ class TestEditCourseView:
             self, client, other_provider_profile, enrolled_course
         ):
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(other_provider_profile.user)
@@ -829,7 +829,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, enrolled_course
         ):
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(saved_provider_profile.user)
@@ -846,7 +846,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, enrolled_course
         ):
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(saved_provider_profile.user)
@@ -867,7 +867,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, enrolled_course
         ):
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(saved_provider_profile.user)
@@ -880,7 +880,7 @@ class TestEditCourseView:
             )
             assert response.status_code == 302
             assert response.url == reverse(
-                "view course",
+                "view Course",
                 kwargs={"course_id": enrolled_course.id}
             )
 
@@ -890,7 +890,7 @@ class TestEditCourseView:
             students_before = [ student for student in enrolled_course.students.all() ]
             assert len(students_before) > 0
             target_url = reverse(
-                "edit course", 
+                "edit Course", 
                 kwargs={ "course_id": enrolled_course.id }
             )
             client.force_login(saved_provider_profile.user)
@@ -909,7 +909,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -928,7 +928,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -946,7 +946,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -965,7 +965,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -983,7 +983,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -1002,7 +1002,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -1020,7 +1020,7 @@ class TestEditCourseView:
             self, client, saved_provider_profile, existing_course
         ):
             target_url = reverse(
-                "edit course",
+                "edit Course",
                 kwargs={"course_id": existing_course.id}
             )
             client.force_login(saved_provider_profile.user)
@@ -1228,7 +1228,7 @@ class TestCourseChangeSuggestedCommitmentsView:
             )
             assert response.status_code == 302
             assert response.url == reverse(
-                "view course", kwargs={ "course_id": enrolled_course.id }
+                "view Course", kwargs={ "course_id": enrolled_course.id }
             )
 
 
@@ -1243,7 +1243,7 @@ class TestJoinCourseView:
             self, client, saved_provider_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code
@@ -1257,7 +1257,7 @@ class TestJoinCourseView:
             self, client, other_provider_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code
@@ -1271,7 +1271,7 @@ class TestJoinCourseView:
             self, client, saved_clinician_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code + "wrong"
@@ -1285,7 +1285,7 @@ class TestJoinCourseView:
             self, client, saved_clinician_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code
@@ -1306,7 +1306,7 @@ class TestJoinCourseView:
             self, client, saved_clinician_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code
@@ -1331,7 +1331,7 @@ class TestJoinCourseView:
             self, client, saved_provider_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code
@@ -1345,7 +1345,7 @@ class TestJoinCourseView:
             self, client, saved_clinician_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code + "wrong"
@@ -1359,7 +1359,7 @@ class TestJoinCourseView:
             self, client, saved_clinician_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code
@@ -1378,7 +1378,7 @@ class TestJoinCourseView:
             self, client, saved_clinician_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code
@@ -1392,7 +1392,7 @@ class TestJoinCourseView:
             self, client, saved_clinician_profile, non_enrolled_course
         ):
             target_url = reverse(
-                "join course",
+                "join Course",
                 kwargs={
                     "course_id": non_enrolled_course.id,
                     "join_code": non_enrolled_course.join_code
@@ -1402,6 +1402,6 @@ class TestJoinCourseView:
             response = client.post(target_url, {"join": "true"})
             assert response.status_code == 302
             assert response.url == reverse(
-                "view course",
+                "view Course",
                 kwargs={"course_id": non_enrolled_course.id}
             )

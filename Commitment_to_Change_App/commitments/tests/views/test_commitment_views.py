@@ -14,20 +14,20 @@ from commitments.tests.helpers import convert_date_to_general_regex
 
 
 @pytest.mark.django_db
-class TestMakeCommitmentView:
-    """Tests for MakeCommitmentView"""
+class TestCreateCommitmentView:
+    """Tests for CreateCommitmentView"""
 
     class TestGet:
-        """Tests for MakeCommitmentView.get"""
+        """Tests for CreateCommitmentView.get"""
 
         def test_rejects_provider_accounts_with_403(self, client, saved_provider_user):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_provider_user)
             response = client.get(target_url)
             assert response.status_code == 403
 
         def test_shows_post_form_pointing_to_this_view(self, client, saved_clinician_profile):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             html = client.get(target_url).content.decode()
             form_regex = re.compile(
@@ -40,7 +40,7 @@ class TestMakeCommitmentView:
             assert post_method_regex.search(form_tag)
 
         def test_mandatory_commitment_fields_are_required(self, client, saved_clinician_profile):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             html = client.get(target_url).content.decode()
             title_input_regex = re.compile(
@@ -65,7 +65,7 @@ class TestMakeCommitmentView:
         def test_associated_course_shows_only_enrolled_courses_and_blank(
             self, client, saved_clinician_profile, enrolled_course, non_enrolled_course
         ):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             html = client.get(target_url).content.decode()
             associated_course_select_regex = re.compile(
@@ -82,10 +82,10 @@ class TestMakeCommitmentView:
 
 
     class TestPost:
-        """Tests for MakeCommitmentView.post"""
+        """Tests for CreateCommitmentView.post"""
 
         def test_rejects_provider_accounts_with_403(self, client, saved_provider_user):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_provider_user)
             response = client.post(target_url)
             assert response.status_code == 403
@@ -93,7 +93,7 @@ class TestMakeCommitmentView:
         def test_bad_request_returns_get_form_with_error_notes(
             self, client, saved_clinician_profile
         ):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             html = client.post(
                 target_url,
@@ -109,7 +109,7 @@ class TestMakeCommitmentView:
             assert error_notes_regex.search(html)
 
         def test_good_request_creates_commitment(self, client, saved_clinician_profile):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
@@ -126,7 +126,7 @@ class TestMakeCommitmentView:
             ).exists()
 
         def test_good_request_redirects_to_view_page(self, client, saved_clinician_profile):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             response = client.post(
                 target_url,
@@ -143,12 +143,12 @@ class TestMakeCommitmentView:
             )
             assert response.status_code == 302
             assert response.url == reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": commitment.id}
             )
 
         def test_empty_titles_are_rejected(self, client, saved_clinician_profile):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
@@ -160,7 +160,7 @@ class TestMakeCommitmentView:
             assert not Commitment.objects.filter(description="test description").exists()
 
         def test_empty_descriptions_are_rejected(self, client, saved_clinician_profile):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
@@ -172,7 +172,7 @@ class TestMakeCommitmentView:
             assert not Commitment.objects.filter(title="sample title").exists()
 
         def test_empty_deadlines_are_rejected(self, client, saved_clinician_profile):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
@@ -184,7 +184,7 @@ class TestMakeCommitmentView:
             assert not Commitment.objects.filter(title="sample title").exists()
 
         def test_past_deadlines_are_rejected(self, client, saved_clinician_profile):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
@@ -199,7 +199,7 @@ class TestMakeCommitmentView:
         def test_enrolled_courses_are_accepted(
             self, client, saved_clinician_profile, enrolled_course
         ):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
@@ -220,7 +220,7 @@ class TestMakeCommitmentView:
         def test_non_enrolled_courses_are_rejected(
             self, client, saved_clinician_profile, non_enrolled_course
         ):
-            target_url = reverse("make commitment")
+            target_url = reverse("create Commitment")
             client.force_login(saved_clinician_profile.user)
             client.post(
                 target_url,
@@ -270,7 +270,7 @@ class TestViewCommitmentView:
             uid = viewable_commitment_1.id
             viewable_commitment_1.delete()
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": uid}
             )
             response = client.get(target_url)
@@ -281,7 +281,7 @@ class TestViewCommitmentView:
         ):
             client.force_login(saved_clinician_profile.user)
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             html = client.get(target_url).content.decode()
@@ -295,7 +295,7 @@ class TestViewCommitmentView:
         ):
             client.force_login(saved_clinician_profile.user)
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_2.id}
             )
             html = client.get(target_url).content.decode()
@@ -309,7 +309,7 @@ class TestViewCommitmentView:
         ):
             client.force_login(other_clinician_profile.user)
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             html = client.get(target_url).content.decode()
@@ -321,7 +321,7 @@ class TestViewCommitmentView:
         ):
             client.force_login(saved_provider_profile.user)
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             html = client.get(target_url).content.decode()
@@ -332,7 +332,7 @@ class TestViewCommitmentView:
             self, client, viewable_commitment_2
         ):
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_2.id}
             )
             html = client.get(target_url).content.decode()
@@ -344,7 +344,7 @@ class TestViewCommitmentView:
         ):
             client.force_login(saved_clinician_profile.user)
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             html = client.get(target_url).content.decode()
@@ -364,7 +364,7 @@ class TestViewCommitmentView:
         ):
             client.force_login(other_clinician_profile.user)
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             html = client.get(target_url).content.decode()
@@ -384,7 +384,7 @@ class TestViewCommitmentView:
         ):
             client.force_login(saved_provider_profile.user)
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             html = client.get(target_url).content.decode()
@@ -403,7 +403,7 @@ class TestViewCommitmentView:
             self, client, viewable_commitment_1
         ):
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             html = client.get(target_url).content.decode()
@@ -424,7 +424,7 @@ class TestViewCommitmentView:
 
         def test_post_rejected_with_405(self, client, viewable_commitment_1):
             target_url = reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             response = client.post(target_url)
@@ -453,7 +453,7 @@ class TestEditCommitmentView:
             self, client, saved_provider_user, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_provider_user)
@@ -464,7 +464,7 @@ class TestEditCommitmentView:
             self, client, other_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(other_clinician_profile.user)
@@ -477,7 +477,7 @@ class TestEditCommitmentView:
             uid = existing_commitment.id
             existing_commitment.delete()
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": uid}
             )
             client.force_login(saved_clinician_profile.user)
@@ -488,7 +488,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -506,7 +506,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -538,7 +538,7 @@ class TestEditCommitmentView:
             existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -563,7 +563,7 @@ class TestEditCommitmentView:
             self, client, saved_provider_user, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_provider_user)
@@ -581,7 +581,7 @@ class TestEditCommitmentView:
             self, client, other_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(other_clinician_profile.user)
@@ -601,7 +601,7 @@ class TestEditCommitmentView:
             uid = existing_commitment.id
             existing_commitment.delete()
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": uid}
             )
             client.force_login(saved_clinician_profile.user)
@@ -619,7 +619,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -640,7 +640,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -662,7 +662,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -677,7 +677,7 @@ class TestEditCommitmentView:
             )
             assert response.status_code == 302
             assert response.url == reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
 
@@ -685,7 +685,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -703,7 +703,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -721,7 +721,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -739,7 +739,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -758,7 +758,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, enrolled_course, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -778,7 +778,7 @@ class TestEditCommitmentView:
             self, client, saved_clinician_profile, non_enrolled_course, existing_commitment
         ):
             target_url = reverse(
-                "edit commitment",
+                "edit Commitment",
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -816,7 +816,7 @@ class TestDeleteCommitmentView:
             self, client, saved_provider_user, existing_commitment
         ):
             target_url = reverse(
-                "delete commitment", 
+                "delete Commitment", 
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_provider_user)
@@ -827,7 +827,7 @@ class TestDeleteCommitmentView:
             self, client, other_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "delete commitment", 
+                "delete Commitment", 
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(other_clinician_profile.user)
@@ -838,7 +838,7 @@ class TestDeleteCommitmentView:
             self, client,saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "delete commitment", 
+                "delete Commitment", 
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -856,7 +856,7 @@ class TestDeleteCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "delete commitment", 
+                "delete Commitment", 
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -880,7 +880,7 @@ class TestDeleteCommitmentView:
             self, client, saved_provider_user, existing_commitment
         ):
             target_url = reverse(
-                "delete commitment", 
+                "delete Commitment", 
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_provider_user)
@@ -891,7 +891,7 @@ class TestDeleteCommitmentView:
             self, client, other_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "delete commitment", 
+                "delete Commitment", 
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(other_clinician_profile.user)
@@ -902,7 +902,7 @@ class TestDeleteCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "delete commitment", 
+                "delete Commitment", 
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -920,7 +920,7 @@ class TestDeleteCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "delete commitment", 
+                "delete Commitment", 
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -934,7 +934,7 @@ class TestDeleteCommitmentView:
             self, client, saved_clinician_profile, existing_commitment
         ):
             target_url = reverse(
-                "delete commitment", 
+                "delete Commitment", 
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
@@ -1278,7 +1278,7 @@ class TestCreateFromSuggestedCommitmentView:
                 associated_course=enrolled_course.id
             )
             assert response.url == reverse(
-                "view commitment",
+                "view Commitment",
                 kwargs={"commitment_id": commitment.id}
             )
 
@@ -1294,7 +1294,7 @@ class TestCompleteCommitmentView:
         """
 
         def test_get_returns_405(self, client, saved_clinician_profile):
-            target_url = reverse("complete commitment", kwargs={"commitment_id": 1})
+            target_url = reverse("complete Commitment", kwargs={"commitment_id": 1})
             client.force_login(saved_clinician_profile.user)
             response = client.get(target_url)
             assert response.status_code == 405
@@ -1317,7 +1317,7 @@ class TestCompleteCommitmentView:
             self, client, saved_completable_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "complete commitment", 
+                "complete Commitment", 
                 kwargs={
                     "commitment_id": saved_completable_commitment.id
                 }
@@ -1334,7 +1334,7 @@ class TestCompleteCommitmentView:
             self, client,saved_completable_commitment, other_clinician_profile
         ):
             target_url = reverse(
-                "complete commitment", 
+                "complete Commitment", 
                 kwargs={
                     "commitment_id": saved_completable_commitment.id
                 }
@@ -1351,7 +1351,7 @@ class TestCompleteCommitmentView:
             self, client, saved_completable_commitment, other_clinician_profile
         ):
             target_url = reverse(
-                "complete commitment", 
+                "complete Commitment", 
                 kwargs={
                     "commitment_id": saved_completable_commitment.id
                 }
@@ -1367,7 +1367,7 @@ class TestCompleteCommitmentView:
             self, client, saved_completable_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "complete commitment", 
+                "complete Commitment", 
                 kwargs={
                     "commitment_id": saved_completable_commitment.id
                 }
@@ -1384,7 +1384,7 @@ class TestCompleteCommitmentView:
             self, client, saved_completable_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "complete commitment", 
+                "complete Commitment", 
                 kwargs={
                     "commitment_id": saved_completable_commitment.id
                 }
@@ -1408,7 +1408,7 @@ class TestDiscontinueCommitmentView:
         """
 
         def test_get_returns_405(self, client, saved_clinician_profile):
-            target_url = reverse("discontinue commitment", kwargs={"commitment_id": 1})
+            target_url = reverse("discontinue Commitment", kwargs={"commitment_id": 1})
             client.force_login(saved_clinician_profile.user)
             response = client.get(target_url)
             assert response.status_code == 405
@@ -1431,7 +1431,7 @@ class TestDiscontinueCommitmentView:
             self, client, saved_discontinueable_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "discontinue commitment", 
+                "discontinue Commitment", 
                 kwargs={
                     "commitment_id": saved_discontinueable_commitment.id
                 }
@@ -1448,7 +1448,7 @@ class TestDiscontinueCommitmentView:
             self, client,saved_discontinueable_commitment, other_clinician_profile
         ):
             target_url = reverse(
-                "discontinue commitment", 
+                "discontinue Commitment", 
                 kwargs={
                     "commitment_id": saved_discontinueable_commitment.id
                 }
@@ -1465,7 +1465,7 @@ class TestDiscontinueCommitmentView:
             self, client, saved_discontinueable_commitment, other_clinician_profile
         ):
             target_url = reverse(
-                "discontinue commitment", 
+                "discontinue Commitment", 
                 kwargs={
                     "commitment_id": saved_discontinueable_commitment.id
                 }
@@ -1481,7 +1481,7 @@ class TestDiscontinueCommitmentView:
             self, client, saved_discontinueable_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "discontinue commitment", 
+                "discontinue Commitment", 
                 kwargs={
                     "commitment_id": saved_discontinueable_commitment.id
                 }
@@ -1498,7 +1498,7 @@ class TestDiscontinueCommitmentView:
             self, client, saved_discontinueable_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "discontinue commitment", 
+                "discontinue Commitment", 
                 kwargs={
                     "commitment_id": saved_discontinueable_commitment.id
                 }
@@ -1522,7 +1522,7 @@ class TestReopenCommitmentView:
         """
 
         def test_get_returns_405(self, client, saved_clinician_profile):
-            target_url = reverse("reopen commitment", kwargs={"commitment_id": 1})
+            target_url = reverse("reopen Commitment", kwargs={"commitment_id": 1})
             client.force_login(saved_clinician_profile.user)
             response = client.get(target_url)
             assert response.status_code == 405
@@ -1555,7 +1555,7 @@ class TestReopenCommitmentView:
             self, client, saved_complete_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "reopen commitment", 
+                "reopen Commitment", 
                 kwargs={
                     "commitment_id": saved_complete_commitment.id
                 }
@@ -1572,7 +1572,7 @@ class TestReopenCommitmentView:
             self, client, saved_discontinued_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "reopen commitment", 
+                "reopen Commitment", 
                 kwargs={
                     "commitment_id": saved_discontinued_commitment.id
                 }
@@ -1589,7 +1589,7 @@ class TestReopenCommitmentView:
             self, client,saved_complete_commitment, other_clinician_profile
         ):
             target_url = reverse(
-                "reopen commitment", 
+                "reopen Commitment", 
                 kwargs={
                     "commitment_id": saved_complete_commitment.id
                 }
@@ -1606,7 +1606,7 @@ class TestReopenCommitmentView:
             self, client, saved_complete_commitment, other_clinician_profile
         ):
             target_url = reverse(
-                "reopen commitment", 
+                "reopen Commitment", 
                 kwargs={
                     "commitment_id": saved_complete_commitment.id
                 }
@@ -1622,7 +1622,7 @@ class TestReopenCommitmentView:
             self, client, saved_complete_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "reopen commitment", 
+                "reopen Commitment", 
                 kwargs={
                     "commitment_id": saved_complete_commitment.id
                 }
@@ -1639,7 +1639,7 @@ class TestReopenCommitmentView:
             self, client, saved_complete_commitment, saved_clinician_profile
         ):
             target_url = reverse(
-                "reopen commitment", 
+                "reopen Commitment", 
                 kwargs={
                     "commitment_id": saved_complete_commitment.id
                 }

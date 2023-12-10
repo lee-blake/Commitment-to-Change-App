@@ -62,7 +62,7 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, TemplateView):
         return context
 
 
-class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
+class CreateCommitmentView(ClinicianLoginRequiredMixin, CreateView):
     form_class = CommitmentForm
     template_name = "commitments/Commitment/make_commitment.html"
 
@@ -74,7 +74,7 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse(
-            "view commitment",
+            "view Commitment",
             kwargs={"commitment_id": self.object.id}
         )
 
@@ -114,7 +114,7 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
-            "view commitment",
+            "view Commitment",
             kwargs={"commitment_id": self.object.id}
         )
 
@@ -156,7 +156,7 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, CreateView)
 
     def get_success_url(self):
         return reverse(
-            "view commitment",
+            "view Commitment",
             kwargs={"commitment_id": self.object.id}
         )
 
@@ -217,7 +217,7 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse(
-            "view course",
+            "view Course",
             kwargs={"course_id": self.object.id}
         )
 
@@ -249,7 +249,7 @@ class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
-            "view course",
+            "view Course",
             kwargs={"course_id": self.object.id}
         )
 
@@ -271,7 +271,7 @@ class JoinCourseView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
-            "view course",
+            "view Course",
             kwargs={"course_id": self.object.id}
         )
 
@@ -305,7 +305,7 @@ class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateVie
 
     def get_success_url(self):
         return reverse(
-            "view course",
+            "view Course",
             kwargs={"course_id": self.object.id}
         )
 

@@ -15,8 +15,8 @@
 {% endblock form_header %}
 
 {% block form_url %}
-{% url 'edit commitment' commitment_id=commitment.id %}
+{% url "edit Commitment" commitment_id=commitment.id %}
 {% endblock form_url %}
 {% block form_extra_action_buttons %}
-<a href="{% url 'delete commitment' commitment_id=commitment.id %}" class="view-button p-1">Delete</a>
+<a href="{% url "delete Commitment" commitment_id=commitment.id %}" class="view-button p-1">Delete</a>
 {% endblock form_extra_action_buttons %}
