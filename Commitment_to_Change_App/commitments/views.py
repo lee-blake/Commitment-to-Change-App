@@ -3,7 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
-from django.views import View
+#from django.views import View
+from django.views.generic.base import View, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse, reverse_lazy
@@ -71,20 +72,15 @@ class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
         return render(request, "commitments/dashboard/clinician/dashboard_clinician_page.html", context)
 
 
-class ProviderDashboardView(ProviderLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        profile = ProviderProfile.objects.get(user=request.user)
-        courses = Course.objects.filter(owner=profile)
-        commitment_templates = CommitmentTemplate.objects.filter(owner=profile)
-        return render(
-            request,
-            "commitments/dashboard/provider/dashboard_provider_page.html", 
-            {
-                "courses": courses,
-                "commitment_templates": commitment_templates
-            }
-        )
+class ProviderDashboardView(ProviderLoginRequiredMixin, TemplateView):
+    template_name = "commitments/dashboard/provider/dashboard_provider_page.html"
+
+    def get_context_data(self, **kwargs):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        context = super().get_context_data(**kwargs)
+        context["courses"] = Course.objects.filter(owner=viewer)
+        context["commitment_templates"] = CommitmentTemplate.objects.filter(owner=viewer)
+        return context
 
 
 class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
