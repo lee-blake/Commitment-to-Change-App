@@ -223,23 +223,18 @@ class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
         )
 
 
-class ViewCourseView(LoginRequiredMixin, View):
-    @staticmethod
-    def get(request, course_id):
-        course = get_object_or_404(Course, id=course_id)
-        context = {
-            "course": course,
-        }
-        if request.user.is_provider and \
-                course.owner == ProviderProfile.objects.get(user=request.user):
-            return render(request, "commitments/Course/course_view_owned_page.html", context)
-        elif request.user.is_clinician and course.students.contains(
-            ClinicianProfile.objects.get(user=request.user)
-        ):
-            return render(
-                request, "commitments/Course/course_view_unowned_page.html", context)
+class ViewCourseView(LoginRequiredMixin, DetailView):
+    model = Course
+    pk_url_kwarg = "course_id"
+
+    def get_template_names(self):
+        if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
+            return ["commitments/Course/course_view_owned_page.html"]
         else:
-            return HttpResponseNotFound("<h1>404</h1")
+            # The viewer must be a student or we should 404 for plausibile deniability of
+            # the existence of the course. Filtering the students for the user works in one line.
+            get_object_or_404(self.object.students, user=self.request.user)
+            return ["commitments/Course/course_view_unowned_page.html"]
 
 
 class JoinCourseView(LoginRequiredMixin, View):
