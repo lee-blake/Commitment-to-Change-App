@@ -1,0 +1,33 @@
+<div class="text-center secondary-accent round-corners">
+    <h3>Status Breakdown</h3>
+</div>
+<div class="table-responsive pt-3 px-4">
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Commitment Status:</th>
+                <th scope="col">Count:</th>
+            </tr>
+        </thead>
+        <tr>
+            <td>In progress:</td>
+            <td>{{ course.statistics.associated_commitments.statuses.in_progress }}</td>
+        </tr>
+        <tr>
+            <td>Completed:</td>
+            <td>{{ course.statistics.associated_commitments.statuses.complete }}</td>
+        </tr>
+        <tr>
+            <td>Past Due:</td>
+            <td>{{ course.statistics.associated_commitments.statuses.past_due }}</td>
+        </tr>
+        <tr>
+            <td>Discontinued:</td>
+            <td>{{ course.statistics.associated_commitments.statuses.discontinued }}</td>
+        </tr>
+        <tr>
+            <th>Total:</th>
+            <th>{{ course.statistics.associated_commitments.total }}</th>
+        </tr>
+    </table>
+</div>

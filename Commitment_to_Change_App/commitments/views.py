@@ -1,7 +1,6 @@
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError, \
-    HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.views import View
@@ -9,7 +8,6 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse, reverse_lazy
 
-from commitments.enums import CommitmentStatus
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
     DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm
@@ -223,49 +221,18 @@ class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
         )
 
 
-class ViewCourseView(LoginRequiredMixin, View):
-    @staticmethod
-    def get(request, course_id):
-        course = get_object_or_404(Course, id=course_id)
-        associated_commitments = Commitment.objects.filter(associated_course=course)
-        total = 0
-        in_progress = 0
-        complete = 0
-        past_due = 0
-        discontinued = 0
-        for commitment in associated_commitments:
-            total += 1
-            match commitment.status:
-                case CommitmentStatus.IN_PROGRESS:
-                    in_progress += 1
-                case CommitmentStatus.COMPLETE:
-                    complete += 1
-                case CommitmentStatus.EXPIRED:
-                    past_due += 1
-                case CommitmentStatus.DISCONTINUED:
-                    discontinued += 1
+class ViewCourseView(LoginRequiredMixin, DetailView):
+    model = Course
+    pk_url_kwarg = "course_id"
 
-        context = {
-            "course": course,
-            "associated_commitments": associated_commitments,
-            "status_breakdown": {
-                "total": total,
-                "in_progress": in_progress,
-                "complete": complete,
-                "past_due": past_due,
-                "discontinued": discontinued
-            }
-        }
-        if request.user.is_provider and \
-                course.owner == ProviderProfile.objects.get(user=request.user):
-            return render(request, "commitments/Course/course_view_owned_page.html", context)
-        elif request.user.is_clinician and course.students.contains(
-            ClinicianProfile.objects.get(user=request.user)
-        ):
-            return render(
-                request, "commitments/Course/course_view_unowned_page.html", context)
+    def get_template_names(self):
+        if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
+            return ["commitments/Course/course_view_owned_page.html"]
         else:
-            return HttpResponseNotFound("<h1>404</h1")
+            # The viewer must be a student or we should 404 for plausibile deniability of
+            # the existence of the course. Filtering the students for the user works in one line.
+            get_object_or_404(self.object.students, user=self.request.user)
+            return ["commitments/Course/course_view_unowned_page.html"]
 
 
 class JoinCourseView(LoginRequiredMixin, View):

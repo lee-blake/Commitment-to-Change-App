@@ -74,6 +74,12 @@ class Course(CourseLogic, models.Model):
         CourseLogic.__init__(self, data_object=self)
         models.Model.__init__(self, *args, **kwargs)
 
+    @property
+    def associated_commitments_list(self):
+        # Because business logic methods iterate over the associated commitments, and because
+        # Django ManyToManyFields are not iterable, we must wrap them with a property.
+        return self.associated_commitments.all()
+
 
 class Commitment(CommitmentLogic, models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
@@ -95,7 +101,8 @@ class Commitment(CommitmentLogic, models.Model):
         Course,
         on_delete=models.SET_NULL,
         null=True,
-        default=None
+        default=None,
+        related_name="associated_commitments"
     )
 
     def __init__(self, *args, **kwargs):

@@ -222,4 +222,30 @@ class TestCourse:
         def test_returns_title(self, title):
             course = Course(title=title)
             assert str(course) == title
-        
+
+    @pytest.mark.django_db
+    class TestAssociatedCommitmentsList:
+        """Tests for Commitment.associated_commitments_list"""
+
+        def test_no_associated_commitments_returns_empty_iterable(self, minimal_course):
+            assert len(minimal_course.associated_commitments_list) == 0
+            assert iter(minimal_course.associated_commitments_list)
+
+        def test_one_associated_commitment_returns_iterable_with_it(
+            self, minimal_course, minimal_commitment
+        ):
+            minimal_commitment.associated_course = minimal_course
+            minimal_commitment.save()
+            assert minimal_commitment in minimal_course.associated_commitments_list
+            assert iter(minimal_course.associated_commitments_list)
+
+    @pytest.mark.django_db
+    class TestStatistics:
+        """Tests for checking that CourseLogic.statistics integrates with Course"""
+
+        def test_associated_commitment_generates_statistics_total_1(
+            self, minimal_course, minimal_commitment
+        ):
+            minimal_commitment.associated_course = minimal_course
+            minimal_commitment.save()
+            assert minimal_course.statistics["associated_commitments"]["total"] == 1
