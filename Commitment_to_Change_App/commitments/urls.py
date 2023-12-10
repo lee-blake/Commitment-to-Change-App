@@ -63,17 +63,17 @@ urlpatterns = [
      path(
           "course/create/",
           views.CreateCourseView.as_view(),
-          name="create course"
+          name="create Course"
      ),
      path(
           "course/<int:course_id>/view/",
           views.ViewCourseView.as_view(),
-          name="view course"
+          name="view Course"
      ),
      path(
           "course/<int:course_id>/edit/",
           views.EditCourseView.as_view(),
-          name="edit course"
+          name="edit Course"
      ),
      path(
           "course/<int:course_id>/suggested-commitments/select/",
@@ -83,7 +83,7 @@ urlpatterns = [
      path(
           "course/<int:course_id>/join/<str:join_code>/",
           views.JoinCourseView.as_view(),
-          name="join course"
+          name="join Course"
      ),
 
      path(

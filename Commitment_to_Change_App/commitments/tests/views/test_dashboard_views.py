@@ -114,7 +114,7 @@ class TestClinicianDashboardView:
             html = client.get(reverse("clinician dashboard")).content.decode()
             for course in courses_enrolling_only_saved_clinician_profile:
                 course_view_url = reverse(
-                    "view course",
+                    "view Course",
                     kwargs={"course_id": course.id}
                 )
                 course_link = f"href=\"{course_view_url}\""
@@ -127,7 +127,7 @@ class TestClinicianDashboardView:
             html = client.get(reverse("clinician dashboard")).content.decode()
             for course in courses_enrolling_only_saved_clinician_profile:
                 course_view_url = reverse(
-                    "view course",
+                    "view Course",
                     kwargs={"course_id": course.id}
                 )
                 course_link = f"href=\"{course_view_url}\""
@@ -182,7 +182,7 @@ class TestProviderDashboardView:
         ):
             client.force_login(saved_provider_profile.user)
             html = client.get(reverse("provider dashboard")).content.decode()
-            create_course_link = reverse("create course")
+            create_course_link = reverse("create Course")
             create_course_link_regex = re.compile(
                 r"\<a\s[^\>]*href=\"" + create_course_link + r"\"[^\>]*\>"
             )
@@ -195,7 +195,7 @@ class TestProviderDashboardView:
             html = client.get(reverse("provider dashboard")).content.decode()
             for course in courses_owned_by_saved_provider_profile:
                 course_view_url = reverse(
-                    "view course",
+                    "view Course",
                     kwargs={"course_id": course.id}
                 )
                 course_link = f"href=\"{course_view_url}\""
@@ -208,7 +208,7 @@ class TestProviderDashboardView:
             html = client.get(reverse("provider dashboard")).content.decode()
             for course in courses_owned_by_saved_provider_profile:
                 course_view_url = reverse(
-                    "view course",
+                    "view Course",
                     kwargs={"course_id": course.id}
                 )
                 course_link = f"href=\"{course_view_url}\""

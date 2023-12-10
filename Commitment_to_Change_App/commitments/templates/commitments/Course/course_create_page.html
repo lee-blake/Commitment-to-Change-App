@@ -7,7 +7,7 @@
     <div class="row g-5">
         <div class="col" align="center">
             <div class="px-4 py-3 foreground round-corners default-form">
-                <form action="{% url 'create course' %}" method="post">
+                <form action="{% url "create Course" %}" method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <input type="submit" value="Submit">

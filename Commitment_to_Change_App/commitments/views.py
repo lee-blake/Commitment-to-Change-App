@@ -189,7 +189,7 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse(
-            "view course",
+            "view Course",
             kwargs={"course_id": self.object.id}
         )
 
@@ -207,7 +207,7 @@ class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
-            "view course",
+            "view Course",
             kwargs={"course_id": self.object.id}
         )
 
@@ -243,7 +243,7 @@ class JoinCourseView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse(
-            "view course",
+            "view Course",
             kwargs={"course_id": self.object.id}
         )
 
@@ -306,7 +306,7 @@ class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateVie
 
     def get_success_url(self):
         return reverse(
-            "view course",
+            "view Course",
             kwargs={"course_id": self.object.id}
         )
 
