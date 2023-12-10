@@ -2,7 +2,8 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput, ModelChoiceField, CheckboxSelectMultiple, \
     ModelMultipleChoiceField, BooleanField, Form, HiddenInput
 
-from .models import ClinicianProfile, Commitment, Course, CommitmentTemplate, ProviderProfile
+from commitments.models import ClinicianProfile, Commitment, Course, CommitmentTemplate, \
+    ProviderProfile
 
 
 class ClinicianProfileForm(ModelForm):
