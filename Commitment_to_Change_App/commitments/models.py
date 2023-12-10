@@ -46,14 +46,6 @@ class CommitmentTemplate(CommitmentTemplateLogic, models.Model):
     def __str__(self):
         return str(self.title)
 
-    def into_commitment(self, **kwargs):
-        return Commitment(
-            title=self.title,
-            description=self.description,
-            source_template=self,
-            **kwargs
-        )
-
 
 class Course(CourseLogic, models.Model):
     DEFAULT_JOIN_CODE_LENGTH = 8
