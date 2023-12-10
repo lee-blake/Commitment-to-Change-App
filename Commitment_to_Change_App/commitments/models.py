@@ -86,9 +86,6 @@ class Course(CourseLogic, models.Model):
         if not self.students.contains(student): #pylint: disable=no-member
             self.students.add(student)
 
-    #def __str__(self):
-    #    return self.title.__str__()
-
 
 class Commitment(CommitmentLogic, models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
