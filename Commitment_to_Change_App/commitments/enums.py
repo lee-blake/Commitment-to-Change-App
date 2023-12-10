@@ -1,5 +1,6 @@
 from django.db.models import IntegerChoices
 
+
 class CommitmentStatus(IntegerChoices):
     # While this may seem to depend on Django, IntegerChoices is mostly just enum.Enum with some
     # nice helper methods for getting names and choices for the database. If we move frameworks
