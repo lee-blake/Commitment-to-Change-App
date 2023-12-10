@@ -10,7 +10,8 @@ from django.urls import reverse, reverse_lazy
 
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
-    DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm
+    DiscontinueCommitmentForm, ReopenCommitmentForm, \
+    CreateCommitmentFromSuggestedCommitmentForm, JoinCourseForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -235,43 +236,42 @@ class ViewCourseView(LoginRequiredMixin, DetailView):
             return ["commitments/Course/course_view_unowned_page.html"]
 
 
-class JoinCourseView(LoginRequiredMixin, View):
+class JoinCourseView(LoginRequiredMixin, UpdateView):
+    template_name = "commitments/Course/course_student_join_page.html"
+    pk_url_kwarg = "course_id"
 
-    @staticmethod
-    def get(request, course_id, join_code):
-        course = get_object_or_404(Course, id=course_id, join_code=join_code)
-        if request.user.is_provider:
-            profile = ProviderProfile.objects.get(user=request.user)
-            if not course.owner == profile:
-                raise PermissionDenied("Providers cannot join courses.")
-            return render(
-                request,
-                "commitments/Course/course_owner_join_page.html",
-                context={"course": course}
-            )
-        return render(
-            request,
-            "commitments/Course/course_student_join_page.html",
-            context={"course": course}
+    def get_queryset(self):
+        return Course.objects.filter(join_code=self.kwargs["join_code"])
+
+    def get_form(self, form_class=None):
+        viewer = get_object_or_404(ClinicianProfile, user=self.request.user)
+        return JoinCourseForm(
+            viewer,
+            self.kwargs["join_code"],
+            **self.get_form_kwargs()
         )
 
-    @staticmethod
-    def post(request, course_id, join_code):
-        if not request.user.is_clinician:
-            raise PermissionDenied("Providers cannot join courses.")
-        if request.POST.get("join") == "true":
-            course = get_object_or_404(Course, id=course_id, join_code=join_code)
-            profile = ClinicianProfile.objects.get(user=request.user)
-            if not course.students.contains(profile):
-                course.students.add(profile)
-            return HttpResponseRedirect(
-                reverse(
-                    "view course",
-                    kwargs={"course_id": course.id}
-                )
+    def get_success_url(self):
+        return reverse(
+            "view course",
+            kwargs={"course_id": self.object.id}
+        )
+
+    # We must override the get and post methods to allow the course owner to view the 
+    # landing page without getting a 403. It is simple enough to be worth it.
+    def get(self, *args, **kwargs):
+        if self.request.user == Course.objects.get(id=kwargs["course_id"]).owner.user:
+            return render(
+                self.request,
+                "commitments/Course/course_owner_join_page.html",
+                {"course": self.get_object()}
             )
-        else:
-            return JoinCourseView.get(request, course_id, join_code)
+        return super().get(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        if not self.request.user.is_clinician:
+            raise PermissionDenied("Providers cannot join courses.")
+        return super().post(*args, **kwargs)
 
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):

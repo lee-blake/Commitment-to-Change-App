@@ -165,3 +165,20 @@ class ReopenCommitmentForm(ModelForm):
     def save(self, commit=True):
         self.instance.reopen()
         super().save(commit=commit)
+
+
+class JoinCourseForm(ModelForm):
+    class Meta:
+        model = Course
+        fields = []
+
+    join = BooleanField(initial=True, widget=HiddenInput())
+
+    def __init__(self, student, student_join_code, *args, **kwargs):
+        self._student = student
+        self._student_join_code = student_join_code
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        self.instance.enroll_student_with_join_code(self._student, self._student_join_code)
+        return self.instance
