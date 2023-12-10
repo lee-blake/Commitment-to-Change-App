@@ -6,7 +6,8 @@ from cme_accounts.models import User
 
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm,\
-     DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm
+    DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm, \
+    JoinCourseForm
 from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course
 
 
@@ -361,3 +362,36 @@ class TestCreateCommitmentFromSuggestedCommitmentForm:
                 owner=commitment_owner
             )
             assert form.instance.title == source_template.title
+
+
+class TestJoinCourseForm:
+    """Tests for JoinCourseForm"""
+
+    class TestIsValid:
+        """Tests for JoinCourseForm.is_valid"""
+
+        def test_no_join_key_is_not_valid(self):
+            form = JoinCourseForm("student", "join_code", {})
+            assert not form.is_valid()
+
+        def test_any_join_key_present_is_valid(self):
+            form = JoinCourseForm("student", "join_code", {"join": "anything"})
+            assert form.is_valid()
+
+
+    @pytest.mark.django_db
+    class TestSave:
+        """Tests for JoinCourseForm.save"""
+
+        def test_save_enrolls_student_with_valid_code(
+            self, minimal_course, minimal_clinician
+        ):
+            minimal_course.join_code = "JOINCODE"
+            form = JoinCourseForm(
+                minimal_clinician,
+                "JOINCODE",
+                {"join": "true"},
+                instance=minimal_course
+            )
+            form.save()
+            assert minimal_course.students.contains(minimal_clinician)
