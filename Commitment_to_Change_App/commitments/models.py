@@ -80,9 +80,6 @@ class Course(CourseLogic, models.Model):
         # Django ManyToManyFields are not iterable, we must wrap them with a property.
         return self.associated_commitments.all()
 
-    #def __str__(self):
-    #    return self.title.__str__()
-
 
 class Commitment(CommitmentLogic, models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
