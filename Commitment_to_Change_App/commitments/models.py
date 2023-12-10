@@ -3,10 +3,9 @@ import datetime
 from django.db import models
 
 import cme_accounts.models
-
 from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic
 from commitments.enums import CommitmentStatus
-from . import validators
+from commitments import validators
 
 
 class ClinicianProfile(models.Model):

@@ -4,8 +4,7 @@ import pytest
 
 from cme_accounts.models import User
 from commitments.enums import CommitmentStatus
-from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, \
-    ProviderProfile, Course
+from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course
 
 class TestClinicianProfile:
     """Tests for ClinicianProfile"""
