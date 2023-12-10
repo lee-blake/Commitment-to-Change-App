@@ -54,6 +54,11 @@ urlpatterns = [
           views.ReopenCommitmentView.as_view(),
           name="reopen Commitment"
      ),
+     path(
+          "course/<int:course_id>/suggested-commitments/<int:commitment_template_id>/create-from/",
+          views.CreateFromSuggestedCommitmentView.as_view(),
+          name="create Commitment from suggested commitment"
+     ),
 
      path(
           "course/create/",
@@ -100,10 +105,5 @@ urlpatterns = [
           "commitment-template/<int:commitment_template_id>/delete/",
           views.DeleteCommitmentTemplateView.as_view(),
           name="delete CommitmentTemplate"
-     ),
-     path(
-          "course/<int:course_id>/suggested-commitments/<int:commitment_template_id>/create-from/",
-          views.CreateFromSuggestedCommitmentView.as_view(),
-          name="create Commitment from suggested commitment"
      ),
 ]
