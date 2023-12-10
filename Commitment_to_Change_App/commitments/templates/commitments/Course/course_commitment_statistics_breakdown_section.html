@@ -11,23 +11,23 @@
         </thead>
         <tr>
             <td>In progress:</td>
-            <td>{{ status_breakdown.in_progress }}</td>
+            <td>{{ course.statistics.associated_commitments.statuses.in_progress }}</td>
         </tr>
         <tr>
             <td>Completed:</td>
-            <td>{{ status_breakdown.complete }}</td>
+            <td>{{ course.statistics.associated_commitments.statuses.complete }}</td>
         </tr>
         <tr>
             <td>Past Due:</td>
-            <td>{{ status_breakdown.past_due }}</td>
+            <td>{{ course.statistics.associated_commitments.statuses.past_due }}</td>
         </tr>
         <tr>
             <td>Discontinued:</td>
-            <td>{{ status_breakdown.discontinued }}</td>
+            <td>{{ course.statistics.associated_commitments.statuses.discontinued }}</td>
         </tr>
         <tr>
             <th>Total:</th>
-            <th>{{ status_breakdown.total }}</th>
+            <th>{{ course.statistics.associated_commitments.total }}</th>
         </tr>
     </table>
 </div>

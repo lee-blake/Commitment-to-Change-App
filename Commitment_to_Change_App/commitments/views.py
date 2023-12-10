@@ -228,33 +228,9 @@ class ViewCourseView(LoginRequiredMixin, View):
     def get(request, course_id):
         course = get_object_or_404(Course, id=course_id)
         associated_commitments = Commitment.objects.filter(associated_course=course)
-        total = 0
-        in_progress = 0
-        complete = 0
-        past_due = 0
-        discontinued = 0
-        for commitment in associated_commitments:
-            total += 1
-            match commitment.status:
-                case CommitmentStatus.IN_PROGRESS:
-                    in_progress += 1
-                case CommitmentStatus.COMPLETE:
-                    complete += 1
-                case CommitmentStatus.EXPIRED:
-                    past_due += 1
-                case CommitmentStatus.DISCONTINUED:
-                    discontinued += 1
-
         context = {
             "course": course,
-            "associated_commitments": associated_commitments,
-            "status_breakdown": {
-                "total": total,
-                "in_progress": in_progress,
-                "complete": complete,
-                "past_due": past_due,
-                "discontinued": discontinued
-            }
+            "associated_commitments": associated_commitments
         }
         if request.user.is_provider and \
                 course.owner == ProviderProfile.objects.get(user=request.user):
