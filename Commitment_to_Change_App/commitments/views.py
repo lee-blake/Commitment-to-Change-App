@@ -15,7 +15,7 @@ from django.urls import reverse, reverse_lazy
 from commitments.enums import CommitmentStatus
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
-    DiscontinueCommitmentForm, ReopenCommitmentForm
+    DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -364,57 +364,31 @@ class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateVie
         )
 
 
-class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, View):
+class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, CreateView):
+    template_name = "commitments/Commitment/commitment_create_from_suggested_commitment.html"
 
-    @staticmethod
-    def get(request, course_id, commitment_template_id):
-        course = get_object_or_404(Course, id=course_id)
-        viewer = get_object_or_404(
-            course.students, user=request.user
+    def get_form(self, form_class=None):
+        source_course = get_object_or_404(Course, id=self.kwargs["course_id"])
+        suggested_commitment_template = get_object_or_404(
+            source_course.suggested_commitments,
+            id=self.kwargs["commitment_template_id"]
         )
-        commitment_template = get_object_or_404(
-            course.suggested_commitments, id=commitment_template_id
-        )
-        form_instance = commitment_template.into_commitment(
-            owner=viewer,
-            associated_course=course
-        )
-        form = CommitmentForm(instance=form_instance, owner=viewer)
-        return render(
-            request,
-            "commitments/Commitment/commitment_create_from_suggested_commitment.html",
-            {"form": form, "course": course, "commitment_template": commitment_template}
+        # The viewer must be a student or we should 404 for plausibile deniability of
+        # the existence of the course. Filtering the students for the user works and gets
+        # us the owner at the same time.
+        student_viewer = get_object_or_404(source_course.students, user=self.request.user)
+        return CreateCommitmentFromSuggestedCommitmentForm(
+            suggested_commitment_template,
+            source_course,
+            owner=student_viewer,
+            **self.get_form_kwargs()
         )
 
-    @staticmethod
-    def post(request, course_id, commitment_template_id):
-        course = get_object_or_404(Course, id=course_id)
-        viewer = get_object_or_404(
-            course.students, user=request.user
+    def get_success_url(self):
+        return reverse(
+            "view commitment",
+            kwargs={"commitment_id": self.object.id}
         )
-        commitment_template = get_object_or_404(
-            course.suggested_commitments, id=commitment_template_id
-        )
-        form_instance = commitment_template.into_commitment(
-            owner=viewer,
-            associated_course=course,
-            status=CommitmentStatus.IN_PROGRESS
-        )
-        form = CommitmentForm(request.POST, instance=form_instance, owner=viewer)
-        if form.is_valid():
-            commitment = form.save()
-            return HttpResponseRedirect(
-                reverse(
-                    "view commitment",
-                    kwargs={ "commitment_id": commitment.id }
-                )
-            )
-        else:
-            return render(
-                request,
-                "commitments/Commitment/commitment_create_from_suggested_commitment.html",
-                {"form": form, "course": course, "commitment_template": commitment_template}
-            )
 
 
 class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):

@@ -1,8 +1,10 @@
 import datetime
 
-from commitments.business_logic import CommitmentLogic
+import pytest
+
+from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic
 from commitments.enums import CommitmentStatus
-from commitments.fake_data_objects import FakeCommitmentData
+from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData
 
 #pylint: disable=protected-access
 # Because Django fields are generally public, we make the DTO reference field on our business
@@ -117,3 +119,65 @@ class TestCommitmentLogic:
             )
             commitment.reopen()
             assert commitment._data.status == CommitmentStatus.EXPIRED
+
+
+    class TestApplyCommitmentTemplate:
+        """Tests for CommitmentLogic.apply_commitment_template"""
+
+        @pytest.fixture(name="application_target")
+        def fixture_application_target(self):
+            return CommitmentLogic(
+                FakeCommitmentData(
+                    title="Original title",
+                    description="Original description",
+                    source_template=None
+                )
+            )
+
+        @pytest.fixture(name="template_to_apply")
+        def fixture_template_to_apply(self):
+            return CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    title="Overwritten title",
+                    description="Non-overwritten title"
+                )
+            )
+
+        def test_overwrites_title_field(self, application_target, template_to_apply):
+            application_target.apply_commitment_template(template_to_apply)
+            assert application_target._data.title == template_to_apply._data.title
+
+        def test_overwrites_description_field(self, application_target, template_to_apply):
+            application_target.apply_commitment_template(template_to_apply)
+            assert application_target._data.description == template_to_apply._data.description
+
+        def test_retains_reference_back_to_commitment_template(
+            self, application_target, template_to_apply
+        ):
+            application_target.apply_commitment_template(template_to_apply)
+            assert application_target._data.source_template == template_to_apply
+
+
+class TestCommitmentTemplateLogic:
+    """Tests for CommitmentTemplateLogic"""
+
+    class TestTitle:
+        """Tests for CommitmentTemplateLogic.title"""
+
+        @pytest.mark.parametrize("passed_title", ["First title", "Second title"])
+        def test_returns_title_from_data(self, passed_title):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(title=passed_title)
+            )
+            assert commitment_template.title == passed_title
+
+
+    class TestDescription:
+        """Tests for CommitmentTemplateLogic.description"""
+
+        @pytest.mark.parametrize("passed_description", ["First description", "Second description"])
+        def test_returns_description_from_data(self, passed_description):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(description=passed_description)
+            )
+            assert commitment_template.description == passed_description
