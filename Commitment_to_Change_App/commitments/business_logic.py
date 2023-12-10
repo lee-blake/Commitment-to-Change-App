@@ -48,6 +48,9 @@ class CommitmentTemplateLogic:
     def __init__(self, data_object):
         self._data = data_object
 
+    def __str__(self):
+        return self._data.title
+
     @property
     def title(self):
         return self._data.title

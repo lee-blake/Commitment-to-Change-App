@@ -163,6 +163,19 @@ class TestCommitmentLogic:
 class TestCommitmentTemplateLogic:
     """Tests for CommitmentTemplateLogic"""
 
+    class TestStr:
+        """Tests for CommitmentTemplateLogic.__str__"""
+
+        @pytest.mark.parametrize("title", ["First title", "Second title"])
+        def test_returns_title(self, title):
+            course = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    title=title
+                )
+            )
+            assert str(course) == title
+
+
     class TestTitle:
         """Tests for CommitmentTemplateLogic.title"""
 
