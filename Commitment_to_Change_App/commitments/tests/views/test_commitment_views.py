@@ -2,7 +2,7 @@
 
 import re
 
-from datetime import date
+from datetime import date, timedelta
 
 import pytest
 
@@ -10,6 +10,7 @@ from django.urls import reverse
 
 from commitments.enums import CommitmentStatus
 from commitments.models import Commitment
+from commitments.tests.helpers import convert_date_to_general_regex
 
 
 @pytest.mark.django_db
@@ -383,6 +384,35 @@ class TestCreateFromSuggestedCommitmentView:
             course_option_match = course_option_regex.search(html)
             assert course_option_match
             assert "selected" in course_option_match[0]
+
+        def test_fields_sourced_from_course_or_template_are_disabled(
+            self, client,saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            """Tests that the fields provided automatically in this view cannot be 
+            edited by the user and should visually display as such in the browser."""
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            html = client.get(target_url).content.decode()
+            print(html)
+            course_select_regex = re.compile(
+                r"\<select[^\>]*name=\"associated_course\"[^\>]*\>"
+            )
+            assert "disabled" in course_select_regex.search(html)[0]
+            title_input_regex = re.compile(
+                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            )
+            assert "disabled" in title_input_regex.search(html)[0]
+            description_input_regex = re.compile(
+                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
+            )
+            assert "disabled" in description_input_regex.search(html)[0]
 
 
     class TestPost:
@@ -919,7 +949,7 @@ class TestViewCommitmentView:
         return Commitment.objects.create(
             title="First commitment",
             description="This is the first description",
-            deadline=date.today(),
+            deadline=date.today()+timedelta(days=1),
             owner=saved_clinician_profile,
             status=CommitmentStatus.IN_PROGRESS
         )
@@ -959,11 +989,8 @@ class TestViewCommitmentView:
             html = client.get(target_url).content.decode()
             assert viewable_commitment_1.title in html
             assert viewable_commitment_1.description in html
-            # It is best not to hardcode a particular date format for the template
-            # Year and day are always numeric so we will just search for them.
-            assert str(viewable_commitment_1.deadline.year) in html
-            assert str(viewable_commitment_1.deadline.day) in html
-            assert str(viewable_commitment_1.status) in html
+            deadline_regex = convert_date_to_general_regex(viewable_commitment_1.deadline)
+            assert deadline_regex.search(html)
 
         def test_second_commitment_values_show_in_page(
             self, client, saved_clinician_profile, viewable_commitment_2
@@ -976,11 +1003,8 @@ class TestViewCommitmentView:
             html = client.get(target_url).content.decode()
             assert viewable_commitment_2.title in html
             assert viewable_commitment_2.description in html
-            # It is best not to hardcode a particular date format for the template
-            # Year and day are always numeric so we will just search for them.
-            assert str(viewable_commitment_2.deadline.year) in html
-            assert str(viewable_commitment_2.deadline.day) in html
-            assert str(viewable_commitment_2.status) in html
+            deadline_regex = convert_date_to_general_regex(viewable_commitment_2.deadline)
+            assert deadline_regex.search(html)
 
         def test_other_clinicians_can_view_commitment(
             self, client, other_clinician_profile, viewable_commitment_1

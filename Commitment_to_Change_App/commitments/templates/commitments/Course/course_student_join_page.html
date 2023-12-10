@@ -22,6 +22,11 @@
         <a href="{% url "clinician dashboard" %}">
             <button class="standard-button">Cancel</button>
         </a>
+        {# Render the error notes for the implicit form so that bad requests made #}
+        {# during development will be easier to debug. Errors cannot occur during #}
+        {# normal use of this form.#}
+        {{ form.non_field_errors }}
+        {{ form.join.errors }}
         {% include "commitments/Course/course_confirm_join_button.html" %}
     </div>
 </div>

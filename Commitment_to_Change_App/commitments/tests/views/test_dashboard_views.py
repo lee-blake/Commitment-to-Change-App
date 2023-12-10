@@ -9,6 +9,7 @@ from django.urls import reverse
 
 from commitments.enums import CommitmentStatus
 from commitments.models import Commitment, Course
+from commitments.tests.helpers import convert_date_to_general_regex
 
 
 @pytest.mark.django_db
@@ -230,15 +231,8 @@ class TestProviderDashboardView:
             html = client.get(reverse("provider dashboard")).content.decode()
             for course in courses_owned_by_saved_provider_profile:
                 if course.start_date:
-                    # TODO this should be replaced with a more robust regex scraping of dates.
-                    iso_format = str(course.start_date)
-                    slash_format = course.start_date.strftime("%-m/%-d/%Y")
-                    spelled_month_format = course.start_date.strftime("%B %-d, %Y")
-                    short_month_format = course.start_date.strftime("%b. %-d, %Y")
-                    assert iso_format in html \
-                        or slash_format in html \
-                        or spelled_month_format in html \
-                        or short_month_format in html
+                    date_regex = convert_date_to_general_regex(course.start_date)
+                    assert date_regex.search(html)
 
         def test_all_owned_courses_show_existent_end_dates_in_page(
             self, client, saved_provider_profile, courses_owned_by_saved_provider_profile
@@ -247,15 +241,8 @@ class TestProviderDashboardView:
             html = client.get(reverse("provider dashboard")).content.decode()
             for course in courses_owned_by_saved_provider_profile:
                 if course.end_date:
-                    # TODO this should be replaced with a more robust regex scraping of dates.
-                    iso_format = str(course.end_date)
-                    slash_format = course.end_date.strftime("%-m/%-d/%Y")
-                    spelled_month_format = course.end_date.strftime("%B %-d, %Y")
-                    short_month_format = course.end_date.strftime("%b. %-d, %Y")
-                    assert iso_format in html \
-                        or slash_format in html \
-                        or spelled_month_format in html \
-                        or short_month_format in html
+                    date_regex = convert_date_to_general_regex(course.end_date)
+                    assert date_regex.search(html)
 
         def test_provider_dashboard_links_to_create_commitment_template(
             self, client, saved_provider_profile,

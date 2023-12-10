@@ -7,6 +7,10 @@
     <div class="row g-5">
         <div class="col" align="center">
             <div class="px-4 py-3 foreground round-corners default-form">
+                <h1>Create from Suggested Commitment</h1>
+                <div>
+                    <p>Some suggested commitment fields are not eligible for editing. {% include "commitments/Commitment/commitment_create_from_suggested_commitment_help_modal.html" %}</p> 
+                </div>
                 <form method="post" action="">
                     {% csrf_token %}
                     {{ form.as_p }}

@@ -6,7 +6,8 @@ from cme_accounts.models import User
 
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm,\
-     DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm
+    DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm, \
+    JoinCourseForm
 from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course
 
 
@@ -46,6 +47,51 @@ class TestCommitmentForm:
             new_owner = ClinicianProfile()
             with pytest.raises(ValueError):
                 CommitmentForm(instance=commitment, owner=new_owner)
+
+        def test_suggested_commitments_cannot_edit_fields_from_source_template(self):
+            owner = ClinicianProfile(id=1)
+            template = CommitmentTemplate()
+            commitment = Commitment(
+                title="Unchanged title",
+                description="Unchanged description",
+                source_template=template
+            )
+            form = CommitmentForm(
+                {
+                    "title": "New title",
+                    "description": "New description",
+                    "deadline": datetime.date.today()
+                },
+                instance=commitment,
+                owner=owner
+            )
+            resulting_commitment = form.save(commit=False)
+            assert resulting_commitment.title == "Unchanged title"
+            assert resulting_commitment.description == "Unchanged description"
+
+        @pytest.mark.django_db
+        def test_suggested_commitments_cannot_change_associated_course(
+            self, minimal_clinician, minimal_course
+        ):
+            minimal_course.students.add(minimal_clinician)
+            template = CommitmentTemplate()
+            commitment = Commitment(
+                title="Unchanged title",
+                description="Unchanged description",
+                source_template=template,
+                associated_course=minimal_course
+            )
+            form = CommitmentForm(
+                {
+                    "title": "New title",
+                    "description": "New description",
+                    "deadline": datetime.date.today()
+                },
+                instance=commitment,
+                owner=minimal_clinician
+            )
+            resulting_commitment = form.save(commit=False)
+            assert resulting_commitment.associated_course == minimal_course
 
 
 class TestCourseForm:
@@ -361,3 +407,36 @@ class TestCreateCommitmentFromSuggestedCommitmentForm:
                 owner=commitment_owner
             )
             assert form.instance.title == source_template.title
+
+
+class TestJoinCourseForm:
+    """Tests for JoinCourseForm"""
+
+    class TestIsValid:
+        """Tests for JoinCourseForm.is_valid"""
+
+        def test_no_join_key_is_not_valid(self):
+            form = JoinCourseForm("student", "join_code", {})
+            assert not form.is_valid()
+
+        def test_any_join_key_present_is_valid(self):
+            form = JoinCourseForm("student", "join_code", {"join": "anything"})
+            assert form.is_valid()
+
+
+    @pytest.mark.django_db
+    class TestSave:
+        """Tests for JoinCourseForm.save"""
+
+        def test_save_enrolls_student_with_valid_code(
+            self, minimal_course, minimal_clinician
+        ):
+            minimal_course.join_code = "JOINCODE"
+            form = JoinCourseForm(
+                minimal_clinician,
+                "JOINCODE",
+                {"join": "true"},
+                instance=minimal_course
+            )
+            form.save()
+            assert minimal_course.students.contains(minimal_clinician)

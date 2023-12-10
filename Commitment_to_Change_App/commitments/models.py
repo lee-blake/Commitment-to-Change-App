@@ -3,10 +3,9 @@ import datetime
 from django.db import models
 
 import cme_accounts.models
-
 from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic
 from commitments.enums import CommitmentStatus
-from . import validators
+from commitments import validators
 
 
 class ClinicianProfile(models.Model):
@@ -43,17 +42,6 @@ class CommitmentTemplate(CommitmentTemplateLogic, models.Model):
         CommitmentTemplateLogic.__init__(self, data_object=self)
         models.Model.__init__(self, *args, **kwargs)
 
-    def __str__(self):
-        return str(self.title)
-
-    def into_commitment(self, **kwargs):
-        return Commitment(
-            title=self.title,
-            description=self.description,
-            source_template=self,
-            **kwargs
-        )
-
 
 class Course(CourseLogic, models.Model):
     DEFAULT_JOIN_CODE_LENGTH = 8
@@ -79,6 +67,12 @@ class Course(CourseLogic, models.Model):
         # Because business logic methods iterate over the associated commitments, and because
         # Django ManyToManyFields are not iterable, we must wrap them with a property.
         return self.associated_commitments.all()
+
+    def _add_student(self, student):
+        # We must override this due to ManyToManyField using different methods than list.
+        # Pylint doesn't understand that contains(...) is applied to the field at runtime.
+        if not self.students.contains(student): #pylint: disable=no-member
+            self.students.add(student)
 
 
 class Commitment(CommitmentLogic, models.Model):

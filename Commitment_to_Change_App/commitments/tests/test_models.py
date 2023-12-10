@@ -4,8 +4,7 @@ import pytest
 
 from cme_accounts.models import User
 from commitments.enums import CommitmentStatus
-from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, \
-    ProviderProfile, Course
+from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course
 
 class TestClinicianProfile:
     """Tests for ClinicianProfile"""
@@ -116,86 +115,9 @@ class TestCommitment:
 class TestCommitmentTemplate:
     """Tests for CommitmentTemplate"""
 
-    class TestIntoCommitment:
-        """Tests for CommitmentTemplate.into_commitment"""
-
-        @pytest.fixture(name="commitment_template_owner")
-        def fixture_commitment_template_owner(self):
-            user = User(
-                username="provider",
-                password="password",
-                email="test@email.me",
-                is_provider=True
-            )
-            return ProviderProfile(
-                user=user
-            )
-
-        @pytest.fixture(name="commitment_owner")
-        def fixture_commitment_owner(self):
-            user = User(
-                username="clinician",
-                password="password",
-                email="test@email.me",
-                is_clinician=True
-            )
-            return ClinicianProfile(
-                user=user
-            )
-
-        def test_converting_copies_required_template_fields(self, commitment_template_owner):
-            template = CommitmentTemplate(
-                title="Template title",
-                description="Template description",
-                owner=commitment_template_owner
-            )
-            commitment = template.into_commitment()
-            assert commitment.title == "Template title"
-            assert commitment.description == "Template description"
-
-        def test_converting_does_not_return_same_require_template_fields_each_time(
-            self, commitment_template_owner
-        ):
-            template = CommitmentTemplate(
-                title="A different title",
-                description="A different description",
-                owner=commitment_template_owner
-            )
-            commitment = template.into_commitment()
-            assert commitment.title == "A different title"
-            assert commitment.description == "A different description"
-
-        def test_converting_correctly_refers_back_to_source_template(
-            self, commitment_template_owner
-        ):
-            template = CommitmentTemplate(
-                title="Template title",
-                description="Template description",
-                owner=commitment_template_owner
-            )
-            commitment = template.into_commitment()
-            assert commitment.source_template == template
-
-        def test_converting_assigns_mandatory_commitment_keyword_arguments(
-            self, commitment_owner, commitment_template_owner
-        ):
-            """Test that other mandatory keyword arguments to Commitments are set on the Commitment
-            created by into_commitment"""
-
-            template = CommitmentTemplate(
-                title="Template title",
-                description="Template description",
-                owner=commitment_template_owner
-            )
-            commitment = template.into_commitment(
-                owner=commitment_owner,
-                deadline=date.today()
-            )
-            assert commitment.deadline == date.today()
-
-
     class TestCommitmentTemplateToString:
-        """Tests for CommitmentTemplate.__str__"""
+        """Tests for making sure CommitmentTemplateLogic.__str__ integrates correctly with
+        CommitmentTemplate"""
 
         def test_first_template_returns_correctly(self):
             template = CommitmentTemplate(
@@ -216,7 +138,7 @@ class TestCourse:
     """Tests for Course"""
 
     class TestStr:
-        """Tests for Course.__str__"""
+        """Tests for making sure CourseLogic.__str__ integrates correctly with Course"""
 
         @pytest.mark.parametrize("title", ["First title", "Second title"])
         def test_returns_title(self, title):
@@ -249,3 +171,22 @@ class TestCourse:
             minimal_commitment.associated_course = minimal_course
             minimal_commitment.save()
             assert minimal_course.statistics["associated_commitments"]["total"] == 1
+
+
+    @pytest.mark.django_db
+    class TestEnrollStudentWithJoinCode:
+        """Tests for checking that CourseLogic.enroll_student_with_join_code integrates
+        with Course."""
+
+        def test_correct_code_enrolls_student(self, minimal_course, minimal_clinician):
+            minimal_course.join_code = "JOINCODE"
+            minimal_course.enroll_student_with_join_code(minimal_clinician, "JOINCODE")
+            assert minimal_clinician in minimal_course.students.all()
+
+        def test_correct_code_does_not_double_enroll_student(
+            self, minimal_course, minimal_clinician
+        ):
+            minimal_course.join_code = "JOINCODE"
+            minimal_course.students.add(minimal_clinician)
+            minimal_course.enroll_student_with_join_code(minimal_clinician, "JOINCODE")
+            assert minimal_course.students.filter(id=minimal_clinician.id).count() == 1

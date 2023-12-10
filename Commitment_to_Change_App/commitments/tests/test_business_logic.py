@@ -2,10 +2,11 @@ import datetime
 
 import pytest
 
-from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic
+from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic, \
+    ClinicianLogic
 from commitments.enums import CommitmentStatus
 from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
-    FakeCourseData
+    FakeCourseData, FakeClinicianData
 
 #pylint: disable=protected-access
 # Because Django fields are generally public, we make the DTO reference field on our business
@@ -162,6 +163,19 @@ class TestCommitmentLogic:
 class TestCommitmentTemplateLogic:
     """Tests for CommitmentTemplateLogic"""
 
+    class TestStr:
+        """Tests for CommitmentTemplateLogic.__str__"""
+
+        @pytest.mark.parametrize("title", ["First title", "Second title"])
+        def test_returns_title(self, title):
+            course = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    title=title
+                )
+            )
+            assert str(course) == title
+
+
     class TestTitle:
         """Tests for CommitmentTemplateLogic.title"""
 
@@ -199,7 +213,7 @@ class TestCourseLogic:
             )
             assert str(course) == title
 
-    
+
     class TestStatistics:
         """Tests for CourseLogic.statistics"""
 
@@ -281,3 +295,40 @@ class TestCourseLogic:
             )
             course.generate_join_code_if_none_exists(length)
             assert len(course._data.join_code) == length
+
+
+    class TestEnrollStudentWithJoinCode:
+        """Tests for CourseLogic.enroll_student_with_join_code"""
+
+        def test_invalid_code_throws_error(self):
+            course = CourseLogic(
+                FakeCourseData(join_code="JOINCODE")
+            )
+            student = ClinicianLogic(
+                FakeClinicianData()
+            )
+            with pytest.raises(ValueError):
+                course.enroll_student_with_join_code(student, "WRONG")
+
+        def test_correct_code_enrolls_student(self):
+            course = CourseLogic(
+                FakeCourseData(join_code="JOINCODE")
+            )
+            student = ClinicianLogic(
+                FakeClinicianData()
+            )
+            course.enroll_student_with_join_code(student, "JOINCODE")
+            assert student in course._data.students
+
+        def test_student_already_present_is_not_enrolled_twice(self):
+            student = ClinicianLogic(
+                FakeClinicianData()
+            )
+            course = CourseLogic(
+                FakeCourseData(
+                    join_code="JOINCODE",
+                    students=[student]
+                )
+            )
+            assert student in course._data.students
+            assert len(course._data.students) == 1

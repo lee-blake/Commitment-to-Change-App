@@ -5,6 +5,11 @@ import string
 from commitments.enums import CommitmentStatus
 
 
+class ClinicianLogic:
+    def __init__(self, data_object):
+        self._data = data_object
+
+
 class CommitmentLogic:
     def __init__(self, data_object):
         self._data = data_object
@@ -42,6 +47,9 @@ class CommitmentLogic:
 class CommitmentTemplateLogic:
     def __init__(self, data_object):
         self._data = data_object
+
+    def __str__(self):
+        return self._data.title
 
     @property
     def title(self):
@@ -97,3 +105,12 @@ class CourseLogic:
             self._data.join_code = ''.join(
                 random.choice(string.ascii_uppercase) for i in range(0, length)
             )
+
+    def enroll_student_with_join_code(self, student, code):
+        if code != self._data.join_code:
+            raise ValueError("The join code was incorrect!")
+        self._add_student(student)
+
+    def _add_student(self, student):
+        if student not in self._data.students:
+            self._data.students.append(student)

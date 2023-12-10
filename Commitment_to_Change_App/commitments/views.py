@@ -3,14 +3,16 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
-from django.views import View
+from django.views.generic.base import View, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.urls import reverse, reverse_lazy
 
+from commitments.enums import CommitmentStatus
 from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
-    DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm
+    DiscontinueCommitmentForm, ReopenCommitmentForm, \
+    CreateCommitmentFromSuggestedCommitmentForm, JoinCourseForm
 from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
 
@@ -44,46 +46,35 @@ class DashboardRedirectingView(LoginRequiredMixin, View):
             )
 
 
-class ClinicianDashboardView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitments = Commitment.objects.filter(owner=profile)
+class ClinicianDashboardView(ClinicianLoginRequiredMixin, TemplateView):
+    template_name = "commitments/dashboard/clinician/dashboard_clinician_page.html"
+
+    def get_context_data(self, **kwargs):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        commitments = Commitment.objects.filter(owner=viewer)
+        # We need to auto-expire them to make sure they are grouped correctly.
         for commitment in commitments:
             commitment.save_expired_if_past_deadline()
-
-        in_progress = list(filter(lambda x: x.status == 0, commitments))
-        completed = list(filter(lambda x: x.status == 1, commitments))
-        expired = list(filter(lambda x: x.status == 2, commitments))
-        discontinued = list(filter(lambda x: x.status == 3, commitments))
-
-        enrolled_courses = profile.course_set.all()
-
-        context = {
-            'in_progress_commitments': in_progress,
-            'expired_commitments': expired,
-            'completed_commitments': completed,
-            'discontinued_commitments': discontinued,
-            'enrolled_courses': enrolled_courses
+        context = super().get_context_data(**kwargs)
+        context["enrolled_courses"] = viewer.course_set.all()
+        context["commitments"] = {
+            "in_progress": commitments.filter(status=CommitmentStatus.IN_PROGRESS),
+            "completed": commitments.filter(status=CommitmentStatus.COMPLETE),
+            "expired": commitments.filter(status=CommitmentStatus.EXPIRED),
+            "discontinued": commitments.filter(status=CommitmentStatus.DISCONTINUED)
         }
+        return context
 
-        return render(request, "commitments/dashboard/clinician/dashboard_clinician_page.html", context)
 
+class ProviderDashboardView(ProviderLoginRequiredMixin, TemplateView):
+    template_name = "commitments/dashboard/provider/dashboard_provider_page.html"
 
-class ProviderDashboardView(ProviderLoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        profile = ProviderProfile.objects.get(user=request.user)
-        courses = Course.objects.filter(owner=profile)
-        commitment_templates = CommitmentTemplate.objects.filter(owner=profile)
-        return render(
-            request,
-            "commitments/dashboard/provider/dashboard_provider_page.html", 
-            {
-                "courses": courses,
-                "commitment_templates": commitment_templates
-            }
-        )
+    def get_context_data(self, **kwargs):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        context = super().get_context_data(**kwargs)
+        context["courses"] = Course.objects.filter(owner=viewer)
+        context["commitment_templates"] = CommitmentTemplate.objects.filter(owner=viewer)
+        return context
 
 
 class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
@@ -235,43 +226,42 @@ class ViewCourseView(LoginRequiredMixin, DetailView):
             return ["commitments/Course/course_view_unowned_page.html"]
 
 
-class JoinCourseView(LoginRequiredMixin, View):
+class JoinCourseView(LoginRequiredMixin, UpdateView):
+    template_name = "commitments/Course/course_student_join_page.html"
+    pk_url_kwarg = "course_id"
 
-    @staticmethod
-    def get(request, course_id, join_code):
-        course = get_object_or_404(Course, id=course_id, join_code=join_code)
-        if request.user.is_provider:
-            profile = ProviderProfile.objects.get(user=request.user)
-            if not course.owner == profile:
-                raise PermissionDenied("Providers cannot join courses.")
-            return render(
-                request,
-                "commitments/Course/course_owner_join_page.html",
-                context={"course": course}
-            )
-        return render(
-            request,
-            "commitments/Course/course_student_join_page.html",
-            context={"course": course}
+    def get_queryset(self):
+        return Course.objects.filter(join_code=self.kwargs["join_code"])
+
+    def get_form(self, form_class=None):
+        viewer = get_object_or_404(ClinicianProfile, user=self.request.user)
+        return JoinCourseForm(
+            viewer,
+            self.kwargs["join_code"],
+            **self.get_form_kwargs()
         )
 
-    @staticmethod
-    def post(request, course_id, join_code):
-        if not request.user.is_clinician:
-            raise PermissionDenied("Providers cannot join courses.")
-        if request.POST.get("join") == "true":
-            course = get_object_or_404(Course, id=course_id, join_code=join_code)
-            profile = ClinicianProfile.objects.get(user=request.user)
-            if not course.students.contains(profile):
-                course.students.add(profile)
-            return HttpResponseRedirect(
-                reverse(
-                    "view course",
-                    kwargs={"course_id": course.id}
-                )
+    def get_success_url(self):
+        return reverse(
+            "view course",
+            kwargs={"course_id": self.object.id}
+        )
+
+    # We must override the get and post methods to allow the course owner to view the 
+    # landing page without getting a 403. It is simple enough to be worth it.
+    def get(self, *args, **kwargs):
+        if self.request.user == Course.objects.get(id=kwargs["course_id"]).owner.user:
+            return render(
+                self.request,
+                "commitments/Course/course_owner_join_page.html",
+                {"course": self.get_object()}
             )
-        else:
-            return JoinCourseView.get(request, course_id, join_code)
+        return super().get(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        if not self.request.user.is_clinician:
+            raise PermissionDenied("Providers cannot join courses.")
+        return super().post(*args, **kwargs)
 
 
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
