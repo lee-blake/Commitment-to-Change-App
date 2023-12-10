@@ -9,7 +9,7 @@
 
         </div>
         <div class="py-1 secondary-accent round-corners text-center">
-            <h2>Provided by: {{ course.owner.institution }}</h2>
+            <h2>{{ course.owner.institution }}</h2>
         </div>
 
         <div class="row py-3 g-5">
@@ -47,12 +47,14 @@
                         <div class="text-center secondary-accent round-corners">
                             <h3>Suggested Commitments</h3>
                         </div>
-                        <div class="px-3">
-                            {% for suggested_commitment in course.suggested_commitments.all %}
-							<div class="div-list">
-                            {% include "commitments/Course/course_suggested_commitments_panel.html" %}
-							</div>
+                        <div class="px-4">
+                            <div class="list-group">
+                                {% for suggested_commitment in course.suggested_commitments.all %}
+                                <div class="d-flex justify-content-between list-group-item">
+                                    {% include "commitments/Course/course_suggested_commitments_panel.html" %}
+                                </div>
                             {% endfor %}
+                        </ul>
 							<div class="text-center pt-1">
 								{% block select_suggested_commitments_button %}
 								{% endblock select_suggested_commitments_button %}
