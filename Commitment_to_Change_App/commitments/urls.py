@@ -42,17 +42,17 @@ urlpatterns = [
      path(
           "commitment/<int:commitment_id>/complete/",
           views.CompleteCommitmentView.as_view(),
-         name="complete commitment"
+         name="complete Commitment"
      ),
      path(
           "commitment/<int:commitment_id>/discontinue/",
           views.DiscontinueCommitmentView.as_view(),
-         name="discontinue commitment"
+         name="discontinue Commitment"
      ),
      path(
           "commitment/<int:commitment_id>/reopen/",
           views.ReopenCommitmentView.as_view(),
-          name="reopen commitment"
+          name="reopen Commitment"
      ),
 
      path(
