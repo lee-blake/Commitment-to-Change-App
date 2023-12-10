@@ -837,11 +837,11 @@ class TestViewCourseView:
                 reverse("view course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             # This can change if we do something other than a table.
-            assert "<td>In progress</td><td>1</td>" in html
-            assert "<td>Completed</td><td>1</td>" in html
-            assert "<td>Past Due</td><td>0</td>" in html
-            assert "<td>Discontinued</td><td>1</td>" in html
-            assert "<th>Total</th><th>3</th>" in html
+            assert re.compile(r"<td>In progress:</td>\s*<td>1</td>").search(html)
+            assert re.compile(r"<td>Completed:</td>\s*<td>1</td>").search(html)
+            assert re.compile(r"<td>Past Due:</td>\s*<td>0</td>").search(html)
+            assert re.compile(r"<td>Discontinued:</td>\s*<td>1</td>").search(html)
+            assert re.compile(r"<th>Total:</th>\s*<th>3</th>").search(html)
 
         def test_general_commitment_statistics_show_in_page_for_provider_2(
             self, client, saved_provider_profile,
@@ -859,11 +859,11 @@ class TestViewCourseView:
                 reverse("view course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             # This can change if we do something other than a table.
-            assert "<td>In progress</td><td>0</td>" in html
-            assert "<td>Completed</td><td>0</td>" in html
-            assert "<td>Past Due</td><td>2</td>" in html
-            assert "<td>Discontinued</td><td>0</td>" in html
-            assert "<th>Total</th><th>2</th>" in html
+            assert re.compile(r"<td>In progress:</td>\s*<td>0</td>").search(html)
+            assert re.compile(r"<td>Completed:</td>\s*<td>0</td>").search(html)
+            assert re.compile(r"<td>Past Due:</td>\s*<td>2</td>").search(html)
+            assert re.compile(r"<td>Discontinued:</td>\s*<td>0</td>").search(html)
+            assert re.compile(r"<th>Total:</th>\s*<th>2</th>").search(html)
 
 
         def test_institution_name_shows_in_page_for_provider(
@@ -956,11 +956,11 @@ class TestViewCourseView:
                 reverse("view course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             # This can change if we do something other than a table.
-            assert "<td>In progress</td><td>1</td>" in html
-            assert "<td>Completed</td><td>1</td>" in html
-            assert "<td>Past Due</td><td>0</td>" in html
-            assert "<td>Discontinued</td><td>1</td>" in html
-            assert "<th>Total</th><th>3</th>" in html
+            assert re.compile(r"<td>In progress:</td>\s*<td>1</td>").search(html)
+            assert re.compile(r"<td>Completed:</td>\s*<td>1</td>").search(html)
+            assert re.compile(r"<td>Past Due:</td>\s*<td>0</td>").search(html)
+            assert re.compile(r"<td>Discontinued:</td>\s*<td>1</td>").search(html)
+            assert re.compile(r"<th>Total:</th>\s*<th>3</th>").search(html)
 
         def test_suggested_commitments_show_in_page_for_clinician(
             self, client, saved_clinician_profile, enrolled_course,

@@ -1,7 +1,8 @@
 {% extends "commitments/Course/course_view_unowned_page.html" %}
 
 {% block join_link %}
-<div class="text-center">Share this link to invite students to the course:
+<div class="text-center foreground round-corners mt-3 mx-3 py-2">
+	Share this link to invite students to the course:
 	<div>
 		<p id="courseJoinLink">http://{{ request.get_host }}{% url 'join course' course_id=course.id join_code=course.join_code %}</p>
 		<p><a href="#" class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</a></p>
@@ -19,6 +20,6 @@
 
 {% block select_suggested_commitments_button %}
 <a href="{% url 'change Course suggested commitments' course_id=course.id %}">
-	<button>Select</button>
+	<button class="standard-button">Select Templates</button>
 </a>
 {% endblock select_suggested_commitments_button %}

@@ -166,6 +166,10 @@ form {
      color: #FFFFFF;
      text-align: center;
  }
+ .div-list{
+    display:list-item;
+    list-style-position: inside;
+ }
  .show-password-button {
     margin-left: -30px;
     cursor: pointer;
@@ -290,24 +294,6 @@ form {
      color: var(--accent-text);
  }
 
-/* 
--------------------------------------------------------------------
-    --- Table styling ---
-(TODO: Remove once tables are removed) 
-------------------------------------------------------------------- 
- */
-
-table.commitment-status-breakdown-table, 
-table.commitment-status-breakdown-table th,
-table.commitment-status-breakdown-table td {
-    border-collapse: collapse;
-    border: 1px solid black;
-}
-
-table.commitment-status-breakdown-table tr > td:nth-child(2),
-table.commitment-status-breakdown-table tr > th:nth-child(2) {
-    text-align: right;
-}
 
 /* 
 -------------------------------------------------------------------
