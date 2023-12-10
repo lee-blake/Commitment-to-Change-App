@@ -74,9 +74,6 @@ class Course(CourseLogic, models.Model):
         CourseLogic.__init__(self, data_object=self)
         models.Model.__init__(self, *args, **kwargs)
 
-    #def __str__(self):
-    #    return self.title.__str__()
-
 
 class Commitment(CommitmentLogic, models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
