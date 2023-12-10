@@ -124,6 +124,53 @@ class TestCreateCommitmentTemplateView:
 
 
 @pytest.mark.django_db
+class TestViewCommitmentTemplateView:
+    """Tests for ViewCommitmentTemplateView"""
+
+    @pytest.fixture(name="saved_commitment_template")
+    def fixture_saved_commitment_template(self, saved_provider_profile):
+        return CommitmentTemplate.objects.create(
+            owner=saved_provider_profile,
+            title="Should not occur randomly in HTML 123481234",
+            description="Also should not occur randomly 12498123hfdwjas"
+        )
+
+    def test_rejects_clinician_accounts_with_403(
+        self, client, saved_clinician_user, saved_commitment_template
+    ):
+        target_url = reverse(
+            "view CommitmentTemplate", 
+            kwargs={ "commitment_template_id": saved_commitment_template.id }
+        )
+        client.force_login(saved_clinician_user)
+        response = client.get(target_url)
+        assert response.status_code == 403
+
+    def test_rejects_other_providers_with_404(
+        self, client, other_provider_profile, saved_commitment_template
+    ):
+        target_url = reverse(
+            "view CommitmentTemplate", 
+            kwargs={ "commitment_template_id": saved_commitment_template.id }
+        )
+        client.force_login(other_provider_profile.user)
+        response = client.get(target_url)
+        assert response.status_code == 404
+
+    def test_shows_mandatory_fields_somewhere_in_page(
+        self, client, saved_provider_profile, saved_commitment_template
+    ):
+        target_url = reverse(
+            "view CommitmentTemplate", 
+            kwargs={ "commitment_template_id": saved_commitment_template.id }
+        )
+        client.force_login(saved_provider_profile.user)
+        html = client.get(target_url).content.decode()
+        assert saved_commitment_template.title in html
+        assert saved_commitment_template.description in html
+
+
+@pytest.mark.django_db
 class TestEditCommitmentTemplateView:
     """Tests for EditCommitmentTemplateView"""
 
@@ -276,53 +323,6 @@ class TestEditCommitmentTemplateView:
                 "view CommitmentTemplate",
                 kwargs={"commitment_template_id": commitment_template_1.id}
             )
-
-
-@pytest.mark.django_db
-class TestViewCommitmentTemplateView:
-    """Tests for ViewCommitmentTemplateView"""
-
-    @pytest.fixture(name="saved_commitment_template")
-    def fixture_saved_commitment_template(self, saved_provider_profile):
-        return CommitmentTemplate.objects.create(
-            owner=saved_provider_profile,
-            title="Should not occur randomly in HTML 123481234",
-            description="Also should not occur randomly 12498123hfdwjas"
-        )
-
-    def test_rejects_clinician_accounts_with_403(
-        self, client, saved_clinician_user, saved_commitment_template
-    ):
-        target_url = reverse(
-            "view CommitmentTemplate", 
-            kwargs={ "commitment_template_id": saved_commitment_template.id }
-        )
-        client.force_login(saved_clinician_user)
-        response = client.get(target_url)
-        assert response.status_code == 403
-
-    def test_rejects_other_providers_with_404(
-        self, client, other_provider_profile, saved_commitment_template
-    ):
-        target_url = reverse(
-            "view CommitmentTemplate", 
-            kwargs={ "commitment_template_id": saved_commitment_template.id }
-        )
-        client.force_login(other_provider_profile.user)
-        response = client.get(target_url)
-        assert response.status_code == 404
-
-    def test_shows_mandatory_fields_somewhere_in_page(
-        self, client, saved_provider_profile, saved_commitment_template
-    ):
-        target_url = reverse(
-            "view CommitmentTemplate", 
-            kwargs={ "commitment_template_id": saved_commitment_template.id }
-        )
-        client.force_login(saved_provider_profile.user)
-        html = client.get(target_url).content.decode()
-        assert saved_commitment_template.title in html
-        assert saved_commitment_template.description in html
 
 
 @pytest.mark.django_db
