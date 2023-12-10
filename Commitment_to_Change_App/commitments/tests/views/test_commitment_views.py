@@ -239,340 +239,196 @@ class TestMakeCommitmentView:
 
 
 @pytest.mark.django_db
-class TestCreateFromSuggestedCommitmentView:
-    """Tests for CreateFromSuggestedCommitmentView"""
+class TestViewCommitmentView:
+    """Tests for ViewCommitmentView"""
+
+    @pytest.fixture(name="viewable_commitment_1")
+    def fixture_viewable_commitment_1(self, saved_clinician_profile):
+        return Commitment.objects.create(
+            title="First commitment",
+            description="This is the first description",
+            deadline=date.today()+timedelta(days=1),
+            owner=saved_clinician_profile,
+            status=CommitmentStatus.IN_PROGRESS
+        )
+
+    @pytest.fixture(name="viewable_commitment_2")
+    def fixture_viewable_commitment_2(self, saved_clinician_profile):
+        return Commitment.objects.create(
+            title="Second commitment",
+            description="This is the second description",
+            deadline=date.fromisoformat("2000-01-01"),
+            owner=saved_clinician_profile,
+            status=CommitmentStatus.EXPIRED
+        )
+
 
     class TestGet:
-        """Tests for CreateFromSuggestedCommitmentView.get"""
+        """Tests for ViewCommitmentView.get"""
 
-        def test_rejects_provider_accounts_with_403(
-            self, client, saved_provider_user, enrolled_course, commitment_template_1
-        ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
+        def test_missing_commitment_returns_404(self, client, viewable_commitment_1):
+            uid = viewable_commitment_1.id
+            viewable_commitment_1.delete()
             target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
+                "view commitment",
+                kwargs={"commitment_id": uid}
             )
-            client.force_login(saved_provider_user)
             response = client.get(target_url)
-            assert response.status_code == 403
+            assert response.status_code == 404
 
-        def test_rejects_non_student_clinician_accounts_with_404(
-            self, client, other_clinician_profile, enrolled_course, commitment_template_1
+        def test_first_commitment_values_show_in_page(
+            self, client, saved_clinician_profile, viewable_commitment_1
         ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
+            client.force_login(saved_clinician_profile.user)
             target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
             )
+            html = client.get(target_url).content.decode()
+            assert viewable_commitment_1.title in html
+            assert viewable_commitment_1.description in html
+            deadline_regex = convert_date_to_general_regex(viewable_commitment_1.deadline)
+            assert deadline_regex.search(html)
+
+        def test_second_commitment_values_show_in_page(
+            self, client, saved_clinician_profile, viewable_commitment_2
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_2.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert viewable_commitment_2.title in html
+            assert viewable_commitment_2.description in html
+            deadline_regex = convert_date_to_general_regex(viewable_commitment_2.deadline)
+            assert deadline_regex.search(html)
+
+        def test_other_clinicians_can_view_commitment(
+            self, client, other_clinician_profile, viewable_commitment_1
+        ):
             client.force_login(other_clinician_profile.user)
-            response = client.get(target_url)
-            assert response.status_code == 404
-
-        def test_returns_404_on_missing_course(
-            self, client, saved_clinician_user, enrolled_course, commitment_template_1
-        ):
             target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id + 1,
-                    "commitment_template_id": commitment_template_1.id
-                }
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
             )
-            client.force_login(saved_clinician_user)
-            response = client.get(target_url)
-            assert response.status_code == 404
-
-        def test_returns_404_on_missing_commitment_template(
-            self, client, saved_clinician_user, enrolled_course, commitment_template_1
-        ):
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id + 1
-                }
-            )
-            client.force_login(saved_clinician_user)
-            response = client.get(target_url)
-            assert response.status_code == 404
-
-        def test_returns_404_on_commitment_template_not_a_part_of_course(
-            self, client, saved_clinician_user, enrolled_course, commitment_template_1
-        ):
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            client.force_login(saved_clinician_user)
-            response = client.get(target_url)
-            assert response.status_code == 404
-
-        def test_shows_post_form_pointing_to_create_commitment_view(
-            self, client,saved_clinician_user, enrolled_course, commitment_template_1
-        ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            client.force_login(saved_clinician_user)
             html = client.get(target_url).content.decode()
-            form_regex = re.compile(
-                r"\<form[^\>]*action=\"\"[^\>]*\>"
-            )
-            match = form_regex.search(html)
-            assert match
-            form_tag = match[0]
-            post_method_regex = re.compile(r"method=\"(post|POST)\"")
-            assert post_method_regex.search(form_tag)
+            assert viewable_commitment_1.title in html
+            assert viewable_commitment_1.description in html
 
-        def test_mandatory_commitment_template_fields_are_filled_by_default(
-            self, client,saved_clinician_user, enrolled_course, commitment_template_1
+        def test_providers_can_view_commitment(
+            self, client, saved_provider_profile, viewable_commitment_1
         ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
+            client.force_login(saved_provider_profile.user)
             target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
             )
-            client.force_login(saved_clinician_user)
             html = client.get(target_url).content.decode()
-            title_input_regex = re.compile(
-                r"\<input[^\>]*name=\"title\"[^\>]*\>"
-            )
-            title_input_match = title_input_regex.search(html)
-            assert title_input_match
-            assert f"value=\"{commitment_template_1.title}\"" in title_input_match[0]
-            description_input_regex = re.compile(
-                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
-            )
-            description_input_match = description_input_regex.search(html)
-            assert description_input_match
-            assert commitment_template_1.description in description_input_match[0]
+            assert viewable_commitment_1.title in html
+            assert viewable_commitment_1.description in html
 
-        def test_course_field_is_set_by_default(
-            self, client,saved_clinician_user, enrolled_course, commitment_template_1
+        def test_anonymous_users_can_view_commitment(
+            self, client, viewable_commitment_2
         ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
             target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_2.id}
             )
-            client.force_login(saved_clinician_user)
             html = client.get(target_url).content.decode()
-            course_option_regex = re.compile(
-                r"\<option[^\>]*value=\"" + str(enrolled_course.id) + r"\"[^\>]*\>"
-            )
-            course_option_match = course_option_regex.search(html)
-            assert course_option_match
-            assert "selected" in course_option_match[0]
+            assert viewable_commitment_2.title in html
+            assert viewable_commitment_2.description in html
 
-        def test_fields_sourced_from_course_or_template_are_disabled(
-            self, client,saved_clinician_user, enrolled_course, commitment_template_1
+        def test_alteration_buttons_show_in_page_for_owner(
+            self, client, saved_clinician_profile, viewable_commitment_1
         ):
-            """Tests that the fields provided automatically in this view cannot be 
-            edited by the user and should visually display as such in the browser."""
-            enrolled_course.suggested_commitments.add(commitment_template_1)
+            client.force_login(saved_clinician_profile.user)
             target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
             )
-            client.force_login(saved_clinician_user)
             html = client.get(target_url).content.decode()
-            print(html)
-            course_select_regex = re.compile(
-                r"\<select[^\>]*name=\"associated_course\"[^\>]*\>"
+            delete_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
             )
-            assert "disabled" in course_select_regex.search(html)[0]
-            title_input_regex = re.compile(
-                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            assert delete_button_regex.search(html)
+            edit_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
             )
-            assert "disabled" in title_input_regex.search(html)[0]
-            description_input_regex = re.compile(
-                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
+            assert edit_button_regex.search(html)
+
+        def test_alteration_buttons_do_not_show_for_other_clinicians(
+            self, client, other_clinician_profile, viewable_commitment_1
+        ):
+            client.force_login(other_clinician_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
             )
-            assert "disabled" in description_input_regex.search(html)[0]
+            html = client.get(target_url).content.decode()
+            delete_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not delete_button_regex.search(html)
+            edit_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not edit_button_regex.search(html)
+
+        def test_alteration_buttons_do_not_show_for_providers(
+            self, client, saved_provider_profile, viewable_commitment_1
+        ):
+            client.force_login(saved_provider_profile.user)
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            delete_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not delete_button_regex.search(html)
+            edit_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not edit_button_regex.search(html)
+
+        def test_alteration_buttons_do_not_show_for_anonymous_users(
+            self, client, viewable_commitment_1
+        ):
+            target_url = reverse(
+                "view commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            delete_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not delete_button_regex.search(html)
+            edit_button_regex = re.compile(
+                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
+                flags=re.IGNORECASE
+            )
+            assert not edit_button_regex.search(html)
 
 
     class TestPost:
-        """Tests for CreateFromSuggestedCommitmentView.post"""
-        def test_rejects_provider_accounts_with_403(
-            self, client, saved_provider_user, enrolled_course, commitment_template_1
-        ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            client.force_login(saved_provider_user)
-            response = client.post(target_url)
-            assert response.status_code == 403
+        """Tests for ViewCommitmentView.post"""
 
-        def test_rejects_non_student_clinician_accounts_with_404(
-            self, client, other_clinician_profile, enrolled_course, commitment_template_1
-        ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
+        def test_post_rejected_with_405(self, client, viewable_commitment_1):
             target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            client.force_login(other_clinician_profile.user)
-            response = client.post(target_url)
-            assert response.status_code == 404
-
-        def test_returns_404_on_missing_course(
-            self, client, saved_clinician_user, enrolled_course, commitment_template_1
-        ):
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id + 1,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            client.force_login(saved_clinician_user)
-            response = client.post(target_url)
-            assert response.status_code == 404
-
-        def test_returns_404_on_missing_commitment_template(
-            self, client, saved_clinician_user, enrolled_course, commitment_template_1
-        ):
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id + 1
-                }
-            )
-            client.force_login(saved_clinician_user)
-            response = client.post(target_url)
-            assert response.status_code == 404
-
-        def test_returns_404_on_commitment_template_not_a_part_of_course(
-            self, client, saved_clinician_user, enrolled_course, commitment_template_1
-        ):
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            client.force_login(saved_clinician_user)
-            response = client.post(target_url)
-            assert response.status_code == 404
-
-        def test_bad_request_returns_get_form(
-            self, client,saved_clinician_profile, enrolled_course, commitment_template_1
-        ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            client.force_login(saved_clinician_profile.user)
-            html = client.post(
-                target_url,
-                {}
-            ).content.decode()
-            form_regex = re.compile(
-                r"\<form[^\>]*action=\"\"[^\>]*\>"
-            )
-            assert form_regex.search(html)
-
-        def test_valid_request_creates_commitment_with_correct_values(
-            self, client, saved_clinician_profile, enrolled_course, commitment_template_1
-        ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            client.force_login(saved_clinician_profile.user)
-            client.post(
-                target_url,
-                {
-                    "title": commitment_template_1.title,
-                    "description": commitment_template_1.description,
-                    "deadline": date.today(),
-                    "associated_course": enrolled_course.id
-                }
-            )
-            commitment = Commitment.objects.get(
-                title=commitment_template_1.title,
-                description=commitment_template_1.description,
-                deadline=date.today(),
-                associated_course=enrolled_course.id
-            )
-            assert commitment.status == CommitmentStatus.IN_PROGRESS
-            assert commitment.owner == saved_clinician_profile
-            assert commitment.source_template == commitment_template_1
-
-        def test_valid_request_redirects_correctly(
-            self, client, saved_clinician_profile, enrolled_course, commitment_template_1
-        ):
-            enrolled_course.suggested_commitments.add(commitment_template_1)
-            target_url = reverse(
-                "create Commitment from suggested commitment", 
-                kwargs={
-                    "course_id": enrolled_course.id,
-                    "commitment_template_id": commitment_template_1.id
-                }
-            )
-            client.force_login(saved_clinician_profile.user)
-            response = client.post(
-                target_url,
-                {
-                    "title": commitment_template_1.title,
-                    "description": commitment_template_1.description,
-                    "deadline": date.today(),
-                    "associated_course": enrolled_course.id
-                }
-            )
-            assert response.status_code == 302
-            commitment = Commitment.objects.get(
-                title=commitment_template_1.title,
-                description=commitment_template_1.description,
-                deadline=date.today(),
-                associated_course=enrolled_course.id
-            )
-            assert response.url == reverse(
                 "view commitment",
-                kwargs={"commitment_id": commitment.id}
+                kwargs={"commitment_id": viewable_commitment_1.id}
             )
+            response = client.post(target_url)
+            assert response.status_code == 405
 
 
 @pytest.mark.django_db
@@ -941,196 +797,490 @@ class TestEditCommitmentView:
 
 
 @pytest.mark.django_db
-class TestViewCommitmentView:
-    """Tests for ViewCommitmentView"""
+class TestDeleteCommitmentView:
+    """Tests for DeleteCommitmentView"""
 
-    @pytest.fixture(name="viewable_commitment_1")
-    def fixture_viewable_commitment_1(self, saved_clinician_profile):
+    @pytest.fixture(name="existing_commitment")
+    def fixture_existing_commitment(self, saved_clinician_profile):
         return Commitment.objects.create(
-            title="First commitment",
-            description="This is the first description",
-            deadline=date.today()+timedelta(days=1),
-            owner=saved_clinician_profile,
-            status=CommitmentStatus.IN_PROGRESS
+            title="Deletion target",
+            description="TBD",
+            deadline=date.today(),
+            owner=saved_clinician_profile
         )
-
-    @pytest.fixture(name="viewable_commitment_2")
-    def fixture_viewable_commitment_2(self, saved_clinician_profile):
-        return Commitment.objects.create(
-            title="Second commitment",
-            description="This is the second description",
-            deadline=date.fromisoformat("2000-01-01"),
-            owner=saved_clinician_profile,
-            status=CommitmentStatus.EXPIRED
-        )
-
 
     class TestGet:
-        """Tests for ViewCommitmentView.get"""
+        """Tests for DeleteCommitmentView.get"""
 
-        def test_missing_commitment_returns_404(self, client, viewable_commitment_1):
-            uid = viewable_commitment_1.id
-            viewable_commitment_1.delete()
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_commitment
+        ):
             target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": uid}
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
             )
+            client.force_login(saved_provider_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_clinicians_with_404(
+            self, client, other_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(other_clinician_profile.user)
             response = client.get(target_url)
             assert response.status_code == 404
 
-        def test_first_commitment_values_show_in_page(
-            self, client, saved_clinician_profile, viewable_commitment_1
+        def test_shows_post_form_pointing_to_this_view(
+            self, client,saved_clinician_profile, existing_commitment
         ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
             client.force_login(saved_clinician_profile.user)
-            target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_1.id}
-            )
             html = client.get(target_url).content.decode()
-            assert viewable_commitment_1.title in html
-            assert viewable_commitment_1.description in html
-            deadline_regex = convert_date_to_general_regex(viewable_commitment_1.deadline)
-            assert deadline_regex.search(html)
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
 
-        def test_second_commitment_values_show_in_page(
-            self, client, saved_clinician_profile, viewable_commitment_2
+        def test_hidden_delete_field_is_set(
+            self, client, saved_clinician_profile, existing_commitment
         ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
             client.force_login(saved_clinician_profile.user)
-            target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_2.id}
-            )
             html = client.get(target_url).content.decode()
-            assert viewable_commitment_2.title in html
-            assert viewable_commitment_2.description in html
-            deadline_regex = convert_date_to_general_regex(viewable_commitment_2.deadline)
-            assert deadline_regex.search(html)
-
-        def test_other_clinicians_can_view_commitment(
-            self, client, other_clinician_profile, viewable_commitment_1
-        ):
-            client.force_login(other_clinician_profile.user)
-            target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_1.id}
+            delete_input_regex = re.compile(
+                r"\<input[^\>]*name=\"delete\"[^\>]*\>"
             )
-            html = client.get(target_url).content.decode()
-            assert viewable_commitment_1.title in html
-            assert viewable_commitment_1.description in html
-
-        def test_providers_can_view_commitment(
-            self, client, saved_provider_profile, viewable_commitment_1
-        ):
-            client.force_login(saved_provider_profile.user)
-            target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_1.id}
+            delete_input_match = delete_input_regex.search(html)
+            assert delete_input_match
+            assert "type=\"hidden\"" in delete_input_match[0]
+            nonempty_value_regex = re.compile(
+                r"value=\"[^\"]+\""
             )
-            html = client.get(target_url).content.decode()
-            assert viewable_commitment_1.title in html
-            assert viewable_commitment_1.description in html
-
-        def test_anonymous_users_can_view_commitment(
-            self, client, viewable_commitment_2
-        ):
-            target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_2.id}
-            )
-            html = client.get(target_url).content.decode()
-            assert viewable_commitment_2.title in html
-            assert viewable_commitment_2.description in html
-
-        def test_alteration_buttons_show_in_page_for_owner(
-            self, client, saved_clinician_profile, viewable_commitment_1
-        ):
-            client.force_login(saved_clinician_profile.user)
-            target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_1.id}
-            )
-            html = client.get(target_url).content.decode()
-            delete_button_regex = re.compile(
-                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
-                flags=re.IGNORECASE
-            )
-            assert delete_button_regex.search(html)
-            edit_button_regex = re.compile(
-                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
-                flags=re.IGNORECASE
-            )
-            assert edit_button_regex.search(html)
-
-        def test_alteration_buttons_do_not_show_for_other_clinicians(
-            self, client, other_clinician_profile, viewable_commitment_1
-        ):
-            client.force_login(other_clinician_profile.user)
-            target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_1.id}
-            )
-            html = client.get(target_url).content.decode()
-            delete_button_regex = re.compile(
-                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
-                flags=re.IGNORECASE
-            )
-            assert not delete_button_regex.search(html)
-            edit_button_regex = re.compile(
-                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
-                flags=re.IGNORECASE
-            )
-            assert not edit_button_regex.search(html)
-
-        def test_alteration_buttons_do_not_show_for_providers(
-            self, client, saved_provider_profile, viewable_commitment_1
-        ):
-            client.force_login(saved_provider_profile.user)
-            target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_1.id}
-            )
-            html = client.get(target_url).content.decode()
-            delete_button_regex = re.compile(
-                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
-                flags=re.IGNORECASE
-            )
-            assert not delete_button_regex.search(html)
-            edit_button_regex = re.compile(
-                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
-                flags=re.IGNORECASE
-            )
-            assert not edit_button_regex.search(html)
-
-        def test_alteration_buttons_do_not_show_for_anonymous_users(
-            self, client, viewable_commitment_1
-        ):
-            target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_1.id}
-            )
-            html = client.get(target_url).content.decode()
-            delete_button_regex = re.compile(
-                r"\<button[^\>]*\>[^\<]*Delete[^\<]*\<\/button\>",
-                flags=re.IGNORECASE
-            )
-            assert not delete_button_regex.search(html)
-            edit_button_regex = re.compile(
-                r"\<button[^\>]*\>[^\<]*Edit[^\<]*\<\/button\>",
-                flags=re.IGNORECASE
-            )
-            assert not edit_button_regex.search(html)
+            assert nonempty_value_regex.search(delete_input_match[0])
 
 
     class TestPost:
-        """Tests for ViewCommitmentView.post"""
+        """Tests for DeleteCommitmentView.post"""
 
-        def test_post_rejected_with_405(self, client, viewable_commitment_1):
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_commitment
+        ):
             target_url = reverse(
-                "view commitment",
-                kwargs={"commitment_id": viewable_commitment_1.id}
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
             )
+            client.force_login(saved_provider_user)
             response = client.post(target_url)
-            assert response.status_code == 405
+            assert response.status_code == 403
+
+        def test_rejects_other_clinicians_with_404(
+            self, client, other_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_invalid_request_returns_the_get_page_with_error_notes(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.post(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_valid_request_deletes_commitment_template(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"delete": "true"}
+            )
+            assert not Commitment.objects.filter(id=existing_commitment.id).exists()
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "delete commitment", 
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {"delete": "true"}
+            )
+            assert response.status_code == 302
+            assert response.url == reverse("clinician dashboard")
+
+
+@pytest.mark.django_db
+class TestCreateFromSuggestedCommitmentView:
+    """Tests for CreateFromSuggestedCommitmentView"""
+
+    class TestGet:
+        """Tests for CreateFromSuggestedCommitmentView.get"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_provider_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_non_student_clinician_accounts_with_404(
+            self, client, other_clinician_profile, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_returns_404_on_missing_course(
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id + 1,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_returns_404_on_missing_commitment_template(
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id + 1
+                }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_returns_404_on_commitment_template_not_a_part_of_course(
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_create_commitment_view(
+            self, client,saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_mandatory_commitment_template_fields_are_filled_by_default(
+            self, client,saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            html = client.get(target_url).content.decode()
+            title_input_regex = re.compile(
+                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            )
+            title_input_match = title_input_regex.search(html)
+            assert title_input_match
+            assert f"value=\"{commitment_template_1.title}\"" in title_input_match[0]
+            description_input_regex = re.compile(
+                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
+            )
+            description_input_match = description_input_regex.search(html)
+            assert description_input_match
+            assert commitment_template_1.description in description_input_match[0]
+
+        def test_course_field_is_set_by_default(
+            self, client,saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            html = client.get(target_url).content.decode()
+            course_option_regex = re.compile(
+                r"\<option[^\>]*value=\"" + str(enrolled_course.id) + r"\"[^\>]*\>"
+            )
+            course_option_match = course_option_regex.search(html)
+            assert course_option_match
+            assert "selected" in course_option_match[0]
+
+        def test_fields_sourced_from_course_or_template_are_disabled(
+            self, client,saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            """Tests that the fields provided automatically in this view cannot be 
+            edited by the user and should visually display as such in the browser."""
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            html = client.get(target_url).content.decode()
+            print(html)
+            course_select_regex = re.compile(
+                r"\<select[^\>]*name=\"associated_course\"[^\>]*\>"
+            )
+            assert "disabled" in course_select_regex.search(html)[0]
+            title_input_regex = re.compile(
+                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            )
+            assert "disabled" in title_input_regex.search(html)[0]
+            description_input_regex = re.compile(
+                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
+            )
+            assert "disabled" in description_input_regex.search(html)[0]
+
+
+    class TestPost:
+        """Tests for CreateFromSuggestedCommitmentView.post"""
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_provider_user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_non_student_clinician_accounts_with_404(
+            self, client, other_clinician_profile, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_returns_404_on_missing_course(
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id + 1,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_returns_404_on_missing_commitment_template(
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id + 1
+                }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_returns_404_on_commitment_template_not_a_part_of_course(
+            self, client, saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_bad_request_returns_get_form(
+            self, client,saved_clinician_profile, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.post(
+                target_url,
+                {}
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+
+        def test_valid_request_creates_commitment_with_correct_values(
+            self, client, saved_clinician_profile, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "title": commitment_template_1.title,
+                    "description": commitment_template_1.description,
+                    "deadline": date.today(),
+                    "associated_course": enrolled_course.id
+                }
+            )
+            commitment = Commitment.objects.get(
+                title=commitment_template_1.title,
+                description=commitment_template_1.description,
+                deadline=date.today(),
+                associated_course=enrolled_course.id
+            )
+            assert commitment.status == CommitmentStatus.IN_PROGRESS
+            assert commitment.owner == saved_clinician_profile
+            assert commitment.source_template == commitment_template_1
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_clinician_profile, enrolled_course, commitment_template_1
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {
+                    "title": commitment_template_1.title,
+                    "description": commitment_template_1.description,
+                    "deadline": date.today(),
+                    "associated_course": enrolled_course.id
+                }
+            )
+            assert response.status_code == 302
+            commitment = Commitment.objects.get(
+                title=commitment_template_1.title,
+                description=commitment_template_1.description,
+                deadline=date.today(),
+                associated_course=enrolled_course.id
+            )
+            assert response.url == reverse(
+                "view commitment",
+                kwargs={"commitment_id": commitment.id}
+            )
 
 
 @pytest.mark.django_db
@@ -1500,153 +1650,3 @@ class TestReopenCommitmentView:
                 {}
             )
             assert response.status_code == 400
-
-
-@pytest.mark.django_db
-class TestDeleteCommitmentView:
-    """Tests for DeleteCommitmentView"""
-
-    @pytest.fixture(name="existing_commitment")
-    def fixture_existing_commitment(self, saved_clinician_profile):
-        return Commitment.objects.create(
-            title="Deletion target",
-            description="TBD",
-            deadline=date.today(),
-            owner=saved_clinician_profile
-        )
-
-    class TestGet:
-        """Tests for DeleteCommitmentView.get"""
-
-        def test_rejects_provider_accounts_with_403(
-            self, client, saved_provider_user, existing_commitment
-        ):
-            target_url = reverse(
-                "delete commitment", 
-                kwargs={"commitment_id": existing_commitment.id}
-            )
-            client.force_login(saved_provider_user)
-            response = client.get(target_url)
-            assert response.status_code == 403
-
-        def test_rejects_other_clinicians_with_404(
-            self, client, other_clinician_profile, existing_commitment
-        ):
-            target_url = reverse(
-                "delete commitment", 
-                kwargs={"commitment_id": existing_commitment.id}
-            )
-            client.force_login(other_clinician_profile.user)
-            response = client.get(target_url)
-            assert response.status_code == 404
-
-        def test_shows_post_form_pointing_to_this_view(
-            self, client,saved_clinician_profile, existing_commitment
-        ):
-            target_url = reverse(
-                "delete commitment", 
-                kwargs={"commitment_id": existing_commitment.id}
-            )
-            client.force_login(saved_clinician_profile.user)
-            html = client.get(target_url).content.decode()
-            form_regex = re.compile(
-                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
-            )
-            match = form_regex.search(html)
-            assert match
-            form_tag = match[0]
-            post_method_regex = re.compile(r"method=\"(post|POST)\"")
-            assert post_method_regex.search(form_tag)
-
-        def test_hidden_delete_field_is_set(
-            self, client, saved_clinician_profile, existing_commitment
-        ):
-            target_url = reverse(
-                "delete commitment", 
-                kwargs={"commitment_id": existing_commitment.id}
-            )
-            client.force_login(saved_clinician_profile.user)
-            html = client.get(target_url).content.decode()
-            delete_input_regex = re.compile(
-                r"\<input[^\>]*name=\"delete\"[^\>]*\>"
-            )
-            delete_input_match = delete_input_regex.search(html)
-            assert delete_input_match
-            assert "type=\"hidden\"" in delete_input_match[0]
-            nonempty_value_regex = re.compile(
-                r"value=\"[^\"]+\""
-            )
-            assert nonempty_value_regex.search(delete_input_match[0])
-
-
-    class TestPost:
-        """Tests for DeleteCommitmentView.post"""
-
-        def test_rejects_provider_accounts_with_403(
-            self, client, saved_provider_user, existing_commitment
-        ):
-            target_url = reverse(
-                "delete commitment", 
-                kwargs={"commitment_id": existing_commitment.id}
-            )
-            client.force_login(saved_provider_user)
-            response = client.post(target_url)
-            assert response.status_code == 403
-
-        def test_rejects_other_clinicians_with_404(
-            self, client, other_clinician_profile, existing_commitment
-        ):
-            target_url = reverse(
-                "delete commitment", 
-                kwargs={"commitment_id": existing_commitment.id}
-            )
-            client.force_login(other_clinician_profile.user)
-            response = client.post(target_url)
-            assert response.status_code == 404
-
-        def test_invalid_request_returns_the_get_page_with_error_notes(
-            self, client, saved_clinician_profile, existing_commitment
-        ):
-            target_url = reverse(
-                "delete commitment", 
-                kwargs={"commitment_id": existing_commitment.id}
-            )
-            client.force_login(saved_clinician_profile.user)
-            html = client.post(target_url).content.decode()
-            form_regex = re.compile(
-                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
-            )
-            assert form_regex.search(html)
-            error_notes_regex = re.compile(
-                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
-            )
-            assert error_notes_regex.search(html)
-
-        def test_valid_request_deletes_commitment_template(
-            self, client, saved_clinician_profile, existing_commitment
-        ):
-            target_url = reverse(
-                "delete commitment", 
-                kwargs={"commitment_id": existing_commitment.id}
-            )
-            client.force_login(saved_clinician_profile.user)
-            client.post(
-                target_url,
-                {"delete": "true"}
-            )
-            assert not Commitment.objects.filter(id=existing_commitment.id).exists()
-
-        def test_valid_request_redirects_correctly(
-            self, client, saved_clinician_profile, existing_commitment
-        ):
-            target_url = reverse(
-                "delete commitment", 
-                kwargs={"commitment_id": existing_commitment.id}
-            )
-            client.force_login(saved_clinician_profile.user)
-            response = client.post(
-                target_url,
-                {"delete": "true"}
-            )
-            assert response.status_code == 302
-            assert response.url == reverse("clinician dashboard")

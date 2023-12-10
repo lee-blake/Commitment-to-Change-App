@@ -8,7 +8,6 @@ from .forms import ClinicianRegistrationForm, ProviderRegistrationForm
 
 
 class RegisterTypeChoiceView(View):
-
     @staticmethod
     def get(request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -17,7 +16,6 @@ class RegisterTypeChoiceView(View):
 
 
 class RegisterClinicianView(RegistrationView):
-
     template_name = "registration/register_clinician.html"
     email_subject_template = "registration/registration_email_subject.txt"
     email_body_template = "registration/registration_email_body.txt"
@@ -39,7 +37,6 @@ class RegisterClinicianView(RegistrationView):
 
 
 class RegisterProviderView(RegistrationView):
-
     template_name = "registration/register_provider.html"
     email_subject_template = "registration/registration_email_subject.txt"
     email_body_template = "registration/registration_email_body.txt"
@@ -61,16 +58,13 @@ class RegisterProviderView(RegistrationView):
 
 
 class AwaitingActivationView(TemplateView):
-
     template_name = "registration/awaiting_activation.html"
 
 
 class ActivateAccountView(ActivationView):
-
     template_name = "registration/activation_failed.html"
     success_url = reverse_lazy("activation complete")
 
 
 class ActivationCompleteView(TemplateView):
-
     template_name = "registration/activation_complete.html"
