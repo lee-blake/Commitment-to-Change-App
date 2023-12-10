@@ -181,3 +181,4 @@ class JoinCourseForm(ModelForm):
 
     def save(self, commit=True):
         self.instance.enroll_student_with_join_code(self._student, self._student_join_code)
+        return self.instance

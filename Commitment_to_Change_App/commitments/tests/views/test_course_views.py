@@ -1355,6 +1355,25 @@ class TestJoinCourseView:
             response = client.post(target_url, {"join": "true"})
             assert response.status_code == 404
 
+        def test_missing_join_field_returns_get_page_with_error_notes(
+            self, client, saved_clinician_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.post(target_url, {}).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            assert "errorlist" in html
+
         def test_good_request_enrolls_student_in_course(
             self, client, saved_clinician_profile, non_enrolled_course
         ):
