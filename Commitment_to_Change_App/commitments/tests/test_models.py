@@ -249,3 +249,22 @@ class TestCourse:
             minimal_commitment.associated_course = minimal_course
             minimal_commitment.save()
             assert minimal_course.statistics["associated_commitments"]["total"] == 1
+
+
+    @pytest.mark.django_db
+    class TestEnrollStudentWithJoinCode:
+        """Tests for checking that CourseLogic.enroll_student_with_join_code integrates
+        with Course."""
+
+        def test_correct_code_enrolls_student(self, minimal_course, minimal_clinician):
+            minimal_course.join_code = "JOINCODE"
+            minimal_course.enroll_student_with_join_code(minimal_clinician, "JOINCODE")
+            assert minimal_clinician in minimal_course.students.all()
+
+        def test_correct_code_does_not_double_enroll_student(
+            self, minimal_course, minimal_clinician
+        ):
+            minimal_course.join_code = "JOINCODE"
+            minimal_course.students.add(minimal_clinician)
+            minimal_course.enroll_student_with_join_code(minimal_clinician, "JOINCODE")
+            assert minimal_course.students.filter(id=minimal_clinician.id).count() == 1

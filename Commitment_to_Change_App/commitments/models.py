@@ -80,6 +80,12 @@ class Course(CourseLogic, models.Model):
         # Django ManyToManyFields are not iterable, we must wrap them with a property.
         return self.associated_commitments.all()
 
+    def _add_student(self, student):
+        # We must override this due to ManyToManyField using different methods than list.
+        # Pylint doesn't understand that contains(...) is applied to the field at runtime.
+        if not self.students.contains(student): #pylint: disable=no-member
+            self.students.add(student)
+
     #def __str__(self):
     #    return self.title.__str__()
 
