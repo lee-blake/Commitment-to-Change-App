@@ -384,6 +384,35 @@ class TestCreateFromSuggestedCommitmentView:
             assert course_option_match
             assert "selected" in course_option_match[0]
 
+        def test_fields_sourced_from_course_or_template_are_disabled(
+            self, client,saved_clinician_user, enrolled_course, commitment_template_1
+        ):
+            """Tests that the fields provided automatically in this view cannot be 
+            edited by the user and should visually display as such in the browser."""
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            target_url = reverse(
+                "create Commitment from suggested commitment", 
+                kwargs={
+                    "course_id": enrolled_course.id,
+                    "commitment_template_id": commitment_template_1.id
+                }
+            )
+            client.force_login(saved_clinician_user)
+            html = client.get(target_url).content.decode()
+            print(html)
+            course_select_regex = re.compile(
+                r"\<select[^\>]*name=\"associated_course\"[^\>]*\>"
+            )
+            assert "disabled" in course_select_regex.search(html)[0]
+            title_input_regex = re.compile(
+                r"\<input[^\>]*name=\"title\"[^\>]*\>"
+            )
+            assert "disabled" in title_input_regex.search(html)[0]
+            description_input_regex = re.compile(
+                r"\<textarea[^\>]*name=\"description\"[^\>]*\>[^\>]*\<\/textarea\>"
+            )
+            assert "disabled" in description_input_regex.search(html)[0]
+
 
     class TestPost:
         """Tests for CreateFromSuggestedCommitmentView.post"""
