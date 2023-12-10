@@ -2,7 +2,12 @@
 {% block title %} Edit Commitment {% endblock title %}
 {% block form_header %}
 <h1>Edit Commitment</h1>
-<p>Try to keep your commitments S.M.A.R.T. {% include "commitments/Commitment/smart_popover.html" %}</p>
+<div>
+    <p>Try to keep your commitments S.M.A.R.T. {% include "commitments/Commitment/smart_popover.html" %}</p>
+</div>
+<div>
+    <p>Some suggested commitment fields are not eligible for editing. {% include "commitments/Commitment/commitment_create_from_suggested_commitment_help_modal.html" %}</p> 
+</div>
 {% endblock form_header %}
 
 {% block form_url %}
