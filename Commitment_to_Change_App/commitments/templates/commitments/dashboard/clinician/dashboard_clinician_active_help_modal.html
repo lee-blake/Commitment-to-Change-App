@@ -1,0 +1,41 @@
+{% extends "commitments/common/base_help_modal.html" %}
+
+{% block modal_title %}
+Active Commitments
+{% endblock modal_title %}
+
+{% block icon_color %}white{% endblock icon_color %}
+
+{% block modal_body_text %}
+Active Commitments are commitments that are either in-progress, or past their due-date.
+<br>
+<ul>
+    <li>
+        <strong>Creating a new Commitment:</strong> To create a new commitment to show in your dashboard, click "Make a commitment" in the navbar at the top of the screen, or
+        use the "Make This Commitment" button in a joined course to make that course's commitment.
+    </li>
+    <li>
+        <strong>Viewing a Commitment:</strong> To view a created commitment, click on the button containing your commitment's name.
+    <li>
+        <strong>Completing a Commitment:</strong> Once you have finished a commitment, you can use the "Complete" button to mark it as such. It will then be moved to the
+        "Completed Commitments" section in the "Inactive Commitments" panel below.
+    </li>
+    <li>
+        <strong>Discontinuing a Commitment:</strong> If you are unable to complete a commitment for any reason, you can use the "Discontinue" button to move it to the "Discontinued Commitments" section
+        in the "Inactive Commitments" panel below.
+    </li>
+</ul>
+{% endblock modal_body_text %}
+
+{% comment %}
+Surrounding the extended template content (modal_everything) with these {% with %} statements
+is necessary to allow the parent template to access our modal_id variable.
+Two with statements are necessary in order to first fetch and format the current
+commitment_id, and then prepend our action string to create a unique modal_id for the modal to use.
+{% endcomment %}
+
+{% block modal_everything %}
+{% with modal_id="dashboard_clinician_active_commitments_help_modal" %}
+{{ block.super }}
+{% endwith %}
+{% endblock modal_everything %}
