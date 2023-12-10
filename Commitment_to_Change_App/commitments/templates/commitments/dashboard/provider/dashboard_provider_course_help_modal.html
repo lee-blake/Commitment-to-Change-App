@@ -1,0 +1,38 @@
+{% extends "commitments/common/base_help_modal.html" %}
+
+{% block modal_title %}
+Courses
+{% endblock modal_title %}
+
+{% block icon_color %}white{% endblock icon_color %}
+
+{% block modal_body_text %}
+Courses are a way to organize students enrolled in a course provided by your institution. By doing this, clinicians can be steered towards
+creating commitments around the learning objectives of their respective CME course. These courses can also function as a way to group students
+for the purposes of collecting data on the effectiveness of your courses in changing medical practice.
+<br>
+<ul>
+    <li>
+        <strong>Creating a course:</strong> Click on "Create a course" in the navbar at the top of the screen.
+        Once you have created a Course, it will show up in the "Courses" panel below.
+    </li>
+
+    <li>
+        <strong>Viewing a course:</strong> Click on the button containing the course name you wish to view.
+    </li>
+</ul>
+
+{% endblock modal_body_text %}
+
+{% comment %}
+Surrounding the extended template content (modal_everything) with these {% with %} statements
+is necessary to allow the parent template to access our modal_id variable.
+Two with statements are necessary in order to first fetch and format the current
+commitment_id, and then prepend our action string to create a unique modal_id for the modal to use.
+{% endcomment %}
+
+{% block modal_everything %}
+{% with modal_id="dashboard_provider_help_modal" %}
+{{ block.super }}
+{% endwith %}
+{% endblock modal_everything %}
