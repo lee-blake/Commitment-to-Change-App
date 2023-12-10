@@ -4,7 +4,7 @@ from django.views import View
 from django.views.generic.base import TemplateView
 from django_registration.backends.activation.views import ActivationView, RegistrationView
 
-from .forms import ClinicianRegistrationForm, ProviderRegistrationForm
+from registration.forms import ClinicianRegistrationForm, ProviderRegistrationForm
 
 
 class RegisterTypeChoiceView(View):
