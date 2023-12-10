@@ -8,7 +8,9 @@
     <div class="row g-5">
         <div class="col" align="center">
             <div class="px-4 py-3 foreground round-corners default-form">
-                <h1 class="center">Create a Commitment Template</h1>
+                <div class="text-center">
+                    <span class="h1">Create a Commitment Template</span> <span>{% include "commitments/CommitmentTemplate/commitment_template_create_page_help_modal.html" %}</span> 
+                </div>
                 <form action="{% url 'create CommitmentTemplate' %}" method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
