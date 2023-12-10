@@ -48,6 +48,51 @@ class TestCommitmentForm:
             with pytest.raises(ValueError):
                 CommitmentForm(instance=commitment, owner=new_owner)
 
+        def test_suggested_commitments_cannot_edit_fields_from_source_template(self):
+            owner = ClinicianProfile(id=1)
+            template = CommitmentTemplate()
+            commitment = Commitment(
+                title="Unchanged title",
+                description="Unchanged description",
+                source_template=template
+            )
+            form = CommitmentForm(
+                {
+                    "title": "New title",
+                    "description": "New description",
+                    "deadline": datetime.date.today()
+                },
+                instance=commitment,
+                owner=owner
+            )
+            resulting_commitment = form.save(commit=False)
+            assert resulting_commitment.title == "Unchanged title"
+            assert resulting_commitment.description == "Unchanged description"
+
+        @pytest.mark.django_db
+        def test_suggested_commitments_cannot_change_associated_course(
+            self, minimal_clinician, minimal_course
+        ):
+            minimal_course.students.add(minimal_clinician)
+            template = CommitmentTemplate()
+            commitment = Commitment(
+                title="Unchanged title",
+                description="Unchanged description",
+                source_template=template,
+                associated_course=minimal_course
+            )
+            form = CommitmentForm(
+                {
+                    "title": "New title",
+                    "description": "New description",
+                    "deadline": datetime.date.today()
+                },
+                instance=commitment,
+                owner=minimal_clinician
+            )
+            resulting_commitment = form.save(commit=False)
+            assert resulting_commitment.associated_course == minimal_course
+
 
 class TestCourseForm:
     """Tests for CourseForm"""

@@ -31,6 +31,13 @@ class CommitmentForm(ModelForm):
         elif owner != self.instance.owner:
             raise ValueError("Cannot change the owner of a commitment!")
         self.fields['associated_course'].queryset = self.instance.owner.course_set.all()
+        self._disable_editing_if_suggested_commitment()
+
+    def _disable_editing_if_suggested_commitment(self):
+        if self.instance.source_template:
+            self.fields["title"].disabled = True
+            self.fields["description"].disabled = True
+            self.fields["associated_course"].disabled = True
 
 
 class CreateCommitmentFromSuggestedCommitmentForm(CommitmentForm):
