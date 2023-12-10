@@ -248,8 +248,7 @@ class JoinCourseView(LoginRequiredMixin, UpdateView):
         return JoinCourseForm(
             viewer,
             self.kwargs["join_code"],
-            self.request.POST,
-            instance=self.object
+            **self.get_form_kwargs()
         )
 
     def get_success_url(self):
