@@ -1,29 +1,29 @@
 {% extends "commitments/Course/course_view_unowned_page.html" %}
 
-{% block course_help_modal %} 
-    {% include "commitments/Course/course_view_owned_page_help_modal.html" %}
+{% block course_help_modal %}
+{% include "commitments/Course/course_view_owned_page_help_modal.html" %}
 {% endblock course_help_modal %}
 
 {% block join_link %}
 <div class="text-center foreground round-corners mt-3 mx-3 py-2">
-	Share this link to invite students to the course:
-	<div>
-		<p id="courseJoinLink">http://{{ request.get_host }}{% url 'join course' course_id=course.id join_code=course.join_code %}</p>
-		<p><a href="#" class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</a></p>
-	</div>
+    Share this link to invite students to the course:
+    <div>
+        <p id="courseJoinLink">http://{{ request.get_host }}{% url 'join course' course_id=course.id join_code=course.join_code %}</p>
+        <p><a href="#" class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</a></p>
+    </div>
 </div>
 {% endblock join_link %}
 
 {% block edit_button %}
 <a href="{% url 'edit course' course_id=course.id %}">
-  <button class="standard-button primary-accent" type="submit">
-	Edit Course
-  </button>
+    <button class="standard-button primary-accent" type="submit">
+        Edit Course
+    </button>
 </a>
 {% endblock edit_button %}
 
 {% block select_suggested_commitments_button %}
 <a href="{% url 'change Course suggested commitments' course_id=course.id %}">
-	<button class="standard-button">Select Templates</button>
+    <button class="standard-button">Select Templates</button>
 </a>
 {% endblock select_suggested_commitments_button %}

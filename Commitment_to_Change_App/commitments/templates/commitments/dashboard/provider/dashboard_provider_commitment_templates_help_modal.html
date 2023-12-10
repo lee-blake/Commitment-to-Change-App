@@ -1,35 +1,35 @@
 {% extends "commitments/common/base_help_modal.html" %}
 
-{% block modal_title %} 
+{% block modal_title %}
 Commitment Templates
 {% endblock modal_title %}
 
 {% block icon_color %}white{% endblock icon_color %}
 
 {% block modal_body_text %}
-Commitment Templates allow students in your courses to commit to a common, course-related goal. You can create as many templates as you like, and use the same commitment across multiple courses if desired. 
-
+Commitment Templates allow students in your courses to commit to a common, course-related goal. You can create as many templates as you like, and use the same commitment across multiple courses if desired.
 <br>
-<li>
-    <strong>Creating a Commitment Template:</strong> Click on the "Create a Commitment Template" button in the navbar at the top of your screen, and fill out the Title and Description 
-</li>
-<br> 
-<li>
-    <strong>Associating a Commitment Template with your course:</strong> Once you have created a Commitment Template, you can "suggest" the commitment to students enrolled in your course by navigating to that course's page from the "Courses" section above, 
-    and clicking the "Select Templates" button. Enrolled students can then click on "Make This Commitment" button in the course page to "join" that commitment.
-</li>
+<ul>
+    <li>
+        <strong>Creating a Commitment Template:</strong> Click on the "Create a Commitment Template" button in the navbar at the top of your screen, and fill out the Title and Description
+    </li>
+    <li>
+        <strong>Associating a Commitment Template with your course:</strong> Once you have created a Commitment Template, you can "suggest" the commitment to students enrolled in your course by navigating to that course's page from the "Courses" section above,
+        and clicking the "Select Templates" button. Enrolled students can then click on "Make This Commitment" button in the course page to "join" that commitment.
+    </li>
+</ul>
 
 {% endblock modal_body_text %}
 
-{% comment %} 
-    Surrounding the extended template content (modal_everything) with these {% with %} statements 
-    is necessary to allow the parent template to access our modal_id variable.
-    Two with statements are necessary in order to first fetch and format the current 
-    commitment_id, and then prepend our action string to create a unique modal_id for the modal to use.
+{% comment %}
+Surrounding the extended template content (modal_everything) with these {% with %} statements
+is necessary to allow the parent template to access our modal_id variable.
+Two with statements are necessary in order to first fetch and format the current
+commitment_id, and then prepend our action string to create a unique modal_id for the modal to use.
 {% endcomment %}
 
 {% block modal_everything %}
-        {% with modal_id="dashboard_provider_commitment_templates_help_modal" %}
-            {{ block.super }}
-        {% endwith %}
+{% with modal_id="dashboard_provider_commitment_templates_help_modal" %}
+{{ block.super }}
+{% endwith %}
 {% endblock modal_everything %}

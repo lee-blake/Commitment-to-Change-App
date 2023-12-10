@@ -9,11 +9,13 @@
         <div class="col">
             <div class="px-4 pb-3 foreground round-corners">
                 <div class="py-1 primary-accent-only round-corners text-center">
-                    <span class="h1 accent-text">Courses</span> <span>{% include "commitments/dashboard/provider/dashboard_provider_course_help_modal.html" %}</span>
+                    <span class="h1 accent-text">Courses</span> 
+                    <span>{% include "commitments/dashboard/provider/dashboard_provider_course_help_modal.html" %}</span>
                 </div>
                 {% include "commitments/dashboard/dashboard_courses_list.html" %}
                 <div class="py-1 primary-accent-only round-corners text-center">
-                    <span class="h1 accent-text">Commitment Templates</span> <span>{% include "commitments/dashboard/provider/dashboard_provider_commitment_templates_help_modal.html" %}</span>
+                    <span class="h1 accent-text">Commitment Templates</span> 
+                    <span>{% include "commitments/dashboard/provider/dashboard_provider_commitment_templates_help_modal.html" %}</span>
                 </div>
                 {% for commitment_template in commitment_templates %}
                     {% include "commitments/dashboard/provider/dashboard_provider_commitment_template_list.html" %}
