@@ -116,7 +116,8 @@ class TestCommitmentTemplate:
     """Tests for CommitmentTemplate"""
 
     class TestCommitmentTemplateToString:
-        """Tests for CommitmentTemplate.__str__"""
+        """Tests for making sure CommitmentTemplateLogic.__str__ integrates correctly with
+        CommitmentTemplate"""
 
         def test_first_template_returns_correctly(self):
             template = CommitmentTemplate(
@@ -137,7 +138,7 @@ class TestCourse:
     """Tests for Course"""
 
     class TestStr:
-        """Tests for Course.__str__"""
+        """Tests for making sure CourseLogic.__str__ integrates correctly with Course"""
 
         @pytest.mark.parametrize("title", ["First title", "Second title"])
         def test_returns_title(self, title):
