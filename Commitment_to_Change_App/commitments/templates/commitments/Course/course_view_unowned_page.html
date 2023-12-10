@@ -69,7 +69,7 @@
                             <h3>Commitments Made in This Course:</h3>
                         </div>
 						<ul>
-                        {% for commitment in associated_commitments %}
+                        {% for commitment in course.associated_commitments_list %}
                             <li>{% include "commitments/Course/course_associated_commitments_panel.html" %}</li>
                         {% endfor %}
 					</ul>
