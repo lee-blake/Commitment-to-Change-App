@@ -1230,3 +1230,159 @@ class TestCourseChangeSuggestedCommitmentsView:
             assert response.url == reverse(
                 "view course", kwargs={ "course_id": enrolled_course.id }
             )
+
+
+@pytest.mark.django_db
+class TestJoinCourseView:
+    """Tests for JoinCourseView"""
+
+    class TestGet:
+        """Tests for JoinCourseView.get"""
+
+        def test_shows_info_page_to_course_owner(
+            self, client, saved_provider_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code
+                }
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            assert "Join page for " + non_enrolled_course.title in html
+
+        def test_rejects_other_provider_accounts_with_404(
+            self, client, other_provider_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code
+                }
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_returns_404_if_join_code_is_wrong(
+            self, client, saved_clinician_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code + "wrong"
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_url(
+            self, client, saved_clinician_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_hidden_join_field_is_set(
+            self, client, saved_clinician_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            hidden_input_regex = re.compile(
+                r"\<input[^\>]*name=\"join\"[^\>]*\>"
+            )
+            match = hidden_input_regex.search(html)
+            assert match
+            input_tag = match[0]
+            nonempty_value_regex = re.compile(r"value=\"[^\"]+\"")
+            assert nonempty_value_regex.search(input_tag)
+
+
+    class TestPost:
+        """Tests for JoinCourseView.post"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code
+                }
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.post(target_url, {"join": "true"})
+            assert response.status_code == 403
+
+        def test_wrong_join_code_rejects_with_404(
+            self, client, saved_clinician_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code + "wrong"
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(target_url, {"join": "true"})
+            assert response.status_code == 404
+
+        def test_good_request_enrolls_student_in_course(
+            self, client, saved_clinician_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(target_url, {"join": "true"})
+            assert non_enrolled_course.students.contains(saved_clinician_profile)
+
+        def test_good_request_redirects_to_course_page(
+            self, client, saved_clinician_profile, non_enrolled_course
+        ):
+            target_url = reverse(
+                "join course",
+                kwargs={
+                    "course_id": non_enrolled_course.id,
+                    "join_code": non_enrolled_course.join_code
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(target_url, {"join": "true"})
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view course",
+                kwargs={"course_id": non_enrolled_course.id}
+            )

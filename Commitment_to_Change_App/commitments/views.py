@@ -242,8 +242,7 @@ class JoinCourseView(LoginRequiredMixin, View):
         course = get_object_or_404(Course, id=course_id, join_code=join_code)
         if request.user.is_provider:
             profile = ProviderProfile.objects.get(user=request.user)
-            if not course.owner == profile:
-                raise PermissionDenied("Providers cannot join courses.")
+            get_object_or_404(Course, id=course_id, join_code=join_code, owner=profile)
             return render(
                 request,
                 "commitments/Course/course_owner_join_page.html",
