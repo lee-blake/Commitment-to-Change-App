@@ -1,36 +1,21 @@
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse, reverse_lazy
 from django.views.generic.base import View, TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.urls import reverse, reverse_lazy
+
 
 from commitments.enums import CommitmentStatus
-from .forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
+from commitments.forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
-    DiscontinueCommitmentForm, ReopenCommitmentForm, \
-    CreateCommitmentFromSuggestedCommitmentForm, JoinCourseForm
-from .mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
-from .models import Commitment, ClinicianProfile, ProviderProfile, Course, CommitmentTemplate
-
-
-class ViewCommitmentView(DetailView):
-    model = Commitment
-    pk_url_kwarg = "commitment_id"
-
-    def get_template_names(self):
-        if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
-            return ["commitments/Commitment/commitment_view_owned_page.html"]
-        else:
-            return ["commitments/Commitment/commitment_view_unowned_page.html"]
-
-    def get_object(self, queryset=None):
-        commitment = super().get_object(queryset=queryset)
-        commitment.save_expired_if_past_deadline()
-        return commitment
+    DiscontinueCommitmentForm, ReopenCommitmentForm, JoinCourseForm, \
+    CreateCommitmentFromSuggestedCommitmentForm
+from commitments.mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
+from commitments.models import Commitment, ClinicianProfile, ProviderProfile, Course, \
+    CommitmentTemplate
 
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
@@ -83,8 +68,8 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        profile = ClinicianProfile.objects.get(user=self.request.user)
-        kwargs.update({ "owner": profile })
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        kwargs.update({ "owner": viewer })
         return kwargs
 
     def get_success_url(self):
@@ -94,19 +79,20 @@ class MakeCommitmentView(ClinicianLoginRequiredMixin, CreateView):
         )
 
 
-class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
+class ViewCommitmentView(DetailView):
     model = Commitment
-    form_class = GenericDeletePostKeySetForm
-    template_name = "commitments/Commitment/commitment_delete_page.html"
     pk_url_kwarg = "commitment_id"
-    context_object_name = "commitment"
-    success_url = reverse_lazy("clinician dashboard")
 
-    def get_queryset(self):
-        viewer = ClinicianProfile.objects.get(user=self.request.user)
-        return Commitment.objects.filter(
-            owner=viewer
-        )
+    def get_template_names(self):
+        if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
+            return ["commitments/Commitment/commitment_view_owned_page.html"]
+        else:
+            return ["commitments/Commitment/commitment_view_unowned_page.html"]
+
+    def get_object(self, queryset=None):
+        commitment = super().get_object(queryset=queryset)
+        commitment.save_expired_if_past_deadline()
+        return commitment
 
 
 class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
@@ -133,11 +119,53 @@ class EditCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
         )
 
 
+class DeleteCommitmentView(ClinicianLoginRequiredMixin, DeleteView):
+    model = Commitment
+    form_class = GenericDeletePostKeySetForm
+    template_name = "commitments/Commitment/commitment_delete_page.html"
+    pk_url_kwarg = "commitment_id"
+    context_object_name = "commitment"
+    success_url = reverse_lazy("clinician dashboard")
+
+    def get_queryset(self):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        return Commitment.objects.filter(
+            owner=viewer
+        )
+
+
+class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, CreateView):
+    template_name = "commitments/Commitment/commitment_create_from_suggested_commitment.html"
+
+    def get_form(self, form_class=None):
+        source_course = get_object_or_404(Course, id=self.kwargs["course_id"])
+        suggested_commitment_template = get_object_or_404(
+            source_course.suggested_commitments,
+            id=self.kwargs["commitment_template_id"]
+        )
+        # The viewer must be a student or we should 404 for plausibile deniability of
+        # the existence of the course. Filtering the students for the user works and gets
+        # us the owner at the same time.
+        student_viewer = get_object_or_404(source_course.students, user=self.request.user)
+        return CreateCommitmentFromSuggestedCommitmentForm(
+            suggested_commitment_template,
+            source_course,
+            owner=student_viewer,
+            **self.get_form_kwargs()
+        )
+
+    def get_success_url(self):
+        return reverse(
+            "view Commitment",
+            kwargs={"commitment_id": self.object.id}
+        )
+
+
 class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def post(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        viewer = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=viewer)
         form = CompleteCommitmentForm(request.POST, instance=commitment)
         if form.is_valid():
             form.save()
@@ -151,8 +179,8 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
 class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def post(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        viewer = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=viewer)
         form = DiscontinueCommitmentForm(request.POST, instance=commitment)
         if form.is_valid():
             form.save()
@@ -166,8 +194,8 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
 class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
     @staticmethod
     def post(request, commitment_id):
-        profile = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=profile)
+        viewer = ClinicianProfile.objects.get(user=request.user)
+        commitment = get_object_or_404(Commitment, id=commitment_id, owner=viewer)
         form = ReopenCommitmentForm(request.POST, instance=commitment)
         if form.is_valid():
             form.save()
@@ -194,6 +222,20 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
         )
 
 
+class ViewCourseView(LoginRequiredMixin, DetailView):
+    model = Course
+    pk_url_kwarg = "course_id"
+
+    def get_template_names(self):
+        if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
+            return ["commitments/Course/course_view_owned_page.html"]
+        else:
+            # The viewer must be a student or we should 404 for plausibile deniability of
+            # the existence of the course. Filtering the students for the user works in one line.
+            get_object_or_404(self.object.students, user=self.request.user)
+            return ["commitments/Course/course_view_unowned_page.html"]
+
+
 class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CourseForm
     template_name = "commitments/Course/course_edit_page.html"
@@ -210,20 +252,6 @@ class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
             "view Course",
             kwargs={"course_id": self.object.id}
         )
-
-
-class ViewCourseView(LoginRequiredMixin, DetailView):
-    model = Course
-    pk_url_kwarg = "course_id"
-
-    def get_template_names(self):
-        if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
-            return ["commitments/Course/course_view_owned_page.html"]
-        else:
-            # The viewer must be a student or we should 404 for plausibile deniability of
-            # the existence of the course. Filtering the students for the user works in one line.
-            get_object_or_404(self.object.students, user=self.request.user)
-            return ["commitments/Course/course_view_unowned_page.html"]
 
 
 class JoinCourseView(LoginRequiredMixin, UpdateView):
@@ -264,6 +292,24 @@ class JoinCourseView(LoginRequiredMixin, UpdateView):
         return super().post(*args, **kwargs)
 
 
+class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateView):
+    form_class = CourseSelectSuggestedCommitmentsForm
+    template_name = "commitments/Course/course_change_suggested_commitments.html"
+    pk_url_kwarg = "course_id"
+
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return Course.objects.filter(
+            owner=viewer
+        )
+
+    def get_success_url(self):
+        return reverse(
+            "view Course",
+            kwargs={"course_id": self.object.id}
+        )
+
+
 class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
     form_class = CommitmentTemplateForm
     template_name = "commitments/CommitmentTemplate/commitment_template_create_page.html"
@@ -293,66 +339,6 @@ class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
         )
 
 
-class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateView):
-    form_class = CourseSelectSuggestedCommitmentsForm
-    template_name = "commitments/Course/course_change_suggested_commitments.html"
-    pk_url_kwarg = "course_id"
-
-    def get_queryset(self):
-        viewer = ProviderProfile.objects.get(user=self.request.user)
-        return Course.objects.filter(
-            owner=viewer
-        )
-
-    def get_success_url(self):
-        return reverse(
-            "view Course",
-            kwargs={"course_id": self.object.id}
-        )
-
-
-class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, CreateView):
-    template_name = "commitments/Commitment/commitment_create_from_suggested_commitment.html"
-
-    def get_form(self, form_class=None):
-        source_course = get_object_or_404(Course, id=self.kwargs["course_id"])
-        suggested_commitment_template = get_object_or_404(
-            source_course.suggested_commitments,
-            id=self.kwargs["commitment_template_id"]
-        )
-        # The viewer must be a student or we should 404 for plausibile deniability of
-        # the existence of the course. Filtering the students for the user works and gets
-        # us the owner at the same time.
-        student_viewer = get_object_or_404(source_course.students, user=self.request.user)
-        return CreateCommitmentFromSuggestedCommitmentForm(
-            suggested_commitment_template,
-            source_course,
-            owner=student_viewer,
-            **self.get_form_kwargs()
-        )
-
-    def get_success_url(self):
-        return reverse(
-            "view Commitment",
-            kwargs={"commitment_id": self.object.id}
-        )
-
-
-class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
-    model = CommitmentTemplate
-    form_class = GenericDeletePostKeySetForm
-    template_name = "commitments/CommitmentTemplate/commitment_template_delete_page.html"
-    pk_url_kwarg = "commitment_template_id"
-    context_object_name = "commitment_template"
-    success_url = reverse_lazy("provider dashboard")
-
-    def get_queryset(self):
-        viewer = ProviderProfile.objects.get(user=self.request.user)
-        return CommitmentTemplate.objects.filter(
-            owner=viewer
-        )
-
-
 class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
     form_class = CommitmentTemplateForm
     template_name = "commitments/CommitmentTemplate/commitment_template_edit_page.html"
@@ -369,4 +355,19 @@ class EditCommitmentTemplateView(ProviderLoginRequiredMixin, UpdateView):
         return reverse(
             "view CommitmentTemplate",
             kwargs={"commitment_template_id": self.object.id}
+        )
+
+
+class DeleteCommitmentTemplateView(ProviderLoginRequiredMixin, DeleteView):
+    model = CommitmentTemplate
+    form_class = GenericDeletePostKeySetForm
+    template_name = "commitments/CommitmentTemplate/commitment_template_delete_page.html"
+    pk_url_kwarg = "commitment_template_id"
+    context_object_name = "commitment_template"
+    success_url = reverse_lazy("provider dashboard")
+
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return CommitmentTemplate.objects.filter(
+            owner=viewer
         )

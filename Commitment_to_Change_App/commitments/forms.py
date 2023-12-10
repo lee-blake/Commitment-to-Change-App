@@ -2,7 +2,26 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput, ModelChoiceField, CheckboxSelectMultiple, \
     ModelMultipleChoiceField, BooleanField, Form, HiddenInput
 
-from .models import ClinicianProfile, Commitment, Course, CommitmentTemplate, ProviderProfile
+from commitments.models import ClinicianProfile, Commitment, Course, CommitmentTemplate, \
+    ProviderProfile
+
+
+class ClinicianProfileForm(ModelForm):
+    class Meta:
+        model = ClinicianProfile
+        fields = [
+            "first_name",
+            "last_name",
+            "institution"
+        ]
+
+
+class ProviderProfileForm(ModelForm):
+    class Meta:
+        model = ProviderProfile
+        fields = [
+            "institution"
+        ]
 
 
 class CommitmentForm(ModelForm):
@@ -26,6 +45,9 @@ class CommitmentForm(ModelForm):
     def __init__(self, *args, **kwargs):
         owner = kwargs.pop("owner")
         super(ModelForm, self).__init__(*args, **kwargs)
+        self._set_owner_enrolled_courses_as_associated_course_options(owner)
+
+    def _set_owner_enrolled_courses_as_associated_course_options(self, owner):
         if not hasattr(self.instance, 'owner') or not self.instance.owner:
             self.instance.owner = owner
         elif owner != self.instance.owner:
@@ -51,6 +73,42 @@ class CreateCommitmentFromSuggestedCommitmentForm(CommitmentForm):
         instance.associated_course = source_course
         kwargs.update({"instance": instance})
         super().__init__(*args, **kwargs )
+
+
+class CompleteCommitmentForm(ModelForm):
+    class Meta:
+        model = Commitment
+        fields = []
+
+    complete = BooleanField(initial=True, widget=HiddenInput())
+
+    def save(self, commit=True):
+        self.instance.mark_complete()
+        super().save(commit=commit)
+
+
+class DiscontinueCommitmentForm(ModelForm):
+    class Meta:
+        model = Commitment
+        fields = []
+
+    discontinue = BooleanField(initial=True, widget=HiddenInput())
+
+    def save(self, commit=True):
+        self.instance.mark_discontinued()
+        super().save(commit=commit)
+
+
+class ReopenCommitmentForm(ModelForm):
+    class Meta:
+        model = Commitment
+        fields = []
+
+    reopen = BooleanField(initial=True, widget=HiddenInput())
+
+    def save(self, commit=True):
+        self.instance.reopen()
+        super().save(commit=commit)
 
 
 class CourseForm(ModelForm):
@@ -90,15 +148,6 @@ class CourseForm(ModelForm):
         return True
 
 
-class CommitmentTemplateForm(ModelForm):
-    class Meta:
-        model = CommitmentTemplate
-        fields = [
-            "title",
-            "description"
-        ]
-
-
 class CourseSelectSuggestedCommitmentsForm(ModelForm):
     class Meta:
         model = Course
@@ -116,64 +165,6 @@ class CourseSelectSuggestedCommitmentsForm(ModelForm):
             CommitmentTemplate.objects.filter(owner=self.instance.owner)
 
 
-class ProviderProfileForm(ModelForm):
-    class Meta:
-        model = ProviderProfile
-        fields = [
-            "institution"
-        ]
-
-
-class ClinicianProfileForm(ModelForm):
-    class Meta:
-        model = ClinicianProfile
-        fields = [
-            "first_name",
-            "last_name",
-            "institution"
-        ]
-
-
-class GenericDeletePostKeySetForm(Form):
-    delete = BooleanField(initial=True, widget=HiddenInput())
-
-
-class CompleteCommitmentForm(ModelForm):
-    class Meta:
-        model = Commitment
-        fields = []
-
-    complete = BooleanField(initial=True, widget=HiddenInput())
-
-    def save(self, commit=True):
-        self.instance.mark_complete()
-        super().save(commit=commit)
-
-
-class DiscontinueCommitmentForm(ModelForm):
-    class Meta:
-        model = Commitment
-        fields = []
-
-    discontinue = BooleanField(initial=True, widget=HiddenInput())
-
-    def save(self, commit=True):
-        self.instance.mark_discontinued()
-        super().save(commit=commit)
-
-
-class ReopenCommitmentForm(ModelForm):
-    class Meta:
-        model = Commitment
-        fields = []
-
-    reopen = BooleanField(initial=True, widget=HiddenInput())
-
-    def save(self, commit=True):
-        self.instance.reopen()
-        super().save(commit=commit)
-
-
 class JoinCourseForm(ModelForm):
     class Meta:
         model = Course
@@ -189,3 +180,19 @@ class JoinCourseForm(ModelForm):
     def save(self, commit=True):
         self.instance.enroll_student_with_join_code(self._student, self._student_join_code)
         return self.instance
+
+
+class CommitmentTemplateForm(ModelForm):
+    class Meta:
+        model = CommitmentTemplate
+        fields = [
+            "title",
+            "description"
+        ]
+
+
+class GenericDeletePostKeySetForm(Form):
+    """A generic form that can be used for DeleteViews. It requires that the POST key 'delete'
+    be nonempty, which helps ensure that POST requests to delete are intentional."""
+
+    delete = BooleanField(initial=True, widget=HiddenInput())
