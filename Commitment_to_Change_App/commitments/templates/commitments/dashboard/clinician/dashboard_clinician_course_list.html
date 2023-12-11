@@ -3,7 +3,7 @@
 {% block course_module_content %}
 <div class="text-center">
       <h3>
-          <a href="{% url "view Course" course_id=course.id %}"><button type="button" id="view-course-button" class="background round-corners p-2">{{ course.title }}</button></a>
+          <a href="{% url "view Course" course_id=course.id %}"><button type="button" id="view-course-button" class="btn dashboard-button background round-corners p-2">{{ course.title }}</button></a>
       </h3>
     <div>
         {% if course.start_date %}

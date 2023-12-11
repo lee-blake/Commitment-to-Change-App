@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <div class="row foreground p-1 round-corners m-3">
+  <div class="row foreground p-1 round-corners">
       <div class="col-md-12">
         {% block course_module_content %}
           <div class="table-responsive text-center">
@@ -16,7 +16,7 @@
                         {% for course in courses %}
                           <tr>
                               <td><a href="{% url "view Course" course_id=course.id %}">
-                                <button type="button" id="view-course-button" class="background round-corners p-2">{{ course.title }}</button></a>
+                                <button type="button" id="view-course-button" class="btn dashboard-button background round-corners p-2">{{ course.title }}</button></a>
                               </td>
                               <td>
                                 {% if course.identifier %}
