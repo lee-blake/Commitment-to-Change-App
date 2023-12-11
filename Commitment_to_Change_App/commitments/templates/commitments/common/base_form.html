@@ -12,8 +12,8 @@
             {% csrf_token %}
             {{ form.as_p }}
             <div class="d-flex align-items-center justify-content-between">
+                <button onclick="history.back()" class="view-button p-1">Cancel</button>
                 <input type="submit" value="Submit">
-
                 {% block form_extra_action_buttons %}{% endblock form_extra_action_buttons %}
             </div>
         </form>
