@@ -66,6 +66,7 @@ jobs:
           pip install -r Commitment_to_Change_App/requirements.txt
 
       - name: Create custom_settings.py
+        id: custom_settings
         working-directory: ./Commitment_to_Change_App/Commitment_to_Change_App
         run: cat custom_settings_sources/custom_settings_github.py | sed "s/SECRET_KEY = ''/SECRET_KEY = '$(python -c "import secrets; print(secrets.token_urlsafe())")'/" > custom_settings.py
 
@@ -75,3 +76,8 @@ jobs:
       - name: Run djlint for errors
         working-directory: ./Commitment_to_Change_App
         run: djlint --profile=django .
+
+      - name: Run pylint
+        working-directory: ./Commitment_to_Change_App
+        if: success() || steps.custom_settings.conclusion == 'success'
+        run: pylint .
