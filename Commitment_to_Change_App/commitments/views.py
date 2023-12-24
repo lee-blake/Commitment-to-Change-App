@@ -17,6 +17,7 @@ from commitments.mixins import ClinicianLoginRequiredMixin, ProviderLoginRequire
 from commitments.models import Commitment, ClinicianProfile, ProviderProfile, Course, \
     CommitmentTemplate
 
+#TODO: Testing that TODO fails pylint
 
 class DashboardRedirectingView(LoginRequiredMixin, View):
     @staticmethod
