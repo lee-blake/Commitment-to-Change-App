@@ -31,7 +31,7 @@ Changed in [link to documentation PR]
 Otherwise note the general changes that still need to be written. -->
 
 # Special Considerations 
-<!--- This section can be discarded in none of the below headings are applicable. -->
+<!--- This section can be discarded if none of the below headings are applicable. -->
 
 ## Migrations
 <!--- Will this trigger migrations? If so, note it here. If the migrations include one or more new fields that are required, provide a one-off default that will work for them. -->
