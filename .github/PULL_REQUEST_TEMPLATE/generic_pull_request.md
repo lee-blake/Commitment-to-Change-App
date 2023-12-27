@@ -2,7 +2,7 @@
 <!--- Describe what this PR will change -->
 
 # Feature/Issue
-<!--- Link to the feature/issue that this PR is related to. GitHub will automatically create a link between your issue/PR if you use the following syntax:
+<!--- Link to the feature/issue that this PR is related to. GitHub will automatically create a link that will close your issue when the PR is merged if you use the following syntax:
 
 Resolves [issue-path]
 
@@ -14,7 +14,9 @@ Resolves [issue-path]
 
 If your PR only makes partial progress on the feature/issue, use something like:
 
-Partially resolves [issue-path]
+Part of [issue-path]
+
+This will still link the issue and will show the PR in the issue log as a mention. DO NOT use language like "partially resolves" because it will automatically close the issue.
 
 DO NOT use an actual URL for the [issue-path]. If you do, GitHub will not correctly link the issue to your PR.
 
