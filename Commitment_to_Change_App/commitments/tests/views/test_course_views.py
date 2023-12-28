@@ -201,7 +201,7 @@ class TestCreateCourseView:
                 "view Course", 
                 kwargs={ "course_id": course.id }
             )
-        
+
         def test_set_unique_identifier_shows_on_created_course(
             self, client, saved_provider_profile
         ):
@@ -675,7 +675,7 @@ class TestEditCourseView:
             start_date=datetime.date.fromisoformat("2000-01-01"),
             end_date=datetime.date.fromisoformat("2001-01-01")
         )
-    
+
 
     class TestGet:
         """Tests for EditCourseView.get"""
@@ -904,7 +904,7 @@ class TestEditCourseView:
             assert len(enrolled_course.students.all()) == len(students_before)
             for student in students_before:
                 assert enrolled_course.students.contains(student)
-        
+
         def test_set_unique_identifier_shows_on_edited_course(
             self, client, saved_provider_profile, existing_course
         ):
