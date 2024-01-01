@@ -9,7 +9,7 @@ from django.template import loader
 from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData
 
 
-class TestExamplesAssociatedCourse:
+class TestCommitmentEditPrefaceModals:
     """Tests for 'commitments/Commitment/commitment_edit_preface_modals.html'"""
 
     def test_not_a_suggested_commit_returns_smart_reminder(self):
@@ -21,7 +21,7 @@ class TestExamplesAssociatedCourse:
         rendered_content = template.render({"commitment": commitment})
         assert "S.M.A.R.T." in rendered_content
 
-    def test__suggested_commit_returns_cannot_edit_reminder(self):
+    def test_suggested_commit_returns_cannot_edit_reminder(self):
         commitment = FakeCommitmentData()
         commitment.source_template = FakeCommitmentTemplateData()
         template = loader.get_template(
