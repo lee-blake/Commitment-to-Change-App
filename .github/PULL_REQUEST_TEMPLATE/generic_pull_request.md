@@ -2,7 +2,7 @@
 <!--- Describe what this PR will change -->
 
 # Feature/Issue
-<!--- Link to the feature/issue that this PR is related to. GitHub will automatically create a link between your issue/PR if you use the following syntax:
+<!--- Link to the feature/issue that this PR is related to. GitHub will automatically create a link that will close your issue when the PR is merged if you use the following syntax:
 
 Resolves [issue-path]
 
@@ -14,7 +14,9 @@ Resolves [issue-path]
 
 If your PR only makes partial progress on the feature/issue, use something like:
 
-Partially resolves [issue-path]
+Part of [issue-path]
+
+This will still link the issue and will show the PR in the issue log as a mention. DO NOT use language like "partially resolves" because it will automatically close the issue.
 
 DO NOT use an actual URL for the [issue-path]. If you do, GitHub will not correctly link the issue to your PR.
 
@@ -29,7 +31,7 @@ Changed in [link to documentation PR]
 Otherwise note the general changes that still need to be written. -->
 
 # Special Considerations 
-<!--- This section can be discarded in none of the below headings are applicable. -->
+<!--- This section can be discarded if none of the below headings are applicable. -->
 
 ## Migrations
 <!--- Will this trigger migrations? If so, note it here. If the migrations include one or more new fields that are required, provide a one-off default that will work for them. -->
@@ -52,5 +54,11 @@ Otherwise note the general changes that still need to be written. -->
 # Checklist 
 - [ ] I ran the automated tests on my development environment before opening this PR.
 - [ ] I manually tested that any features I implemented on this PR work.
+<!-- You don't need to check all of these, just check with at least one & mark any here -->
+- [ ] I tested that any frontend changes or features render reasonably well on mobile
+  - [ ] Firefox/Gecko dev tools
+  - [ ] Chrome/Chromium dev tools
+  - [ ] Edge dev tools
+  - [ ] Other <!-- replace this to tell us what, specifically -->
 - [ ] I have verified that any new code I have written has been covered with tests, if possible.
 - [ ] I have done my best to leave the codebase better than I have found it with this PR.
