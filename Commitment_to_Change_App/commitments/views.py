@@ -275,7 +275,7 @@ class JoinCourseView(LoginRequiredMixin, UpdateView):
             kwargs={"course_id": self.object.id}
         )
 
-    # We must override the get and post methods to allow the course owner to view the 
+    # We must override the get and post methods to allow the course owner to view the
     # landing page without getting a 403. It is simple enough to be worth it.
     def get(self, *args, **kwargs):
         if self.request.user == Course.objects.get(id=kwargs["course_id"]).owner.user:
