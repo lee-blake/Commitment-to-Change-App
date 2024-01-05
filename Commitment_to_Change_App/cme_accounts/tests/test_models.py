@@ -49,7 +49,7 @@ class TestUser:
             user = User(username="-A", )
             with pytest.raises(ValidationError):
                 user.clean_fields(ignore_non_username_fields)
-        
+
         def test_letter_starting_slug_username_is_valid(self, ignore_non_username_fields):
             user = User(username="slug-test_name007")
             user.clean_fields(ignore_non_username_fields)
@@ -70,7 +70,7 @@ class TestUser:
             required_field_names.remove("email")
             return required_field_names
 
-        
+
         def test_empty_email_is_not_valid(self, ignore_non_email_fields):
             user = User(email="")
             with pytest.raises(ValidationError):
