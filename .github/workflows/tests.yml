@@ -48,6 +48,15 @@ jobs:
       - name: Run pytest
         working-directory: ./Commitment_to_Change_App
         run: pytest -vv
+
+      - name: Run coverage
+        working-directory: ./Commitment_to_Change_App
+        run: coverage run -m pytest
+
+      - name: Report coverage
+        working-directory: ./Commitment_to_Change_App
+        run: coverage report
+        
   
   lint:
     runs-on: ubuntu-latest
