@@ -145,30 +145,16 @@ class TestSignOutView:
         )
 
     class TestGet:
-        """Tests for SignOutView.get"""
+        """Tests for SignOutView.get
 
-        def test_deprecated_get_request_logs_out(self, client, valid_user):
-            """Test that a get request to the URL logs out the user. 
+        get is disallowed by Django. The only test here verifies that it returns an appropriate error.
+        """
 
-            Django has deprecated this functionality so we should use POST requests
-            instead. However, we should still have a test here because if someone
-            mistakenly uses the GET method and Django stops supporting it, things will
-            break. This test will immediately explain why. The alternative is to throw an
-            error on a GET request, but that is likely to confuse users or not adequately
-            inform the programmer of the problem. Adding this test is the best option.
-            
-            When we start using Django 5.0+, we can remove this test once any other issues
-            with the """
-            # Suppress the deprecation warning for this test only.
-            import warnings #pylint: disable=import-outside-toplevel
-            from django.utils.deprecation import \
-                RemovedInDjango50Warning #pylint: disable=import-outside-toplevel
-            warnings.simplefilter("ignore", category=RemovedInDjango50Warning)
+        def test_get_returns_405(self, client, valid_user):
+            target_url = reverse("logout")
             client.force_login(valid_user)
-            client.get(reverse("logout"))
-            # Django does not have a nice way to check if the user is logged in from a client
-            # request. This will have to do.
-            assert "_auth_user_id" not in client.session
+            response = client.get(target_url)
+            assert response.status_code == 405
 
 
     class TestPost:
