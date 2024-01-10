@@ -147,8 +147,8 @@ class TestSignOutView:
     class TestGet:
         """Tests for SignOutView.get
 
-        get is disallowed by Django. The only test here verifies that it returns an appropriate error.
-        """
+        get is disallowed by Django. The only test here verifies that it returns an appropriate
+        error."""
 
         def test_get_returns_405(self, client, valid_user):
             target_url = reverse("logout")
