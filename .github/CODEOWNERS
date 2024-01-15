@@ -1,0 +1,28 @@
+# Branch protections - Lee
+/.github/CODEOWNERS @lee-blake
+
+# Docker - Lee
+/docker-compose.yaml @lee-blake
+/mailcapture/ @lee-blake
+/Commitment_to_Change_App/Dockerfile
+/Commitment_to_Change_App/requirements.txt
+
+# Testing, linting, and CI - Lee
+/.github/workflows @lee-blake
+/Commitment_to_Change_App/pytest.ini @lee-blake
+/Commitment_to_Change_App/.coveragerc @lee-blake
+/Commitment_to_Change_App/.pylintrc @lee-blake
+
+# Python = usually backend - Lee
+*.py @lee-blake
+
+# HTML, CSS, JS = usually frontend - North
+*.html @North-Kaster
+*.css @North-Kaster
+*.js @North-Kaster
+
+# Anything else in template/static directories - North
+/Commitment_to_Change_App/commitments/templates
+/Commitment_to_Change_App/cme_accounts/templates
+/Commitment_to_Change_App/registration/templates
+/Commitment_to_Change_App/static
