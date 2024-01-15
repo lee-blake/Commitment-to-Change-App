@@ -22,7 +22,7 @@
 *.js @North-Kaster
 
 # Anything else in template/static directories - North
-/Commitment_to_Change_App/commitments/templates
-/Commitment_to_Change_App/cme_accounts/templates
-/Commitment_to_Change_App/registration/templates
-/Commitment_to_Change_App/static
+/Commitment_to_Change_App/commitments/templates @North-Kaster
+/Commitment_to_Change_App/cme_accounts/templates @North-Kaster
+/Commitment_to_Change_App/registration/templates @North-Kaster
+/Commitment_to_Change_App/static @North-Kaster
