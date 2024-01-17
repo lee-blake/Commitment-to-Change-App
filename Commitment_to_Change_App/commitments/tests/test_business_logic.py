@@ -200,6 +200,62 @@ class TestCommitmentTemplateLogic:
             assert commitment_template.description == passed_description
 
 
+    class TestStatistics:
+        """Tests for CommitmentTemplateLogic.statistics"""
+
+        def test_counts_for_no_derived_commitments_are_correct(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(derived_commitments=[])
+            )
+            stats = commitment_template.statistics
+            assert stats["derived_commitments"]["statuses"]["counts"]["total"] == 0
+            assert stats["derived_commitments"]["statuses"]["counts"]["in_progress"] == 0
+            assert stats["derived_commitments"]["statuses"]["counts"]["complete"] == 0
+            assert stats["derived_commitments"]["statuses"]["counts"]["discontinued"] == 0
+            assert stats["derived_commitments"]["statuses"]["counts"]["expired"] == 0
+
+        def test_counts_for_one_of_each_status_derived_commitments_are_correct(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(derived_commitments=[
+                    FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
+                    FakeCommitmentData(status=CommitmentStatus.COMPLETE),
+                    FakeCommitmentData(status=CommitmentStatus.EXPIRED),
+                    FakeCommitmentData(status=CommitmentStatus.DISCONTINUED),
+                ])
+            )
+            stats = commitment_template.statistics
+            assert stats["derived_commitments"]["statuses"]["counts"]["total"] == 4
+            assert stats["derived_commitments"]["statuses"]["counts"]["in_progress"] == 1
+            assert stats["derived_commitments"]["statuses"]["counts"]["complete"] == 1
+            assert stats["derived_commitments"]["statuses"]["counts"]["discontinued"] == 1
+            assert stats["derived_commitments"]["statuses"]["counts"]["expired"] == 1
+
+        def test_percentages_for_no_derived_commitments_are_correct(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(derived_commitments=[])
+            )
+            stats = commitment_template.statistics
+            assert stats["derived_commitments"]["statuses"]["percentages"]["in_progress"] == "N/A"
+            assert stats["derived_commitments"]["statuses"]["percentages"]["complete"] == "N/A"
+            assert stats["derived_commitments"]["statuses"]["percentages"]["discontinued"] == "N/A"
+            assert stats["derived_commitments"]["statuses"]["percentages"]["expired"] == "N/A"
+
+        def test_percentages_for_one_of_each_status_derived_commitments_are_correct(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(derived_commitments=[
+                    FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
+                    FakeCommitmentData(status=CommitmentStatus.COMPLETE),
+                    FakeCommitmentData(status=CommitmentStatus.EXPIRED),
+                    FakeCommitmentData(status=CommitmentStatus.DISCONTINUED),
+                ])
+            )
+            stats = commitment_template.statistics
+            assert stats["derived_commitments"]["statuses"]["percentages"]["in_progress"] == 25
+            assert stats["derived_commitments"]["statuses"]["percentages"]["complete"] == 25
+            assert stats["derived_commitments"]["statuses"]["percentages"]["discontinued"] == 25
+            assert stats["derived_commitments"]["statuses"]["percentages"]["expired"] == 25
+
+
 class TestCourseLogic:
     """Tests for CourseLogic"""
 
