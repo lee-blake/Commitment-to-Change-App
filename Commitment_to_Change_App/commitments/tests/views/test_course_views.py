@@ -1405,3 +1405,137 @@ class TestJoinCourseView:
                 "view Course",
                 kwargs={"course_id": non_enrolled_course.id}
             )
+
+@pytest.mark.django_db
+class TestDeleteCourseView:
+    """Tests for DeleteCourseView"""
+
+    @pytest.fixture(name="existing_course")
+    def fixture_existing_course(self, saved_provider_profile):
+        return Commitment.objects.create(
+            title="Deletion target",
+            description="TBD",
+            owner=saved_provider_profile
+        )
+
+    class TestGet:
+        """Tests for DeleteCourseView.get"""
+
+        def test_rejects_clinician_accounts_with_403(
+            self, client, saved_clinician_user, existing_course
+        ):
+            target_url = reverse(
+                "delete Course", 
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "delete Course", 
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client,saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "delete Course", 
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_hidden_delete_field_is_set(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "delete Course", 
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            delete_input_regex = re.compile(
+                r"\<input[^\>]*name=\"delete\"[^\>]*\>"
+            )
+            delete_input_match = delete_input_regex.search(html)
+            assert delete_input_match
+            assert "type=\"hidden\"" in delete_input_match[0]
+            nonempty_value_regex = re.compile(
+                r"value=\"[^\"]+\""
+            )
+            assert nonempty_value_regex.search(delete_input_match[0])
+
+
+    class TestPost:
+        """Tests for DeleteCourseView.post"""
+
+        def test_rejects_clinician_accounts_with_403(
+            self, client, saved_clinician_user, existing_course
+        ):
+            target_url = reverse(
+                "delete Course", 
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_clinician_user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "delete Course", 
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_invalid_request_returns_the_get_page_with_error_notes(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "delete Course", 
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.post(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_provider_profile, existing_course
+        ):
+            target_url = reverse(
+                "delete Course", 
+                kwargs={"course_id": existing_course.id}
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.post(
+                target_url,
+                {"delete": "true"}
+            )
+            assert response.status_code == 302
+            assert response.url == reverse("provider dashboard")
