@@ -1,3 +1,5 @@
+import csv
+
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
@@ -13,6 +15,7 @@ from commitments.forms import CommitmentForm, CourseForm, CommitmentTemplateForm
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
     DiscontinueCommitmentForm, ReopenCommitmentForm, JoinCourseForm, \
     CreateCommitmentFromSuggestedCommitmentForm
+from commitments.generic_views import GeneratedTemporaryTextFileDownloadView
 from commitments.mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from commitments.models import Commitment, ClinicianProfile, ProviderProfile, Course, \
     CommitmentTemplate
@@ -324,6 +327,37 @@ class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
             "view CommitmentTemplate",
             kwargs={"commitment_template_id": self.object.id}
         )
+
+
+class DownloadCourseCommitmentsCSVView(
+    ProviderLoginRequiredMixin, GeneratedTemporaryTextFileDownloadView
+):
+    filename = "course_commitments.csv"
+
+    def write_text_to_file(self, temporary_file):
+        course_id = self.kwargs["course_id"]
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        course = get_object_or_404(Course, id=course_id, owner=viewer)
+        writer = csv.writer(temporary_file)
+        writer.writerow([
+            "Commitment Title", 
+            "Commitment Description",
+            "Status",
+            "Due",
+            "Owner First Name",
+            "Owner Last Name",
+            "Owner Email"
+            ])
+        for commitment in course.associated_commitments_list:
+            writer.writerow([
+                commitment.title, 
+                commitment.description,
+                CommitmentStatus.__str__(commitment.status),
+                commitment.deadline,
+                commitment.owner.first_name,
+                commitment.owner.last_name,
+                commitment.owner.email
+                ])
 
 
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
