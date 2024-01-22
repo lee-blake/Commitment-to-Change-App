@@ -350,7 +350,7 @@ class DownloadCourseCommitmentsCSVView(
             ])
         for commitment in course.associated_commitments_list:
             writer.writerow([
-                commitment.title, 
+                commitment.title,
                 commitment.description,
                 CommitmentStatus.__str__(commitment.status),
                 commitment.deadline,
