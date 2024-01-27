@@ -3,7 +3,8 @@ import pytest
 
 from django.test import RequestFactory
 
-from commitments.generic_views import GeneratedTemporaryFileDownloadView
+from commitments.generic_views import GeneratedTemporaryFileDownloadView, \
+    GeneratedTemporaryTextFileDownloadView
 
 
 @pytest.fixture(name="trivial_request")
@@ -71,3 +72,19 @@ class TestGeneratedTemporaryFileDownloadView:
             b"".join(response.streaming_content)
             del response
             assert not os.path.exists(underlying_file_name)
+
+
+class TestGeneratedTemporaryTextFileDownloadView:
+    """Tests for GeneratedTemporaryTextFileDownloadView"""
+
+    class TestGet:
+        """Tests for GeneratedTemporaryTextFileDownloadView.get"""
+
+        @pytest.mark.parametrize("content", ["x", "y"])
+        def test_file_contains_correct_content(self, content, trivial_request):
+            class ChildClass(GeneratedTemporaryTextFileDownloadView):
+                def write_text_to_file(self, temporary_file):
+                    temporary_file.write(content)
+            response = ChildClass.as_view()(trivial_request)
+            response_content = b"".join(response.streaming_content)
+            assert response_content.decode() == content
