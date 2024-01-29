@@ -23,7 +23,11 @@
 {% endblock edit_button %}
 
 {% block clinician_email_button %}
-        <button href="mailto:{{ clinician.email }}" class="standard-button align-self-end">Send email</button>
+        <a href="mailto:{{ clinician.email }}">
+            <button class="mailto-icon standard-button align-self-end">
+                <i class="bi bi-envelope-at-fill"></i>
+            </button>
+        </a>
 {% endblock clinician_email_button %}
 
 {% block select_suggested_commitments_button %}
