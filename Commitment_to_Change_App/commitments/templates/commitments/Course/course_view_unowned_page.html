@@ -5,10 +5,10 @@
 <div class="container-fluid p-3 ">
     <div class="container-xl px-2 round-corners foreground">
         <div class="py-1 primary-accent-only round-corners text-center">
-            <span class="h1 accent-text">{{ course.title }}</span> 
+            <span class="h1 accent-text">{{ course.title }}</span>
             <span>
-                {% block course_help_modal %} 
-                    {% include "commitments/Course/course_view_unowned_page_help_modal.html" %}
+                {% block course_help_modal %}
+                {% include "commitments/Course/course_view_unowned_page_help_modal.html" %}
                 {% endblock course_help_modal %}
             </span>
 
@@ -35,11 +35,18 @@
                         <div class="text-center secondary-accent round-corners">
                             <h3>List of Students Enrolled:</h3>
                         </div>
-                        <ul>
-                            {% for clinician in course.students.all %}
-                            <li>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</li>
-                            {% endfor %}
-                        </ul>
+
+                        {% for clinician in course.students.all %}
+                        <div class="d-flex justify-content-between list-group-item">
+                            <span>
+                                <li>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</li>
+                            </span>
+                            <span>
+                                {% block clinician_email_button %} {% endblock clinician_email_button %}
+                            </span>
+                        </div>
+                        {% endfor %}
+
                     </div>
                 </div>
             </div>
@@ -58,12 +65,12 @@
                                 <div class="d-flex justify-content-between list-group-item">
                                     {% include "commitments/Course/course_suggested_commitments_panel.html" %}
                                 </div>
-                            {% endfor %}
-                        </div>
-							<div class="text-center pt-1">
-								{% block select_suggested_commitments_button %}
-								{% endblock select_suggested_commitments_button %}
-							</div>
+                                {% endfor %}
+                            </div>
+                            <div class="text-center pt-1">
+                                {% block select_suggested_commitments_button %}
+                                {% endblock select_suggested_commitments_button %}
+                            </div>
                         </div>
                     </div>
                     <div class="foreground round-corners pb-3 mt-3 mx-3">
@@ -73,11 +80,11 @@
                         <div class="text-center secondary-accent round-corners">
                             <h3>Commitments Made in This Course:</h3>
                         </div>
-						<ul>
-                        {% for commitment in course.associated_commitments_list %}
+                        <ul>
+                            {% for commitment in course.associated_commitments_list %}
                             <li>{% include "commitments/Course/course_associated_commitments_panel.html" %}</li>
-                        {% endfor %}
-					</ul>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>
