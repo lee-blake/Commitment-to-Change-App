@@ -22,6 +22,9 @@ class ClinicianProfile(models.Model):
         # the different account types. See cme_accounts.models.User for details. As such,
         # the username is stored on the User object.
         return self.user.username
+    @property
+    def email(self):
+        return self.user.email
 
 
 class ProviderProfile(models.Model):
