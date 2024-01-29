@@ -8,7 +8,7 @@ from django.views.generic.base import View
 
 class GeneratedTemporaryFileDownloadView(View, ABC):
     filename = ""
-    as_attachment = True
+    as_attachment = False
 
     def get(self, *args, **kwargs):
         # We use NamedTemporaryFile over TemporaryFile to enable testing that the cleanup

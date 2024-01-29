@@ -11,7 +11,7 @@ from commitments.generic_views import GeneratedTemporaryBinaryFileDownloadView, 
 def fixture_trivial_request():
     return RequestFactory().get("/")
 
-class TestGeneratedTemporaryBinaryFileDownloadView:
+class TestGeneratedTemporaryFileDownloadView:
     """Tests for GeneratedTemporaryBinaryFileDownloadView"""
 
     class TestClassParameters:
