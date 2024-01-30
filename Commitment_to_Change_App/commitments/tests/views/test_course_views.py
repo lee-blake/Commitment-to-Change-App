@@ -501,6 +501,20 @@ class TestViewCourseView:
             assert re.compile(r"<td>Discontinued:</td>\s*<td>0</td>").search(html)
             assert re.compile(r"<th>Total:</th>\s*<th>2</th>").search(html)
 
+        def test_course_commitments_csv_download_shows_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            download_link = reverse(
+                "download Course Commitments as csv",
+                kwargs={
+                    "course_id": enrolled_course.id
+                }
+            )
+            assert download_link in html
 
         def test_institution_name_shows_in_page_for_provider(
             self, client, saved_provider_profile, enrolled_course
@@ -608,6 +622,21 @@ class TestViewCourseView:
             assert re.compile(r"<td>Past Due:</td>\s*<td>0</td>").search(html)
             assert re.compile(r"<td>Discontinued:</td>\s*<td>1</td>").search(html)
             assert re.compile(r"<th>Total:</th>\s*<th>3</th>").search(html)
+
+        def test_course_commitments_csv_download_does_not_show_in_page_for_student(
+            self, client, saved_clinician_profile, enrolled_course
+        ):
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            download_link = reverse(
+                "download Course Commitments as csv",
+                kwargs={
+                    "course_id": enrolled_course.id
+                }
+            )
+            assert download_link not in html
 
         def test_suggested_commitments_show_in_page_for_clinician(
             self, client, saved_clinician_profile, enrolled_course,

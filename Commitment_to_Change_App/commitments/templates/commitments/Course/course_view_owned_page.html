@@ -35,3 +35,11 @@
     <button class="standard-button">Select Templates</button>
 </a>
 {% endblock select_suggested_commitments_button %}
+
+{% block course_commitment_csv_download_link %}
+<div class="text-center">
+    <a href="{% url "download Course Commitments as csv" course_id=course.id %}">
+        Download list of commitments
+    </a>
+</div>
+{% endblock course_commitment_csv_download_link %}
