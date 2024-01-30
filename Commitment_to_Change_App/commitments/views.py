@@ -1,5 +1,3 @@
-import csv
-
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, HttpResponseBadRequest, HttpResponseServerError
@@ -10,6 +8,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 
+from commitments.business_logic import write_course_commitments_as_csv
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
@@ -338,26 +337,7 @@ class DownloadCourseCommitmentsCSVView(
         course_id = self.kwargs["course_id"]
         viewer = ProviderProfile.objects.get(user=self.request.user)
         course = get_object_or_404(Course, id=course_id, owner=viewer)
-        writer = csv.writer(temporary_file)
-        writer.writerow([
-            "Commitment Title", 
-            "Commitment Description",
-            "Status",
-            "Due",
-            "Owner First Name",
-            "Owner Last Name",
-            "Owner Email"
-            ])
-        for commitment in course.associated_commitments_list:
-            writer.writerow([
-                commitment.title,
-                commitment.description,
-                CommitmentStatus.__str__(commitment.status),
-                commitment.deadline,
-                commitment.owner.first_name,
-                commitment.owner.last_name,
-                commitment.owner.email
-                ])
+        write_course_commitments_as_csv(course, temporary_file)
 
 
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
