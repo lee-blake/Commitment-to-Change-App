@@ -228,6 +228,12 @@ form {
 ------------------------------------------------------------------- 
  */
 
+ div.change-suggested-form input[type=submit]
+ {
+     background-color: var(--primary-accent);
+     border-radius: 15px;
+     color: var(--accent-text);
+ }
 
  div.default-form input[type=submit]
  {
@@ -289,13 +295,6 @@ form {
      box-sizing: border-box;
      display: inline-block;
      width: 100%;
- }
-
-.selectSuggestedForm input[type=submit]
- {
-     background-color: var(--primary-accent);
-     border-radius: 15px;
-     color: var(--accent-text);
  }
 
 
