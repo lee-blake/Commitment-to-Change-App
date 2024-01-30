@@ -1,3 +1,4 @@
+import csv
 import datetime
 import random
 import string
@@ -114,3 +115,29 @@ class CourseLogic:
     def _add_student(self, student):
         if student not in self._data.students:
             self._data.students.append(student)
+
+
+def write_course_commitments_as_csv(course, file_object_to_write_to):
+    headers = [
+        "Commitment Title", 
+        "Commitment Description",
+        "Status",
+        "Due",
+        "Owner First Name",
+        "Owner Last Name",
+        "Owner Email"
+    ]
+    writer = csv.DictWriter(file_object_to_write_to, headers)
+    writer.writeheader()
+    for commitment in course.associated_commitments_list:
+        writer.writerow({
+            "Commitment Title": commitment.title,
+            "Commitment Description": commitment.description,
+            # Because it is an enum, CommitmentStatus may be erroneously loaded as an int.
+            # Ensure it always converts to a human-friendly string.
+            "Status": CommitmentStatus.__str__(commitment.status),
+            "Due": commitment.deadline,
+            "Owner First Name": commitment.owner.first_name,
+            "Owner Last Name": commitment.owner.last_name,
+            "Owner Email": commitment.owner.email
+        })
