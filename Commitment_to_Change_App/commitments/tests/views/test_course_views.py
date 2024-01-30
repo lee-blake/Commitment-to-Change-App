@@ -442,6 +442,19 @@ class TestViewCourseView:
             assert saved_clinician_profile.username in html
             assert other_clinician_profile.username not in html
 
+        @pytest.mark.parametrize("email_address", ["address1@test.email", "address2@localhost"])
+        def test_enrolled_student_mailto_links_show_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course,
+            saved_clinician_profile, email_address
+        ):
+            saved_clinician_profile.user.email = email_address
+            saved_clinician_profile.user.save()
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert f"mailto:{email_address}" in html
+
         def test_general_commitment_statistics_show_in_page_for_provider_1(
             self, client, saved_provider_profile,
             enrolled_course, associated_commitments
@@ -560,6 +573,17 @@ class TestViewCourseView:
             ).content.decode()
             assert enrolled_course.title in html
             assert enrolled_course.description in html
+
+        def test_enrolled_student_mailto_links_do_not_show_in_page_for_clinician(
+            self, client, enrolled_course, saved_clinician_profile
+        ):
+            saved_clinician_profile.user.email = "notpresent@inpage"
+            saved_clinician_profile.user.save()
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert "mailto:notpresent@inpage" not in html
 
         def test_general_commitment_statistics_show_in_page_for_clinician(
             self, client, saved_clinician_profile,
