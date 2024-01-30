@@ -27,7 +27,7 @@ class TestClinicianProfile:
     class TestEmail:
         """Tests for ClinicianProfile.email"""
 
-        @pytest.fixture(name="created_user", params=["One", "Two"])
+        @pytest.fixture(name="created_user", params=["test1@localhost", "test2@email"])
         def fixture_created_user(self, request):
             return User(
                 id=1,
