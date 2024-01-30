@@ -23,7 +23,7 @@ class TestClinicianProfile:
         def test_shows_username(self, created_user):
             profile = ClinicianProfile(user=created_user)
             assert profile.username == created_user.username
-    
+
     class TestEmail:
         """Tests for ClinicianProfile.email"""
 
@@ -37,7 +37,7 @@ class TestClinicianProfile:
         def test_shows_email(self, created_user):
             profile = ClinicianProfile(user=created_user)
             assert profile.email == created_user.email
-    
+
 
 class TestCommitment:
     """Tests for Commitment"""
