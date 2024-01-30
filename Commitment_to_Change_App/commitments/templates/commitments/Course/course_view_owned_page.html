@@ -22,6 +22,14 @@
 </a>
 {% endblock edit_button %}
 
+{% block clinician_email_button %}
+        <a href="mailto:{{ clinician.email }}">
+            <button class="mailto-icon standard-button align-self-end">
+                <i class="bi bi-envelope-at-fill"></i>
+            </button>
+        </a>
+{% endblock clinician_email_button %}
+
 {% block select_suggested_commitments_button %}
 <a href="{% url 'change Course suggested commitments' course_id=course.id %}">
     <button class="standard-button">Select Templates</button>

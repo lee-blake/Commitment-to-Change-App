@@ -179,6 +179,10 @@ form {
     font-size: 32px;
  }
 
+ .mailto-icon {
+    font-size: 20px;
+ }
+
  .modal-dialog {
     max-width: fit-content;
     margin-left: auto;
