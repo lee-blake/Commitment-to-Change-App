@@ -23,6 +23,10 @@ class ClinicianProfile(models.Model):
         # the username is stored on the User object.
         return self.user.username
 
+    @property
+    def email(self):
+        return self.user.email
+
 
 class ProviderProfile(models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)

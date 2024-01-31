@@ -22,8 +22,27 @@
 </a>
 {% endblock edit_button %}
 
+{% block clinician_email_button %}
+        <a href="mailto:{{ clinician.email }}">
+            <button class="mailto-icon standard-button align-self-end">
+                <i class="bi bi-envelope-at-fill"></i>
+            </button>
+        </a>
+{% endblock clinician_email_button %}
+
 {% block select_suggested_commitments_button %}
 <a href="{% url 'change Course suggested commitments' course_id=course.id %}">
     <button class="standard-button">Select Templates</button>
 </a>
 {% endblock select_suggested_commitments_button %}
+
+{% block course_commitment_csv_download_link %}
+<div class="text-center">
+    <a href="{% url "download Course Commitments as csv" course_id=course.id %}">
+        <button class="standard-button">
+            Download commitments list
+            <i class="bi bi-file-earmark-arrow-down"></i>
+        </button>
+    </a>
+</div>
+{% endblock course_commitment_csv_download_link %}
