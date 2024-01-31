@@ -8,7 +8,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 
-from commitments.business_logic import write_course_commitments_as_csv
+from commitments.business_logic import write_course_commitments_as_csv, \
+    write_aggregate_course_statistics_as_csv
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
@@ -62,6 +63,17 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, TemplateView):
         context["courses"] = Course.objects.filter(owner=viewer)
         context["commitment_templates"] = CommitmentTemplate.objects.filter(owner=viewer)
         return context
+
+
+class AggregateCourseStatisticsCSVDownloadView(
+    ProviderLoginRequiredMixin, GeneratedTemporaryTextFileDownloadView
+):
+    filename = "course_statistics.csv"
+
+    def write_text_to_file(self, temporary_file):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        courses = Course.objects.filter(owner=viewer).all()
+        write_aggregate_course_statistics_as_csv(courses, temporary_file)
 
 
 class CreateCommitmentView(ClinicianLoginRequiredMixin, CreateView):
