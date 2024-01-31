@@ -1,23 +1,10 @@
-{% extends "commitments/common/base.html" %}
+{% extends "commitments/common/base_form.html" %}
 
 {% block title %} Create from a Suggested Commitment {% endblock title %}
 
-{% block page_content %}
-<div class="container-fluid px-3 pt-3 text-center background">
-    <div class="row g-5">
-        <div class="col" align="center">
-            <div class="container-sm p-1 py-3 foreground round-corners default-form">
-                <h1>Create from Suggested Commitment</h1>
-                <div>
-                    <p>Some suggested commitment fields are not eligible for editing. {% include "commitments/Commitment/commitment_create_from_suggested_commitment_help_modal.html" %}</p> 
-                </div>
-                <form method="post" action="">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <input type="submit" value="Submit">
-                </form>
-            </div>
-        </div>
+{% block form_header %}
+    <h1>Create from Suggested Commitment</h1>
+    <div>
+        <p>Some suggested commitment fields are not eligible for editing. {% include "commitments/Commitment/commitment_create_from_suggested_commitment_help_modal.html" %}</p> 
     </div>
-</div>
-{% endblock page_content %}
+{% endblock form_header %}

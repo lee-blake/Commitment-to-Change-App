@@ -7,12 +7,11 @@
     
     <div class="row g-5">
         <div class="col" align="center">
-            <div class="px-4 py-3 foreground round-corners">
+            <div class="change-suggested-form px-4 py-3 foreground round-corners">
                 <h1 class="text-center">Select Suggested Commitments for {{ course.title }}</h1>
                 <form 
                 action="{% url 'change Course suggested commitments' course_id=course.id %}" 
-                method="post"
-                class="selectSuggestedForm">
+                method="post">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <input type="submit" value="Submit" class="py-1 px-3">
