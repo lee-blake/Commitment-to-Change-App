@@ -22,5 +22,104 @@
             {{ commitment_template.statistics.derived_commitments.statuses.counts.discontinued }}
             ({{ commitment_template.statistics.derived_commitments.statuses.percentages.discontinued }}%)
         </span>
+        <script src="https://d3js.org/d3.v6.min.js"></script>
+    <div id="status-breakdown-chart">
+    </div>
+    
+
+    <script>
+        // Set up data for the pie chart. In the future, this should be passed in.
+        const data = [
+        {
+            count: {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }},
+            label: "In-progress: " + {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }} + " (~" +
+            {{ commitment_template.statistics.derived_commitments.statuses.percentages.in_progress }}.toFixed(2) + "%)",
+            color: '#8FC3D4' 
+        },
+        { 
+            count: {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }},
+            label: "Complete: " + {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }} + " (~" +
+            {{ commitment_template.statistics.derived_commitments.statuses.percentages.complete }}.toFixed(2) + "%)",
+            color: '#7CC487' 
+        },
+        {
+            count: {{ commitment_template.statistics.derived_commitments.statuses.counts.discontinued }},
+            label: "Discontinued: " + {{commitment_template.statistics.derived_commitments.statuses.counts.discontinued}} + " (~" +
+            {{commitment_template.statistics.derived_commitments.statuses.percentages.discontinued}}.toFixed(2) + "%)",
+            color: '#717171' 
+        },
+        { 
+            count: {{ commitment_template.statistics.derived_commitments.statuses.counts.expired }},
+            label: "Past-due: " + {{commitment_template.statistics.derived_commitments.statuses.counts.expired}} + " (~" +
+            {{commitment_template.statistics.derived_commitments.statuses.percentages.expired}}.toFixed(2) + "%)",
+            color: '#E27E7A' 
+        },
+        ];
+
+        const width = 400;
+        const height = 400;
+        const radius = Math.min(width, height) / 2.5;
+
+        const color = d3.scaleOrdinal().range(data.map(d => d.color));
+
+        // Create a pie chart function using count as our base
+        const pie = d3.pie().value(d => d.count);
+
+        // Create an arc generator for the pie chart
+        const arc = d3.arc()
+        .innerRadius(0)
+        .outerRadius(radius);
+
+        // Select the SVG container
+        const svg = d3.select("#status-breakdown-chart")
+        .append("div")
+        .classed("svg-container", true)
+        .append("svg")
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .classed("svg-content-responsive", true);
+
+        // Create a group element for the pie chart
+        const pieGroup = svg.append("g")
+        .attr("transform", `translate(${width / 2},${height / 2})`);
+
+        // Generate the pie chart segments
+        const arcs = pie(data);
+
+        // Create and append path elements for each segment
+        pieGroup.selectAll("path")
+        .data(arcs)
+        .enter().append("path")
+        .attr("d", arc)
+        .attr("fill", d => color(d.data.color));
+
+        // Add text labels
+        pieGroup.selectAll("text")
+        .data(arcs)
+        .enter().append("text")
+        .attr("transform", d => `translate(${arc.centroid(d)})`)
+        .attr("text-anchor", "middle")
+        .text(d => d.data.label);
+
+        // Add legend
+        const legend = svg.append("g")
+        .attr("transform", `translate(${width - 400}, 30)`);
+
+        legend.selectAll("rect")
+        .data(data)
+        .enter().append("rect")
+        .attr("y", (d, i) => i * 20)
+        .attr("width", 18)
+        .attr("height", 18)
+        .attr("fill", d => color(d.color));
+
+        legend.selectAll("text")
+        .data(data)
+        .enter().append("text")
+        .attr("y", (d, i) => i * 20 + 9)
+        .attr("x", 22)
+        .text(d => d.label);
+
+    </script>
     {% endif %}
 </div>

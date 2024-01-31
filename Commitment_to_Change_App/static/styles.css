@@ -125,6 +125,26 @@ form {
     --- Component Styling --- 
 ------------------------------------------------------------------- 
  */
+ .svg-container {
+    display: inline-block;
+    position: relative;
+    width: 85%;
+    padding-bottom: 100%; 
+    vertical-align: top;
+    overflow: hidden;
+  }
+  .svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+  }
+  
+ #status-breakdown-chart {
+    max-width: 500px;
+    height: auto;
+    margin: 0 auto;
+    }
 
  .button
  {
