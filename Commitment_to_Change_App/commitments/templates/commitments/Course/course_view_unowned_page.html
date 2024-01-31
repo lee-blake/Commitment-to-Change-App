@@ -80,6 +80,8 @@
                         <div class="text-center secondary-accent round-corners">
                             <h3>Commitments Made in This Course:</h3>
                         </div>
+                        {% block course_commitment_csv_download_link %}
+                        {% endblock course_commitment_csv_download_link %}
                         <ul>
                             {% for commitment in course.associated_commitments_list %}
                             <li>{% include "commitments/Course/course_associated_commitments_panel.html" %}</li>

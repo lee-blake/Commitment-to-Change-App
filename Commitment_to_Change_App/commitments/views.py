@@ -8,11 +8,13 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 
+from commitments.business_logic import write_course_commitments_as_csv
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
     DiscontinueCommitmentForm, ReopenCommitmentForm, JoinCourseForm, \
     CreateCommitmentFromSuggestedCommitmentForm
+from commitments.generic_views import GeneratedTemporaryTextFileDownloadView
 from commitments.mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from commitments.models import Commitment, ClinicianProfile, ProviderProfile, Course, \
     CommitmentTemplate
@@ -324,6 +326,18 @@ class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
             "view CommitmentTemplate",
             kwargs={"commitment_template_id": self.object.id}
         )
+
+
+class DownloadCourseCommitmentsCSVView(
+    ProviderLoginRequiredMixin, GeneratedTemporaryTextFileDownloadView
+):
+    filename = "course_commitments.csv"
+
+    def write_text_to_file(self, temporary_file):
+        course_id = self.kwargs["course_id"]
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        course = get_object_or_404(Course, id=course_id, owner=viewer)
+        write_course_commitments_as_csv(course, temporary_file)
 
 
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
