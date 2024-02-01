@@ -7,10 +7,10 @@
  */
 
 :root {
-    --primary-accent: #AA1400;
+    --primary-accent: #780a08;
     --primary-select: #e61d02;
     --primary-border: #630000;
-    --secondary-accent: #ffa2a2;
+    --secondary-accent: #b83130;
     --background: #DDE6EC;
     --foreground: #FFFFFF;
     --primary-text: #000000;
@@ -26,6 +26,10 @@
  */
 
  body {background-color: var(--background);}
+ 
+ h3 {
+    font-weight: 400;
+ }
 
  ul.errorlist > li {
     color: red;
@@ -50,7 +54,7 @@ form {
 .primary-accent-only {background-color: var(--primary-accent)}
 .primary-select {background-color: var(--primary-select);}
 .primary-border {background-color: var(--primary-border);}
-.secondary-accent {background-color: var(--secondary-accent);}
+.secondary-accent {background-color: var(--secondary-accent); color: var(--accent-text);}
 .background {background-color: var(--background);}
 .foreground {background-color: var(--foreground);}
 .accent-text {color: var(--accent-text);}
