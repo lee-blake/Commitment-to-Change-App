@@ -6,22 +6,6 @@
             {{ commitment_template.statistics.derived_commitments.statuses.counts.total }}
              derived commitments
         </h2>
-        <span class="p3 text-center">In Progress: 
-        {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }}
-        ({{ commitment_template.statistics.derived_commitments.statuses.percentages.in_progress }}%)
-        </span>
-        <span class="p3 text-center">Past Due: 
-            {{ commitment_template.statistics.derived_commitments.statuses.counts.expired }}
-            ({{ commitment_template.statistics.derived_commitments.statuses.percentages.expired }}%)
-        </span>
-        <span class="p3 text-center">Complete: 
-            {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }}
-            ({{ commitment_template.statistics.derived_commitments.statuses.percentages.complete }}%)
-        </span>
-        <span class="p3 text-center">Discontinued: 
-            {{ commitment_template.statistics.derived_commitments.statuses.counts.discontinued }}
-            ({{ commitment_template.statistics.derived_commitments.statuses.percentages.discontinued }}%)
-        </span>
         <script src="https://d3js.org/d3.v6.min.js"></script>
     <div id="status-breakdown-chart">
     </div>
@@ -32,33 +16,37 @@
         const data = [
         {
             count: {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }},
-            label: "In-progress: " + {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }} + " (~" +
+            label: "~" + {{ commitment_template.statistics.derived_commitments.statuses.percentages.in_progress }}.toFixed(2) + "%",
+            color: '#8FC3D4',
+            legend: "In-progress: " + {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }} + " (~" +
             {{ commitment_template.statistics.derived_commitments.statuses.percentages.in_progress }}.toFixed(2) + "%)",
-            color: '#8FC3D4' 
         },
         { 
             count: {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }},
-            label: "Complete: " + {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }} + " (~" +
+            label: "~" + {{ commitment_template.statistics.derived_commitments.statuses.percentages.complete }}.toFixed(2) + "%",
+            color: '#7CC487',
+            legend: "Complete: " + {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }} + " (~" +
             {{ commitment_template.statistics.derived_commitments.statuses.percentages.complete }}.toFixed(2) + "%)",
-            color: '#7CC487' 
         },
         {
             count: {{ commitment_template.statistics.derived_commitments.statuses.counts.discontinued }},
-            label: "Discontinued: " + {{commitment_template.statistics.derived_commitments.statuses.counts.discontinued}} + " (~" +
+            label: "~" + {{commitment_template.statistics.derived_commitments.statuses.percentages.discontinued}}.toFixed(2) + "%",
+            color: '#717171',
+            legend: "Discontinued: " + {{commitment_template.statistics.derived_commitments.statuses.counts.discontinued}} + " (~" +
             {{commitment_template.statistics.derived_commitments.statuses.percentages.discontinued}}.toFixed(2) + "%)",
-            color: '#717171' 
         },
         { 
             count: {{ commitment_template.statistics.derived_commitments.statuses.counts.expired }},
-            label: "Past-due: " + {{commitment_template.statistics.derived_commitments.statuses.counts.expired}} + " (~" +
+            label: "~" +{{commitment_template.statistics.derived_commitments.statuses.percentages.expired}}.toFixed(2) + "%",
+            color: '#E27E7A',
+            legend: "Past-due: " + {{commitment_template.statistics.derived_commitments.statuses.counts.expired}} + " (~" +
             {{commitment_template.statistics.derived_commitments.statuses.percentages.expired}}.toFixed(2) + "%)",
-            color: '#E27E7A' 
         },
         ];
 
-        const width = 400;
-        const height = 400;
-        const radius = Math.min(width, height) / 2.5;
+        const width = 600;
+        const height = 650;
+        const radius = Math.min(width, height) / 2.3;
 
         const color = d3.scaleOrdinal().range(data.map(d => d.color));
 
@@ -81,7 +69,7 @@
 
         // Create a group element for the pie chart
         const pieGroup = svg.append("g")
-        .attr("transform", `translate(${width / 2},${height / 2})`);
+        .attr("transform", `translate(${width / 2},${height / 1.7})`);
 
         // Generate the pie chart segments
         const arcs = pie(data);
@@ -103,12 +91,14 @@
 
         // Add legend
         const legend = svg.append("g")
-        .attr("transform", `translate(${width - 400}, 30)`);
+        .attr("transform", `translate(0, 20)`);
+
+        const legendVerticalSpacing = 26;
 
         legend.selectAll("rect")
         .data(data)
         .enter().append("rect")
-        .attr("y", (d, i) => i * 20)
+        .attr("y", (d, i) => i * legendVerticalSpacing)
         .attr("width", 18)
         .attr("height", 18)
         .attr("fill", d => color(d.color));
@@ -116,9 +106,9 @@
         legend.selectAll("text")
         .data(data)
         .enter().append("text")
-        .attr("y", (d, i) => i * 20 + 9)
+        .attr("y", (d, i) => i * legendVerticalSpacing + 18)
         .attr("x", 22)
-        .text(d => d.label);
+        .text(d => d.legend);
 
     </script>
     {% endif %}

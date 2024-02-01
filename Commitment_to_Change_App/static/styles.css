@@ -132,19 +132,23 @@ form {
     padding-bottom: 100%; 
     vertical-align: top;
     overflow: hidden;
-  }
-  .svg-content-responsive {
+ }
+ .svg-content-responsive {
     display: inline-block;
     position: absolute;
-    top: 10px;
+    top: 0;
     left: 0;
-  }
+ }
   
  #status-breakdown-chart {
-    max-width: 500px;
+    max-width: 700px;
     height: auto;
     margin: 0 auto;
-    }
+ }
+
+ #status-breakdown-chart text {
+    font-size: 24px;
+ }
 
  .button
  {
