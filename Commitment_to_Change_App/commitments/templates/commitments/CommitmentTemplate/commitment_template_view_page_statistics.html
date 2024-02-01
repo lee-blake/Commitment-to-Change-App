@@ -13,6 +13,7 @@
 
     <script>
         // Set up data for the pie chart. In the future, this should be passed in.
+
         const data = [
         {
             count: {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }},
@@ -43,6 +44,12 @@
             {{commitment_template.statistics.derived_commitments.statuses.percentages.expired}}.toFixed(2) + "%)",
         },
         ];
+
+        for (let i = data.length - 1; i >= 0; i--) {
+            if (data[i].count === 0) {
+                data.splice(i, 1);
+            }
+        }
 
         const width = 600;
         const height = 650;
