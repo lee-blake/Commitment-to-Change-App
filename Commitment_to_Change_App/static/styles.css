@@ -16,7 +16,7 @@
     --primary-text: #000000;
     --light-text: #7B7B7B;
     --accent-text: #FFFFFF;
-    --standard-round: 15px;
+    --standard-round: 12px;
 }
 
 /* 
@@ -70,6 +70,10 @@ form {
      border-radius: var(--standard-round);
  }
 
+ .round-top-corners {
+    border-radius: var(--standard-round) var(--standard-round) 0 0;
+ }
+ 
 /* 
 -------------------------------------------------------------------
     --- Containers --- 
