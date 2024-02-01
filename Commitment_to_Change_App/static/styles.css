@@ -141,13 +141,17 @@ form {
  }
   
  #status-breakdown-chart {
-    max-width: 700px;
+    max-width: 400px;
     height: auto;
     margin: 0 auto;
  }
 
  #status-breakdown-chart text {
     font-size: 24px;
+ }
+
+ #status-breakdown-chart .pie-chart-legend-text { 
+    font-size: 32px;
  }
 
  .button

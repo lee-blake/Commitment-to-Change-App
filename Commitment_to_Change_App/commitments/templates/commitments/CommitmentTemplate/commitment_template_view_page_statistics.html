@@ -52,8 +52,8 @@
         }
 
         const width = 600;
-        const height = 650;
-        const radius = Math.min(width, height) / 2.3;
+        const height = 700;
+        const radius = Math.min(width, height) / 2.4;
 
         const color = d3.scaleOrdinal().range(data.map(d => d.color));
 
@@ -100,7 +100,7 @@
         const legend = svg.append("g")
         .attr("transform", `translate(0, 20)`);
 
-        const legendVerticalSpacing = 26;
+        const legendVerticalSpacing = 40;
 
         legend.selectAll("rect")
         .data(data)
@@ -115,7 +115,8 @@
         .enter().append("text")
         .attr("y", (d, i) => i * legendVerticalSpacing + 18)
         .attr("x", 22)
-        .text(d => d.legend);
+        .text(d => d.legend)
+        .classed("pie-chart-legend-text", true);
 
     </script>
     {% endif %}
