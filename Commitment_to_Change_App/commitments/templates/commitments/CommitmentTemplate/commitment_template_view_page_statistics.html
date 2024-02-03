@@ -45,79 +45,80 @@
         },
         ];
 
-        for (let i = data.length - 1; i >= 0; i--) {
-            if (data[i].count === 0) {
-                data.splice(i, 1);
+        const cleanData = removeEmptyData(data);
+        generatePieChart(cleanData, 600, 700, 0.45);
+
+        function removeEmptyData(data){
+            let cleanData = data.slice();
+            for (let i = cleanData.length - 1; i >= 0; i--) {
+                if (cleanData[i].count === 0) {
+                    cleanData.splice(i, 1);
+                }
             }
+            return cleanData;
         }
 
-        const width = 600;
-        const height = 700;
-        const radius = Math.min(width, height) / 2.4;
+        function generatePieChart(data, imageSizeX, imageSizeY, pieChartSize){
 
-        const color = d3.scaleOrdinal().range(data.map(d => d.color));
+            const radius = Math.min(imageSizeX, imageSizeY) * pieChartSize;
+            const color = d3.scaleOrdinal().range(data.map(d => d.color));
+             // Create a pie chart function using count as our base
+            const pie = d3.pie().value(d => d.count);
+            // Create an arc generator for the pie chart
+            const arc = d3.arc().innerRadius(0).outerRadius(radius);
+            // Select the SVG container
+            const svg = d3.select("#status-breakdown-chart")
+                .append("div")
+                .classed("svg-container", true)
+                .append("svg")
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", `0 0 ${imageSizeX} ${imageSizeY}`)
+                .classed("svg-content-responsive", true);
 
-        // Create a pie chart function using count as our base
-        const pie = d3.pie().value(d => d.count);
+            // Create a group element for the pie chart
+            const pieGroup = svg.append("g")
+                .attr("transform", `translate(${imageSizeX / 2},${imageSizeY / 1.7})`);
 
-        // Create an arc generator for the pie chart
-        const arc = d3.arc()
-        .innerRadius(0)
-        .outerRadius(radius);
+            // Generate the pie chart segments
+            const arcs = pie(data);
 
-        // Select the SVG container
-        const svg = d3.select("#status-breakdown-chart")
-        .append("div")
-        .classed("svg-container", true)
-        .append("svg")
-        .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", `0 0 ${width} ${height}`)
-        .classed("svg-content-responsive", true);
+            // Create and append path elements for each segment
+            pieGroup.selectAll("path")
+                .data(arcs)
+                .enter().append("path")
+                .attr("d", arc)
+                .attr("fill", d => color(d.data.color));
 
-        // Create a group element for the pie chart
-        const pieGroup = svg.append("g")
-        .attr("transform", `translate(${width / 2},${height / 1.7})`);
+            // Add text labels
+            pieGroup.selectAll("text")
+                .data(arcs)
+                .enter().append("text")
+                .attr("transform", d => `translate(${arc.centroid(d)})`)
+                .attr("text-anchor", "middle")
+                .text(d => d.data.label);
 
-        // Generate the pie chart segments
-        const arcs = pie(data);
+            // Add legend
+            const legend = svg.append("g")
+                .attr("transform", `translate(0, 20)`);
 
-        // Create and append path elements for each segment
-        pieGroup.selectAll("path")
-        .data(arcs)
-        .enter().append("path")
-        .attr("d", arc)
-        .attr("fill", d => color(d.data.color));
+            const legendVerticalSpacing = 40;
 
-        // Add text labels
-        pieGroup.selectAll("text")
-        .data(arcs)
-        .enter().append("text")
-        .attr("transform", d => `translate(${arc.centroid(d)})`)
-        .attr("text-anchor", "middle")
-        .text(d => d.data.label);
+            legend.selectAll("rect")
+                .data(data)
+                .enter().append("rect")
+                .attr("y", (d, i) => i * legendVerticalSpacing)
+                .attr("width", 18)
+                .attr("height", 18)
+                .attr("fill", d => color(d.color));
 
-        // Add legend
-        const legend = svg.append("g")
-        .attr("transform", `translate(0, 20)`);
-
-        const legendVerticalSpacing = 40;
-
-        legend.selectAll("rect")
-        .data(data)
-        .enter().append("rect")
-        .attr("y", (d, i) => i * legendVerticalSpacing)
-        .attr("width", 18)
-        .attr("height", 18)
-        .attr("fill", d => color(d.color));
-
-        legend.selectAll("text")
-        .data(data)
-        .enter().append("text")
-        .attr("y", (d, i) => i * legendVerticalSpacing + 18)
-        .attr("x", 22)
-        .text(d => d.legend)
-        .classed("pie-chart-legend-text", true);
-
+            legend.selectAll("text")
+                .data(data)
+                .enter().append("text")
+                .attr("y", (d, i) => i * legendVerticalSpacing + 18)
+                .attr("x", 22)
+                .text(d => d.legend)
+                .classed("pie-chart-legend-text", true);
+        }
     </script>
     {% endif %}
 </div>
