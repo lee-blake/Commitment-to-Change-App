@@ -47,7 +47,7 @@
         ];
 
         const cleanData = removeEmptyData(data);
-        document.addEventListener("DOMContentLoaded", () => generatePieChart(cleanData, 0.45, "#status-breakdown-chart"));
+        document.addEventListener("DOMContentLoaded", () => generatePieChart(cleanData, "#status-breakdown-chart"));
 
         function removeEmptyData(data){
             let cleanData = data.slice();

@@ -1,4 +1,5 @@
-function generatePieChart(data, pieChartSize, chartContainerSelector){
+function generatePieChart(data, chartContainerSelector){
+    const pieChartSize = 0.45;
 
     const imageSizeX = 600;
     const imageSizeY = 700;
