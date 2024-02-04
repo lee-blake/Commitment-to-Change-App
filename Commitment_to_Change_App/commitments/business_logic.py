@@ -141,3 +141,39 @@ def write_course_commitments_as_csv(course, file_object_to_write_to):
             "Owner Last Name": commitment.owner.last_name,
             "Owner Email": commitment.owner.email
         })
+
+
+def write_aggregate_course_statistics_as_csv(courses, file_object_to_write_to):
+    headers = [
+        "Course Identifier",
+        "Course Title",
+        "Start Date",
+        "End Date",
+        "Total Commitments",
+        "Num. In Progress",
+        "Num. Past Due",
+        "Num. Completed",
+        "Num. Discontinued",
+        ]
+    writer = csv.DictWriter(file_object_to_write_to, headers)
+    writer.writeheader()
+    for course in courses:
+        # This course logic is a wrapper to make testing work without adding extra properties
+        # to CourseLogic. It is questionable code and should be removed by moving the statistics
+        # logic to another class.
+        course_logic = CourseLogic(course)
+        writer.writerow({
+            "Course Identifier": course.identifier,
+            "Course Title": course.title,
+            "Start Date": course.start_date,
+            "End Date": course.end_date,
+            "Total Commitments": course_logic.statistics["associated_commitments"]["total"],
+            "Num. In Progress": \
+                course_logic.statistics["associated_commitments"]["statuses"]["in_progress"],
+            "Num. Past Due": \
+                course_logic.statistics["associated_commitments"]["statuses"]["past_due"],
+            "Num. Completed": \
+                course_logic.statistics["associated_commitments"]["statuses"]["complete"],
+            "Num. Discontinued": \
+                course_logic.statistics["associated_commitments"]["statuses"]["discontinued"],
+        })

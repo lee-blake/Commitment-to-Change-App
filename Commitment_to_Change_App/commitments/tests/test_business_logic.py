@@ -5,7 +5,7 @@ import io
 import pytest
 
 from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic, \
-    ClinicianLogic, write_course_commitments_as_csv
+    ClinicianLogic, write_course_commitments_as_csv, write_aggregate_course_statistics_as_csv
 from commitments.enums import CommitmentStatus
 from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
     FakeCourseData, FakeClinicianData
@@ -398,3 +398,84 @@ class TestWriteCourseCommitmentsAsCSV:
             csv_reader = csv.DictReader(fake_file)
             rows = [row for row in csv_reader]
             assert rows[0]["Status"] == str(CommitmentStatus.COMPLETE)
+
+
+class TestWriteAggregateCourseStatisticsAsCSV:
+    """Tests for write_aggregate_course_statistics_as_csv"""
+
+    def test_empty_course_list_only_prints_headers(self):
+        courses = []
+        with io.StringIO() as fake_file:
+            write_aggregate_course_statistics_as_csv(courses, fake_file)
+            fake_file.seek(0)
+            csv_reader = csv.reader(fake_file)
+            rows = [row for row in csv_reader]
+            assert len(rows) == 1
+            expected_headers = [
+                "Course Identifier",
+                "Course Title",
+                "Start Date",
+                "End Date",
+                "Total Commitments",
+                "Num. In Progress",
+                "Num. Past Due",
+                "Num. Completed",
+                "Num. Discontinued",
+            ]
+            assert rows[0] == expected_headers
+
+    def test_empty_course_prints_csv_correctly(self):
+        empty_course = FakeCourseData(
+            identifier=None,
+            title="Empty Course",
+            start_date=None,
+            end_date=None,
+            associated_commitments_list=[]
+        )
+        courses = [empty_course]
+        with io.StringIO() as fake_file:
+            write_aggregate_course_statistics_as_csv(courses, fake_file)
+            fake_file.seek(0)
+            csv_reader = csv.DictReader(fake_file)
+            rows = [row for row in csv_reader]
+            expected_values = {
+                "Course Identifier": "",
+                "Course Title": "Empty Course",
+                "Start Date": "",
+                "End Date": "",
+                "Total Commitments": "0",
+                "Num. In Progress": "0",
+                "Num. Past Due": "0",
+                "Num. Completed": "0",
+                "Num. Discontinued": "0",
+            }
+            assert rows[0] == expected_values
+
+    def test_one_of_each_status_course_prints_csv_correctly(self):
+        one_of_each_commitment_status = []
+        owner = FakeClinicianData()
+        for status in CommitmentStatus.values:
+            commitment = FakeCommitmentData(owner=owner, status=status)
+            one_of_each_commitment_status.append(commitment)
+        one_of_each_status_course = FakeCourseData(
+            title="One of each status",
+            associated_commitments_list=one_of_each_commitment_status
+        )
+        courses = [one_of_each_status_course]
+        with io.StringIO() as fake_file:
+            write_aggregate_course_statistics_as_csv(courses, fake_file)
+            fake_file.seek(0)
+            csv_reader = csv.DictReader(fake_file)
+            rows = [row for row in csv_reader]
+            expected_values = {
+                "Course Identifier": "FAKE-001",
+                "Course Title": "One of each status",
+                "Start Date": str(datetime.date.today()),
+                "End Date": str(datetime.date.today()),
+                "Total Commitments": "4",
+                "Num. In Progress": "1",
+                "Num. Past Due": "1",
+                "Num. Completed": "1",
+                "Num. Discontinued": "1",
+            }
+            assert rows[0] == expected_values
