@@ -251,17 +251,6 @@ class TestCourse:
             assert minimal_commitment in minimal_course.associated_commitments_list
             assert iter(minimal_course.associated_commitments_list)
 
-    @pytest.mark.django_db
-    class TestStatistics:
-        """Tests for checking that CourseLogic.statistics integrates with Course"""
-
-        def test_associated_commitment_generates_statistics_total_1(
-            self, minimal_course, minimal_commitment
-        ):
-            minimal_commitment.associated_course = minimal_course
-            minimal_commitment.save()
-            assert minimal_course.statistics["associated_commitments"]["total"] == 1
-
 
     @pytest.mark.django_db
     class TestEnrollStudentWithJoinCode:

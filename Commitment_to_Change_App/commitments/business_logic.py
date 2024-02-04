@@ -117,36 +117,6 @@ class CourseLogic:
     def __str__(self):
         return self._data.title.__str__()
 
-    @property
-    def statistics(self):
-        if not self._statistics:
-            self._statistics =  {
-                "associated_commitments": {
-                    "total": len(self._data.associated_commitments_list),
-                    "statuses": self._compute_associated_commitment_statuses()
-                }
-            }
-        return self._statistics
-
-    def _compute_associated_commitment_statuses(self):
-        stats_object = {
-            "in_progress": 0,
-            "complete": 0,
-            "past_due": 0,
-            "discontinued": 0
-        }
-        for commitment in self._data.associated_commitments_list:
-            match commitment.status:
-                case CommitmentStatus.IN_PROGRESS:
-                    stats_object["in_progress"] += 1
-                case CommitmentStatus.COMPLETE:
-                    stats_object["complete"] += 1
-                case CommitmentStatus.EXPIRED:
-                    stats_object["past_due"] += 1
-                case CommitmentStatus.DISCONTINUED:
-                    stats_object["discontinued"] += 1
-        return stats_object
-
     def generate_join_code_if_none_exists(self, length):
         if length <= 0:
             raise ValueError("Join codes must have a positive length!")

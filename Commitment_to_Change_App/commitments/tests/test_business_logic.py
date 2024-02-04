@@ -273,51 +273,6 @@ class TestCourseLogic:
             assert str(course) == title
 
 
-    class TestStatistics:
-        """Tests for CourseLogic.statistics"""
-
-        def test_total_correct_0(self):
-            course = CourseLogic(
-                FakeCourseData(associated_commitments_list=[])
-            )
-            assert course.statistics["associated_commitments"]["total"] == 0
-
-        def test_total_correct_1(self):
-            course = CourseLogic(
-                FakeCourseData(associated_commitments_list=[
-                    FakeCommitmentData()
-                ])
-            )
-            assert course.statistics["associated_commitments"]["total"] == 1
-
-        def test_associated_commitments_status_counts_correct_all_0(self):
-            course = CourseLogic(
-                FakeCourseData(associated_commitments_list=[])
-            )
-            status_stats = course.statistics["associated_commitments"]["statuses"]
-            assert status_stats["in_progress"] == 0
-            assert status_stats["complete"] == 0
-            assert status_stats["past_due"] == 0
-            assert status_stats["discontinued"] == 0
-
-        def test_associated_commitments_status_counts_correct_all_1(self):
-            course = CourseLogic(
-                FakeCourseData(
-                    associated_commitments_list=[
-                        FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
-                        FakeCommitmentData(status=CommitmentStatus.COMPLETE),
-                        FakeCommitmentData(status=CommitmentStatus.EXPIRED),
-                        FakeCommitmentData(status=CommitmentStatus.DISCONTINUED)
-                    ]
-                )
-            )
-            status_stats = course.statistics["associated_commitments"]["statuses"]
-            assert status_stats["in_progress"] == 1
-            assert status_stats["complete"] == 1
-            assert status_stats["past_due"] == 1
-            assert status_stats["discontinued"] == 1
-
-
     class TestGenerateJoinCodeIfNoneExists:
         """Tests for CourseLogic.generate_join_code_if_none_exists"""
 
