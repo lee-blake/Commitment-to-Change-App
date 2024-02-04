@@ -285,6 +285,18 @@ class TestProviderDashboardView:
             )
             assert commitment_template_2_link_regex.search(html)
 
+        def test_provider_dashboard_links_to_aggregate_course_stats_csv_downlaod(
+            self, client, saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("provider dashboard")).content.decode()
+            download_course_stats_csv_link = reverse("download aggregate Course statistics as csv")
+            create_course_link_regex = re.compile(
+                r"\<a\s[^\>]*href=\"" + download_course_stats_csv_link + r"\"[^\>]*\>"
+            )
+            assert create_course_link_regex.search(html)
+
+
     class TestPost:
         """Tests for ProviderDashboardView.post"""
 

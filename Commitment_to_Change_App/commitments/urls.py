@@ -111,4 +111,10 @@ urlpatterns = [
           views.DeleteCommitmentTemplateView.as_view(),
           name="delete CommitmentTemplate"
      ),
+
+     path(
+          "statistics/courses/aggregate/",
+          views.AggregateCourseStatisticsCSVDownloadView.as_view(),
+          name="download aggregate Course statistics as csv"
+     )
 ]
