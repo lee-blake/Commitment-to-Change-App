@@ -5,7 +5,8 @@ import io
 import pytest
 
 from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic, \
-    ClinicianLogic, write_course_commitments_as_csv, write_aggregate_course_statistics_as_csv
+    ClinicianLogic, write_course_commitments_as_csv, write_aggregate_course_statistics_as_csv, \
+    CommitmentStatusStatistics
 from commitments.enums import CommitmentStatus
 from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
     FakeCourseData, FakeClinicianData
@@ -390,6 +391,103 @@ class TestCourseLogic:
             )
             assert student in course._data.students
             assert len(course._data.students) == 1
+
+
+class TestCommitmentStatusStatistics:
+    """Tests for CommitmentStatusStatistics"""
+
+    class TestTotal:
+        """Tests for CommitmentStatusStatistics.total"""
+
+        def test_returns_zero_when_empty(self):
+            stats = CommitmentStatusStatistics()
+            assert stats.total() == 0
+
+        def test_returns_one_with_single_commitment(self):
+            stats = CommitmentStatusStatistics(FakeCommitmentData())
+            assert stats.total() == 1
+
+
+    class TestCountWithStatus:
+        """Tests for CommitmentStatusStatistics.count_with_status"""
+
+        def test_returns_zero_when_empty(self):
+            stats = CommitmentStatusStatistics()
+            for status in CommitmentStatus.values:
+                assert stats.count_with_status(status) == 0
+
+        @pytest.mark.parametrize("status", CommitmentStatus.values)
+        def test_returns_one_with_commitment_of_that_status(self, status):
+            stats = CommitmentStatusStatistics(FakeCommitmentData(status=status))
+            assert stats.count_with_status(status) == 1
+
+        def test_returns_zero_if_none_of_that_type(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            for status in CommitmentStatus.values:
+                if status == CommitmentStatus.IN_PROGRESS:
+                    continue
+                assert stats.count_with_status(status) == 0
+
+
+    class TestFractionWithStatus:
+        """Tests for CommitmentStatusStatistics.fraction_with_status"""
+
+        def test_raises_error_when_empty(self):
+            stats = CommitmentStatusStatistics()
+            with pytest.raises(ArithmeticError):
+                stats.fraction_with_status(CommitmentStatus.IN_PROGRESS)
+
+        def test_returns_one_for_only_status_present(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            assert stats.fraction_with_status(CommitmentStatus.IN_PROGRESS) == 1
+
+        def test_returns_zero_for_not_present(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            assert stats.fraction_with_status(CommitmentStatus.COMPLETE) == 0
+
+        def test_returns_half_when_one_of_two(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
+                FakeCommitmentData(status=CommitmentStatus.COMPLETE)
+            )
+            assert stats.fraction_with_status(CommitmentStatus.IN_PROGRESS) == pytest.approx(0.5)
+            assert stats.fraction_with_status(CommitmentStatus.COMPLETE) == pytest.approx(0.5)
+
+
+    class TestPercentageWithStatus:
+        """Tests for CommitmentStatusStatistics.percentage_with_status"""
+
+        def test_raises_error_when_empty(self):
+            stats = CommitmentStatusStatistics()
+            with pytest.raises(ArithmeticError):
+                stats.percentage_with_status(CommitmentStatus.IN_PROGRESS)
+
+        def test_returns_one_hundred_for_only_status_present(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            assert stats.percentage_with_status(CommitmentStatus.IN_PROGRESS) == 100
+
+        def test_returns_zero_for_not_present(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            assert stats.percentage_with_status(CommitmentStatus.COMPLETE) == 0
+
+        def test_returns_fifty_when_one_of_two(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
+                FakeCommitmentData(status=CommitmentStatus.COMPLETE)
+            )
+            assert stats.percentage_with_status(CommitmentStatus.IN_PROGRESS) == pytest.approx(50)
+            assert stats.percentage_with_status(CommitmentStatus.COMPLETE) == pytest.approx(50)
+
 
 
 class TestWriteCourseCommitmentsAsCSV:

@@ -165,6 +165,35 @@ class CourseLogic:
             self._data.students.append(student)
 
 
+class CommitmentStatusStatistics:
+    def __init__(self, *commitments):
+        self._total = 0
+        self._status_counts = {}
+        self._initialize_status_counts()
+        self._count_statuses(*commitments)
+
+    def _initialize_status_counts(self):
+        for status in CommitmentStatus.values:
+            self._status_counts[status] = 0
+
+    def _count_statuses(self, *commitments):
+        for commitment in commitments:
+            self._total += 1
+            self._status_counts[commitment.status] += 1
+
+    def total(self):
+        return self._total
+
+    def count_with_status(self, status):
+        return self._status_counts[status]
+
+    def fraction_with_status(self, status):
+        return self._status_counts[status]/self._total
+
+    def percentage_with_status(self, status):
+        return 100*self.fraction_with_status(status)
+
+
 def write_course_commitments_as_csv(course, file_object_to_write_to):
     headers = [
         "Commitment Title", 
