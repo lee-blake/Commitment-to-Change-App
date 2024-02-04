@@ -16,7 +16,6 @@ class GeneratedTemporaryFileDownloadView(View, ABC):
         temp_file = tempfile.NamedTemporaryFile(mode="w+b", delete=True)
         self._write_content_to_file(temp_file)
         # Reset the head so the written content can be read
-        print(temp_file)
         temp_file.seek(0)
         return FileResponse(
             temp_file,
