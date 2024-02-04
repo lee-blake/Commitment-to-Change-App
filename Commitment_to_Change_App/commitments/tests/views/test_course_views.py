@@ -1,6 +1,8 @@
 """Tests for views relating to Course objects."""
 
+import csv
 import datetime
+import io
 import re
 
 import pytest
@@ -442,6 +444,19 @@ class TestViewCourseView:
             assert saved_clinician_profile.username in html
             assert other_clinician_profile.username not in html
 
+        @pytest.mark.parametrize("email_address", ["address1@test.email", "address2@localhost"])
+        def test_enrolled_student_mailto_links_show_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course,
+            saved_clinician_profile, email_address
+        ):
+            saved_clinician_profile.user.email = email_address
+            saved_clinician_profile.user.save()
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert f"mailto:{email_address}" in html
+
         def test_general_commitment_statistics_show_in_page_for_provider_1(
             self, client, saved_provider_profile,
             enrolled_course, associated_commitments
@@ -486,6 +501,20 @@ class TestViewCourseView:
             assert re.compile(r"<td>Discontinued:</td>\s*<td>0</td>").search(html)
             assert re.compile(r"<th>Total:</th>\s*<th>2</th>").search(html)
 
+        def test_course_commitments_csv_download_shows_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            download_link = reverse(
+                "download Course Commitments as csv",
+                kwargs={
+                    "course_id": enrolled_course.id
+                }
+            )
+            assert download_link in html
 
         def test_institution_name_shows_in_page_for_provider(
             self, client, saved_provider_profile, enrolled_course
@@ -561,6 +590,17 @@ class TestViewCourseView:
             assert enrolled_course.title in html
             assert enrolled_course.description in html
 
+        def test_enrolled_student_mailto_links_do_not_show_in_page_for_clinician(
+            self, client, enrolled_course, saved_clinician_profile
+        ):
+            saved_clinician_profile.user.email = "notpresent@inpage"
+            saved_clinician_profile.user.save()
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            assert "mailto:notpresent@inpage" not in html
+
         def test_general_commitment_statistics_show_in_page_for_clinician(
             self, client, saved_clinician_profile,
             enrolled_course, associated_commitments
@@ -582,6 +622,21 @@ class TestViewCourseView:
             assert re.compile(r"<td>Past Due:</td>\s*<td>0</td>").search(html)
             assert re.compile(r"<td>Discontinued:</td>\s*<td>1</td>").search(html)
             assert re.compile(r"<th>Total:</th>\s*<th>3</th>").search(html)
+
+        def test_course_commitments_csv_download_does_not_show_in_page_for_student(
+            self, client, saved_clinician_profile, enrolled_course
+        ):
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            download_link = reverse(
+                "download Course Commitments as csv",
+                kwargs={
+                    "course_id": enrolled_course.id
+                }
+            )
+            assert download_link not in html
 
         def test_suggested_commitments_show_in_page_for_clinician(
             self, client, saved_clinician_profile, enrolled_course,
@@ -1405,3 +1460,99 @@ class TestJoinCourseView:
                 "view Course",
                 kwargs={"course_id": non_enrolled_course.id}
             )
+
+
+@pytest.mark.django_db
+class TestDownloadCourseCommitmentsCSVView:
+    """Tests for DownloadCourseCommitmentsCSVView"""
+
+    class TestGet:
+        """Tests for DownloadCourseCommitmentsCSVView.get"""
+
+        def test_rejects_clinician_accounts_with_403(
+            self, client, saved_clinician_user, enrolled_course
+        ):
+            target_url = reverse(
+                "download Course Commitments as csv", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_providers_with_404(
+            self, client, other_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "download Course Commitments as csv", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(other_provider_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_course_with_no_commitments_gives_one_line_csv(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            target_url = reverse(
+                "download Course Commitments as csv", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.get(target_url)
+            file_content = b"".join(response.streaming_content).decode()
+            csv_reader = csv.reader(io.StringIO(file_content))
+            rows = [row for row in csv_reader]
+            assert len(rows) == 1
+            # Check at least one of the column headers to make sure they're getting written.
+            # Changing the index/content here is expected if the csv format changes.
+            assert rows[0][0] == "Commitment Title"
+
+        def test_course_with_one_commitment_correctly_writes_row(
+            self, client, saved_provider_profile, enrolled_course, saved_clinician_profile
+        ):
+            Commitment.objects.create(
+                title="Sample title",
+                description="Sample commitment for csv",
+                owner=saved_clinician_profile,
+                deadline=datetime.date.today(),
+                associated_course=enrolled_course
+            )
+            target_url = reverse(
+                "download Course Commitments as csv", 
+                kwargs={ "course_id": enrolled_course.id }
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.get(target_url)
+            file_content = b"".join(response.streaming_content).decode()
+            csv_reader = csv.DictReader(io.StringIO(file_content))
+            rows = [row for row in csv_reader]
+            expected_values = {
+                "Commitment Title": "Sample title", 
+                "Commitment Description": "Sample commitment for csv",
+                "Status": "In Progress",
+                "Due": str(datetime.date.today()),
+                "Owner First Name": "", # None converts to "" in csv
+                "Owner Last Name": "",
+                "Owner Email": "test@email.me"
+            }
+            # Check that expected values are a subset of actual values. This allows us to
+            # add more headers without changing this test - 7 properties is enough triangulation.
+            # DictReader does not have a header row so index 0.
+            assert expected_values.items() <= rows[0].items()
+
+
+    class TestPost:
+        """Tests for DownloadCourseCommitmentsCSVView.post
+
+        post does not exist. The only test here verifies that it returns an appropriate error.
+        """
+
+        def test_post_returns_405(self, client, saved_provider_profile):
+            target_url = reverse(
+                "download Course Commitments as csv",
+                kwargs={"course_id": 1}
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 405

@@ -1,9 +1,11 @@
+import csv
 import datetime
+import io
 
 import pytest
 
 from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic, \
-    ClinicianLogic
+    ClinicianLogic, write_course_commitments_as_csv
 from commitments.enums import CommitmentStatus
 from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
     FakeCourseData, FakeClinicianData
@@ -332,3 +334,67 @@ class TestCourseLogic:
             )
             assert student in course._data.students
             assert len(course._data.students) == 1
+
+
+class TestWriteCourseCommitmentsAsCSV:
+    """Tests for write_course_commitments_as_csv"""
+
+    def test_empty_course_commitments_list_only_prints_headers(self):
+        course = FakeCourseData(associated_commitments_list=[])
+        with io.StringIO() as fake_file:
+            write_course_commitments_as_csv(course, fake_file)
+            fake_file.seek(0)
+            csv_reader = csv.reader(fake_file)
+            rows = [row for row in csv_reader]
+            assert len(rows) == 1
+            expected_headers = [
+                "Commitment Title", 
+                "Commitment Description",
+                "Status",
+                "Due",
+                "Owner First Name",
+                "Owner Last Name",
+                "Owner Email"
+            ]
+            assert rows[0] == expected_headers
+
+    def test_single_course_commitment_prints_csv_correctly(self):
+        owner = FakeClinicianData()
+        commitment = FakeCommitmentData(owner=owner)
+        course = FakeCourseData(
+            associated_commitments_list=[
+                commitment
+            ]
+        )
+        with io.StringIO() as fake_file:
+            write_course_commitments_as_csv(course, fake_file)
+            fake_file.seek(0)
+            csv_reader = csv.DictReader(fake_file)
+            rows = [row for row in csv_reader]
+            expected_values = {
+                "Commitment Title": commitment.title, 
+                "Commitment Description": commitment.description,
+                # Make sure it is definitely a string and not an int
+                "Status": CommitmentStatus.__str__(commitment.status),
+                "Due": str(commitment.deadline),
+                "Owner First Name": owner.first_name,
+                "Owner Last Name": owner.last_name,
+                "Owner Email": owner.email
+            }
+            assert rows[0] == expected_values
+
+    def test_enum_passed_as_int_still_prints_human_friendly_text(self):
+        owner = FakeClinicianData()
+        commitment = FakeCommitmentData(owner=owner)
+        commitment.status = int(CommitmentStatus.COMPLETE)
+        course = FakeCourseData(
+            associated_commitments_list=[
+                commitment
+            ]
+        )
+        with io.StringIO() as fake_file:
+            write_course_commitments_as_csv(course, fake_file)
+            fake_file.seek(0)
+            csv_reader = csv.DictReader(fake_file)
+            rows = [row for row in csv_reader]
+            assert rows[0]["Status"] == str(CommitmentStatus.COMPLETE)
