@@ -6,36 +6,7 @@
             {{ commitment_template.statistics.derived_commitments.statuses.counts.total }}
              derived commitments
         </h2>
-        <script src="https://d3js.org/d3.v6.min.js"></script>
-        
-    <div id="status-breakdown-chart">
-    </div>
-    
-
-    <script>
-        // Set up data for the pie chart. In the future, this should be passed in.
-
-        const data = [
-        {
-            count: {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }},
-            color: '#8FC3D4',
-            
-        },
-        { 
-            count: {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }},
-            color: '#7CC487',
-        },
-        {
-            count: {{ commitment_template.statistics.derived_commitments.statuses.counts.discontinued }},
-            color: '#717171',
-        },
-        { 
-            count: {{ commitment_template.statistics.derived_commitments.statuses.counts.expired }},
-            color: '#E27E7A',
-        },
-        ];
-        document.addEventListener("DOMContentLoaded", () => generatePieChart(cleanData, "#status-breakdown-chart"));
-
-    </script>
+        {% include "commitments/CommitmentTemplate/commitment_template_chart_legend.html" %}
+        {% include "commitments/CommitmentTemplate/commitment_template_chart_pie.html" %}
     {% endif %}
 </div>

@@ -1,0 +1,23 @@
+<div id="status-breakdown-chart">
+</div>
+<script>
+    const data = [
+    {
+        count: {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }},
+        color: "legend-color-in-progress",
+    },
+    { 
+        count: {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }},
+        color: "legend-color-complete",
+    },
+    {
+        count: {{ commitment_template.statistics.derived_commitments.statuses.counts.discontinued }},
+        color: "legend-color-discontinued",
+    },
+    { 
+        count: {{ commitment_template.statistics.derived_commitments.statuses.counts.expired }},
+        color: "legend-color-expired",
+    },
+    ];
+    document.addEventListener("DOMContentLoaded", () => generatePieChart(data, "#status-breakdown-chart"));
+</script>
