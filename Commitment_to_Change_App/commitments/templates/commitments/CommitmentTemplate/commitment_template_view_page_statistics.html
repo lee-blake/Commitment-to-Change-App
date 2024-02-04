@@ -34,19 +34,8 @@
             color: '#E27E7A',
         },
         ];
-
-        const cleanData = removeEmptyData(data);
         document.addEventListener("DOMContentLoaded", () => generatePieChart(cleanData, "#status-breakdown-chart"));
 
-        function removeEmptyData(data){
-            let cleanData = data.slice();
-            for (let i = cleanData.length - 1; i >= 0; i--) {
-                if (cleanData[i].count === 0) {
-                    cleanData.splice(i, 1);
-                }
-            }
-            return cleanData;
-        }
     </script>
     {% endif %}
 </div>
