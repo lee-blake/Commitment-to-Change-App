@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 
 from commitments.business_logic import write_course_commitments_as_csv, \
-    write_aggregate_course_statistics_as_csv
+    write_aggregate_course_statistics_as_csv, CommitmentStatusStatistics
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
@@ -239,6 +239,15 @@ class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
 class ViewCourseView(LoginRequiredMixin, DetailView):
     model = Course
     pk_url_kwarg = "course_id"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Enrich the course object with its statistics
+        course = context["course"]
+        course.commitment_statistics = CommitmentStatusStatistics(
+            *course.associated_commitments_list
+        ).as_json()
+        return context
 
     def get_template_names(self):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
