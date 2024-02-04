@@ -18,31 +18,20 @@
         const data = [
         {
             count: {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }},
-            label: "~" + {{ commitment_template.statistics.derived_commitments.statuses.percentages.in_progress }}.toFixed(2) + "%",
             color: '#8FC3D4',
-            legend: "In-progress: " + {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }} + " (~" +
-            {{ commitment_template.statistics.derived_commitments.statuses.percentages.in_progress }}.toFixed(2) + "%)",
+            
         },
         { 
             count: {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }},
-            label: "~" + {{ commitment_template.statistics.derived_commitments.statuses.percentages.complete }}.toFixed(2) + "%",
             color: '#7CC487',
-            legend: "Complete: " + {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }} + " (~" +
-            {{ commitment_template.statistics.derived_commitments.statuses.percentages.complete }}.toFixed(2) + "%)",
         },
         {
             count: {{ commitment_template.statistics.derived_commitments.statuses.counts.discontinued }},
-            label: "~" + {{commitment_template.statistics.derived_commitments.statuses.percentages.discontinued}}.toFixed(2) + "%",
             color: '#717171',
-            legend: "Discontinued: " + {{commitment_template.statistics.derived_commitments.statuses.counts.discontinued}} + " (~" +
-            {{commitment_template.statistics.derived_commitments.statuses.percentages.discontinued}}.toFixed(2) + "%)",
         },
         { 
             count: {{ commitment_template.statistics.derived_commitments.statuses.counts.expired }},
-            label: "~" +{{commitment_template.statistics.derived_commitments.statuses.percentages.expired}}.toFixed(2) + "%",
             color: '#E27E7A',
-            legend: "Past-due: " + {{commitment_template.statistics.derived_commitments.statuses.counts.expired}} + " (~" +
-            {{commitment_template.statistics.derived_commitments.statuses.percentages.expired}}.toFixed(2) + "%)",
         },
         ];
 

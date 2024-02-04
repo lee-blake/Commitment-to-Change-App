@@ -2,7 +2,7 @@ function generatePieChart(data, chartContainerSelector){
     const pieChartSize = 0.45;
 
     const imageSizeX = 600;
-    const imageSizeY = 700;
+    const imageSizeY = 600;
 
     const radius = Math.min(imageSizeX, imageSizeY) * pieChartSize;
     const color = d3.scaleOrdinal().range(data.map(d => d.color));
@@ -21,7 +21,7 @@ function generatePieChart(data, chartContainerSelector){
 
     // Create a group element for the pie chart
     const pieGroup = svg.append("g")
-        .attr("transform", `translate(${imageSizeX / 2},${imageSizeY / 1.7})`);
+        .attr("transform", `translate(${imageSizeX / 2},${imageSizeY / 2})`);
 
     // Generate the pie chart segments
     const arcs = pie(data);
@@ -32,35 +32,4 @@ function generatePieChart(data, chartContainerSelector){
         .enter().append("path")
         .attr("d", arc)
         .attr("fill", d => color(d.data.color));
-
-    // Add text labels
-    pieGroup.selectAll("text")
-        .data(arcs)
-        .enter().append("text")
-        .attr("transform", d => `translate(${arc.centroid(d)})`)
-        .attr("text-anchor", "middle")
-        .text(d => d.data.label);
-    
-
-    // Add legend
-    const legend = svg.append("g")
-        .attr("transform", `translate(0, 20)`);
-
-    const legendVerticalSpacing = 40;
-
-    legend.selectAll("rect")
-        .data(data)
-        .enter().append("rect")
-        .attr("y", (d, i) => i * legendVerticalSpacing)
-        .attr("width", 18)
-        .attr("height", 18)
-        .attr("fill", d => color(d.color));
-
-    legend.selectAll("text")
-        .data(data)
-        .enter().append("text")
-        .attr("y", (d, i) => i * legendVerticalSpacing + 18)
-        .attr("x", 22)
-        .text(d => d.legend)
-        .classed("pie-chart-legend-text", true);
 }
