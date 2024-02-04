@@ -1,0 +1,26 @@
+<div class="container-fluid text-center">
+    {% if commitment_template.statistics.derived_commitments.statuses.counts.total == 0 %}
+        No commitments have been made from this template.
+    {% else %}
+        <h2>Statistics for 
+            {{ commitment_template.statistics.derived_commitments.statuses.counts.total }}
+             derived commitments
+        </h2>
+        <span class="p3 text-center">In Progress: 
+        {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }}
+        ({{ commitment_template.statistics.derived_commitments.statuses.percentages.in_progress }}%)
+        </span>
+        <span class="p3 text-center">Past Due: 
+            {{ commitment_template.statistics.derived_commitments.statuses.counts.expired }}
+            ({{ commitment_template.statistics.derived_commitments.statuses.percentages.expired }}%)
+        </span>
+        <span class="p3 text-center">Complete: 
+            {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }}
+            ({{ commitment_template.statistics.derived_commitments.statuses.percentages.complete }}%)
+        </span>
+        <span class="p3 text-center">Discontinued: 
+            {{ commitment_template.statistics.derived_commitments.statuses.counts.discontinued }}
+            ({{ commitment_template.statistics.derived_commitments.statuses.percentages.discontinued }}%)
+        </span>
+    {% endif %}
+</div>

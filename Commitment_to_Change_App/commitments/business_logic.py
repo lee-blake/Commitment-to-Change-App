@@ -60,6 +60,54 @@ class CommitmentTemplateLogic:
     def description(self):
         return self._data.description
 
+    @property
+    def derived_commitments(self):
+        return self._data.derived_commitments
+
+    @property
+    def statistics(self):
+        derived_status_counts = self._compute_derived_commitment_status_counts()
+        derived_status_percentages = self._compute_derived_commitment_status_percentages(
+            derived_status_counts
+        )
+        return {
+            "derived_commitments": {
+                "statuses": {
+                    "counts": derived_status_counts,
+                    "percentages": derived_status_percentages
+                }
+            }
+        }
+
+    def _compute_derived_commitment_status_counts(self):
+        status_counts = {
+            CommitmentStatus.IN_PROGRESS: 0,
+            CommitmentStatus.COMPLETE: 0,
+            CommitmentStatus.DISCONTINUED: 0,
+            CommitmentStatus.EXPIRED: 0,
+            }
+        for commitment in self.derived_commitments:
+            status_counts[commitment.status] += 1
+        return {
+            "in_progress": status_counts[CommitmentStatus.IN_PROGRESS],
+            "complete": status_counts[CommitmentStatus.COMPLETE],
+            "discontinued": status_counts[CommitmentStatus.DISCONTINUED],
+            "expired": status_counts[CommitmentStatus.EXPIRED],
+            "total": len(self.derived_commitments)
+        }
+
+    def _compute_derived_commitment_status_percentages(self, status_counts):
+        status_names = ["in_progress", "complete", "discontinued", "expired"]
+        status_percentages = {}
+        total_commitments = status_counts["total"]
+        for status_name in status_names:
+            if total_commitments == 0:
+                status_percentages[status_name] = "N/A"
+            else:
+                status_percentages[status_name] = \
+                    100 * status_counts[status_name] / total_commitments
+        return status_percentages
+
 
 class CourseLogic:
     def __init__(self, data_object):
