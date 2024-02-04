@@ -489,6 +489,49 @@ class TestCommitmentStatusStatistics:
             assert stats.percentage_with_status(CommitmentStatus.COMPLETE) == pytest.approx(50)
 
 
+    class TestDataAsJSON:
+        """Tests for CommitmentStatusStatistics.as_json"""
+
+        def test_empty_returns_correctly(self):
+            stats = CommitmentStatusStatistics()
+            expected_json = {
+                "total": 0,
+                "counts": {
+                    "in_progress": 0,
+                    "complete": 0,
+                    "discontinued": 0,
+                    "expired": 0
+                },
+                "percentages": {
+                    "in_progress": "N/A",
+                    "complete": "N/A",
+                    "discontinued": "N/A",
+                    "expired": "N/A"
+                }
+            }
+            assert stats.as_json() == expected_json
+
+        def test_one_of_each_returns_correctly(self):
+            stats = CommitmentStatusStatistics(
+                *[FakeCommitmentData(status=status) for status in CommitmentStatus.values]
+            )
+            expected_json = {
+                "total": 4,
+                "counts": {
+                    "in_progress": 1,
+                    "complete": 1,
+                    "discontinued": 1,
+                    "expired": 1
+                },
+                "percentages": {
+                    "in_progress": 25,
+                    "complete": 25,
+                    "discontinued": 25,
+                    "expired": 25
+                }
+            }
+            assert stats.as_json() == expected_json
+
 
 class TestWriteCourseCommitmentsAsCSV:
     """Tests for write_course_commitments_as_csv"""

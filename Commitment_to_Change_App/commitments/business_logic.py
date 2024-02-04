@@ -193,6 +193,36 @@ class CommitmentStatusStatistics:
     def percentage_with_status(self, status):
         return 100*self.fraction_with_status(status)
 
+    def as_json(self):
+        return {
+            "total": self._total,
+            "counts": self._get_counts_json(),
+            "percentages": self._get_percentages_json()
+        }
+
+    def _get_counts_json(self):
+        return {
+            "in_progress": self.count_with_status(CommitmentStatus.IN_PROGRESS),
+            "complete": self.count_with_status(CommitmentStatus.COMPLETE),
+            "discontinued": self.count_with_status(CommitmentStatus.DISCONTINUED),
+            "expired": self.count_with_status(CommitmentStatus.EXPIRED),
+        }
+
+    def _get_percentages_json(self):
+        if self._total == 0:
+            return {
+                "in_progress": "N/A",
+                "complete": "N/A",
+                "discontinued": "N/A",
+                "expired": "N/A"
+            }
+        return {
+            "in_progress": self.percentage_with_status(CommitmentStatus.IN_PROGRESS),
+            "complete": self.percentage_with_status(CommitmentStatus.COMPLETE),
+            "discontinued": self.percentage_with_status(CommitmentStatus.DISCONTINUED),
+            "expired": self.percentage_with_status(CommitmentStatus.EXPIRED),
+        }
+
 
 def write_course_commitments_as_csv(course, file_object_to_write_to):
     headers = [
