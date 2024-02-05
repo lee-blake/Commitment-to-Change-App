@@ -43,7 +43,6 @@ class TestCommitmentViewPageStatistics:
             "commitments/CommitmentTemplate/commitment_template_view_page_statistics.html"
         )
         rendered_content = template.render({"commitment_template": commitment_template})
-        print (rendered_content)
         assert "No commitments have been made from this template." in rendered_content
 
 
