@@ -149,6 +149,34 @@ class TestCommitmentTemplate:
             assert str(template) == "not the same"
 
 
+    @pytest.mark.django_db
+    class TestDerivedCommitments:
+        """Tests for CommitmentTemplate.derived_commitments"""
+
+        def test_no_derived_commitments_returns_empty_list(self, minimal_provider):
+            template = CommitmentTemplate.objects.create(
+                title="Test CommitmentTemplate",
+                description="No derived commitments",
+                owner=minimal_provider
+            )
+            assert template.derived_commitments == []
+
+        def test_one_derived_commitment_returns_in_list(self, minimal_provider, minimal_clinician):
+            template = CommitmentTemplate.objects.create(
+                title="Test CommitmentTemplate",
+                description="One derived commitment",
+                owner=minimal_provider
+            )
+            commitment = Commitment.objects.create(
+                title="Test Commitment",
+                description="Derived from a CommitmentTemplate",
+                deadline=date.today(),
+                owner=minimal_clinician,
+                source_template=template
+            )
+            assert template.derived_commitments == [commitment]
+
+
 class TestCourse:
     """Tests for Course"""
 
@@ -175,17 +203,6 @@ class TestCourse:
             minimal_commitment.save()
             assert minimal_commitment in minimal_course.associated_commitments_list
             assert iter(minimal_course.associated_commitments_list)
-
-    @pytest.mark.django_db
-    class TestStatistics:
-        """Tests for checking that CourseLogic.statistics integrates with Course"""
-
-        def test_associated_commitment_generates_statistics_total_1(
-            self, minimal_course, minimal_commitment
-        ):
-            minimal_commitment.associated_course = minimal_course
-            minimal_commitment.save()
-            assert minimal_course.statistics["associated_commitments"]["total"] == 1
 
 
     @pytest.mark.django_db

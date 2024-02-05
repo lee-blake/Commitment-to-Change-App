@@ -46,6 +46,10 @@ class CommitmentTemplate(CommitmentTemplateLogic, models.Model):
         CommitmentTemplateLogic.__init__(self, data_object=self)
         models.Model.__init__(self, *args, **kwargs)
 
+    @property
+    def derived_commitments(self):
+        return list(Commitment.objects.filter(source_template=self).all())
+
 
 class Course(CourseLogic, models.Model):
     DEFAULT_JOIN_CODE_LENGTH = 8

@@ -16,7 +16,12 @@
     --primary-text: #000000;
     --light-text: #7B7B7B;
     --accent-text: #FFFFFF;
-    --standard-round: 12px;
+    --in-progress: #8FC3D4;
+    --complete: #7CC487;
+    --discontinued: #717171;
+    --expired: #ffa2a2;
+    --standard-round: 15px;
+    
 }
 
 /* 
@@ -134,6 +139,62 @@ form {
 ------------------------------------------------------------------- 
  */
 
+ .pie-chart-and-legend-container {
+    display:flex;
+    justify-content: center;
+ }
+ .chart-legend-container {
+    padding: 15px;
+    margin-top: auto;
+    margin-bottom: auto;
+
+  }
+  .chart-legend-item-container {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .chart-legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border-radius: 4px;
+  }
+  .legend-color-in-progress {
+    background-color: var(--in-progress);
+    fill: var(--in-progress);
+  }
+  .legend-color-complete {
+    background-color: var(--complete);
+    fill: var(--complete); 
+  }
+  .legend-color-discontinued {
+    background-color: var(--discontinued);
+    fill: var(--discontinued);
+  }
+  .legend-color-expired {
+    background-color: var(--expired);
+    fill: var(--expired);
+  }
+ .svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; 
+    vertical-align: top;
+    overflow: hidden;
+ }
+ .svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+ }
+ .pie-chart {
+    padding: 15px;
+    width: min(50%, 400px, 1000px);
+ }
  .button
  {
      background-color: var(--primary-accent);

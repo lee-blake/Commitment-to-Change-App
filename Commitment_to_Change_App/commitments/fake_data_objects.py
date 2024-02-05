@@ -60,6 +60,7 @@ class FakeCommitmentTemplateData:
     title = "Fake CommitmentTemplate Title"
     description = "Fake CommitmentTemplate Description"
     owner = FakeProviderData()
+    derived_commitments = []
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)

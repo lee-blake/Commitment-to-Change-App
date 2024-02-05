@@ -11,6 +11,7 @@
     <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
       <p>{{ commitment_template.description }}</p>
     </div>
+    {% include "commitments/CommitmentTemplate/commitment_template_view_page_statistics.html" %}
     <div class="container-fluid text-center">
       {% block edit_button %}
       <a href="{% url 'edit CommitmentTemplate' commitment_template_id=commitment_template.id %}">

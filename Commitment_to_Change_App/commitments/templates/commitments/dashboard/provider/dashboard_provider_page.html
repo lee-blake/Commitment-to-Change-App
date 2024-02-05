@@ -13,6 +13,14 @@
                     <span class="h1 accent-text">Courses</span> 
                     <span>{% include "commitments/dashboard/provider/dashboard_provider_course_help_modal.html" %}</span>
                 </div>
+                <div class="text-center py-1">
+                    <a href="{% url "download aggregate Course statistics as csv" %}">
+                        <button class="standard-button">
+                            Download aggregate course statistics
+                            <i class="bi bi-file-earmark-arrow-down"></i>
+                        </button>
+                    </a>
+                </div>
                 {% include "commitments/dashboard/dashboard_courses_list.html" %}
             </div>
             <div class="pb-3 foreground round-corners">
