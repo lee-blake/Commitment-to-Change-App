@@ -2,32 +2,5 @@
     <h3>Status Breakdown</h3>
 </div>
 <div class="table-responsive pt-3 px-4">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Commitment Status:</th>
-                <th scope="col">Count:</th>
-            </tr>
-        </thead>
-        <tr>
-            <td>In progress:</td>
-            <td>{{ course.commitment_statistics.counts.in_progress }}</td>
-        </tr>
-        <tr>
-            <td>Completed:</td>
-            <td>{{ course.commitment_statistics.counts.complete }}</td>
-        </tr>
-        <tr>
-            <td>Past Due:</td>
-            <td>{{ course.commitment_statistics.counts.expired }}</td>
-        </tr>
-        <tr>
-            <td>Discontinued:</td>
-            <td>{{ course.commitment_statistics.counts.discontinued }}</td>
-        </tr>
-        <tr>
-            <th>Total:</th>
-            <th>{{ course.commitment_statistics.total }}</th>
-        </tr>
-    </table>
+    {% include "commitments/common/course_commitment_statistics_pie_chart.html" with course_commitments_object=course.commitment_statistics %}
 </div>
