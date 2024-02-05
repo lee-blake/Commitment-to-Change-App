@@ -201,6 +201,18 @@ class TestCommitmentTemplateLogic:
             assert commitment_template.description == passed_description
 
 
+    class TestDerivedCommitments:
+        """Tests for CommitmentTemplateLogic.derived_commitments"""
+
+        @pytest.mark.parametrize("commitment_title", ["a", "b"])
+        def test_returns_derived_commitments_from_data(self, commitment_title):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    derived_commitments=[FakeCommitmentData(title=commitment_title)]
+                )
+            )
+            assert commitment_template.derived_commitments[0].title == commitment_title
+
 class TestCourseLogic:
     """Tests for CourseLogic"""
 
