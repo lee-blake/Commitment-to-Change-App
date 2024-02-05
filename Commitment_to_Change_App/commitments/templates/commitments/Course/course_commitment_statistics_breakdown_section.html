@@ -1,6 +1,9 @@
 <div class="text-center secondary-accent round-corners">
     <h3>Status Breakdown</h3>
 </div>
+<div class="text-center">
+    <h5>Total Commitments: {{ course.commitment_statistics.total }}</h5>
+</div> 
 <div class="table-responsive pt-3 px-4">
     {% include "commitments/common/course_commitment_statistics_pie_chart.html" with course_commitments_object=course.commitment_statistics %}
 </div>
