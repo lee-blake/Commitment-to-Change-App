@@ -367,6 +367,14 @@ class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        commitment_template = context["commitment_template"]
+        commitment_template.commitment_statistics = CommitmentStatusStatistics(
+            *commitment_template.derived_commitments
+        ).as_json()
+        return context
+
     def get_queryset(self):
         viewer = ProviderProfile.objects.get(user=self.request.user)
         return CommitmentTemplate.objects.filter(
