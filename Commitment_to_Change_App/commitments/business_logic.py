@@ -94,6 +94,11 @@ class CourseLogic:
         if student not in self._data.students:
             self._data.students.append(student)
 
+    def enrich_with_statistics(self):
+        self._data.commitment_statistics = CommitmentStatusStatistics(
+            *self._data.associated_commitments_list
+        ).as_json()
+
 
 class CommitmentStatusStatistics:
     def __init__(self, *commitments):

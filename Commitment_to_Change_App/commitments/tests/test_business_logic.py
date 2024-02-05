@@ -327,6 +327,28 @@ class TestCourseLogic:
             assert len(course._data.students) == 1
 
 
+    class TestEnrichWithStatistics:
+        """Tests for CourseLogic.enrich_with_statistics"""
+
+        def test_sets_stats_correctly_on_empty_list(self):
+            course = CourseLogic(
+                FakeCourseData(
+                    associated_commitments_list=[]
+                )
+            )
+            course.enrich_with_statistics()
+            assert course._data.commitment_statistics["total"] == 0
+
+        def test_sets_stats_correctly_on_single_associated_commitment(self):
+            course = CourseLogic(
+                FakeCourseData(
+                    associated_commitments_list=[FakeCommitmentData()]
+                )
+            )
+            course.enrich_with_statistics()
+            assert course._data.commitment_statistics["total"] == 1
+
+
 class TestCommitmentStatusStatistics:
     """Tests for CommitmentStatusStatistics"""
 
