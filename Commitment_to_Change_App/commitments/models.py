@@ -23,6 +23,10 @@ class ClinicianProfile(models.Model):
         # the username is stored on the User object.
         return self.user.username
 
+    @property
+    def email(self):
+        return self.user.email
+
 
 class ProviderProfile(models.Model):
     created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
@@ -41,6 +45,10 @@ class CommitmentTemplate(CommitmentTemplateLogic, models.Model):
     def __init__(self, *args, **kwargs):
         CommitmentTemplateLogic.__init__(self, data_object=self)
         models.Model.__init__(self, *args, **kwargs)
+
+    @property
+    def derived_commitments(self):
+        return list(Commitment.objects.filter(source_template=self).all())
 
 
 class Course(CourseLogic, models.Model):

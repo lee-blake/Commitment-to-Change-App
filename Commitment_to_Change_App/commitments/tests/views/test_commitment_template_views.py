@@ -1,12 +1,14 @@
 """Tests for views relating to CommitmentTemplate objects."""
 
+import datetime
 import re
 
 import pytest
 
 from django.urls import reverse
 
-from commitments.models import CommitmentTemplate
+from commitments.enums import CommitmentStatus
+from commitments.models import CommitmentTemplate, Commitment
 
 
 @pytest.mark.django_db
@@ -168,6 +170,66 @@ class TestViewCommitmentTemplateView:
         html = client.get(target_url).content.decode()
         assert saved_commitment_template.title in html
         assert saved_commitment_template.description in html
+
+    def test_shows_statistics_correctly_first_case(
+        self, client, saved_provider_profile, saved_commitment_template, saved_clinician_profile
+    ):
+        Commitment.objects.create(
+            owner=saved_clinician_profile,
+            title="In progress",
+            description="Testing for stats",
+            status=CommitmentStatus.IN_PROGRESS,
+            deadline=datetime.date.today(),
+            source_template=saved_commitment_template
+        )
+        Commitment.objects.create(
+            owner=saved_clinician_profile,
+            title="Complete",
+            description="Testing for stats",
+            status=CommitmentStatus.COMPLETE,
+            deadline=datetime.date.today(),
+            source_template=saved_commitment_template
+        )
+        target_url = reverse(
+            "view CommitmentTemplate", 
+            kwargs={ "commitment_template_id": saved_commitment_template.id }
+        )
+        client.force_login(saved_provider_profile.user)
+        html = client.get(target_url).content.decode()
+        assert "In-progress: 1" in html
+        assert "Complete: 1" in html
+        assert "Discontinued: 0" in html or "Discontinued:" not in html
+        assert "Past-due: 0" in html or "Past-due:" not in html
+
+    def test_shows_statistics_correctly_second_case(
+        self, client, saved_provider_profile, saved_commitment_template, saved_clinician_profile
+    ):
+        Commitment.objects.create(
+            owner=saved_clinician_profile,
+            title="In progress",
+            description="Testing for stats",
+            status=CommitmentStatus.DISCONTINUED,
+            deadline=datetime.date.today(),
+            source_template=saved_commitment_template
+        )
+        Commitment.objects.create(
+            owner=saved_clinician_profile,
+            title="Complete",
+            description="Testing for stats",
+            status=CommitmentStatus.EXPIRED,
+            deadline=datetime.date.today(),
+            source_template=saved_commitment_template
+        )
+        target_url = reverse(
+            "view CommitmentTemplate", 
+            kwargs={ "commitment_template_id": saved_commitment_template.id }
+        )
+        client.force_login(saved_provider_profile.user)
+        html = client.get(target_url).content.decode()
+        assert "Discontinued: 1" in html
+        assert "Past-due: 1" in html
+        assert "In-progress: 0" in html or "In-progress:" not in html
+        assert "Complete: 0" in html or "Complete:" not in html
 
 
 @pytest.mark.django_db

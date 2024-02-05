@@ -81,6 +81,11 @@ urlpatterns = [
           name="change Course suggested commitments"
      ),
      path(
+          "course/<int:course_id>/associated-commitments/download-csv",
+          views.DownloadCourseCommitmentsCSVView.as_view(),
+          name="download Course Commitments as csv"
+     ),
+     path(
           "course/<int:course_id>/join/<str:join_code>/",
           views.JoinCourseView.as_view(),
           name="join Course"
@@ -106,4 +111,10 @@ urlpatterns = [
           views.DeleteCommitmentTemplateView.as_view(),
           name="delete CommitmentTemplate"
      ),
+
+     path(
+          "statistics/courses/aggregate/",
+          views.AggregateCourseStatisticsCSVDownloadView.as_view(),
+          name="download aggregate Course statistics as csv"
+     )
 ]

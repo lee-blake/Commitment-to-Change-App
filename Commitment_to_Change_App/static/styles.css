@@ -7,16 +7,21 @@
  */
 
 :root {
-    --primary-accent: #AA1400;
+    --primary-accent: #780a08;
     --primary-select: #e61d02;
     --primary-border: #630000;
-    --secondary-accent: #ffa2a2;
+    --secondary-accent: #b83130;
     --background: #DDE6EC;
     --foreground: #FFFFFF;
     --primary-text: #000000;
     --light-text: #7B7B7B;
     --accent-text: #FFFFFF;
+    --in-progress: #8FC3D4;
+    --complete: #7CC487;
+    --discontinued: #717171;
+    --expired: #ffa2a2;
     --standard-round: 15px;
+    
 }
 
 /* 
@@ -26,6 +31,10 @@
  */
 
  body {background-color: var(--background);}
+ 
+ h3 {
+    font-weight: 400;
+ }
 
  ul.errorlist > li {
     color: red;
@@ -50,7 +59,7 @@ form {
 .primary-accent-only {background-color: var(--primary-accent)}
 .primary-select {background-color: var(--primary-select);}
 .primary-border {background-color: var(--primary-border);}
-.secondary-accent {background-color: var(--secondary-accent);}
+.secondary-accent {background-color: var(--secondary-accent); color: var(--accent-text);}
 .background {background-color: var(--background);}
 .foreground {background-color: var(--foreground);}
 .accent-text {color: var(--accent-text);}
@@ -64,6 +73,10 @@ form {
  .round-corners
  {
      border-radius: var(--standard-round);
+ }
+
+ .round-top-corners {
+    border-radius: var(--standard-round) var(--standard-round) 0 0;
  }
 
 /* 
@@ -126,6 +139,62 @@ form {
 ------------------------------------------------------------------- 
  */
 
+ .pie-chart-and-legend-container {
+    display:flex;
+    justify-content: center;
+ }
+ .chart-legend-container {
+    padding: 15px;
+    margin-top: auto;
+    margin-bottom: auto;
+
+  }
+  .chart-legend-item-container {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .chart-legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border-radius: 4px;
+  }
+  .legend-color-in-progress {
+    background-color: var(--in-progress);
+    fill: var(--in-progress);
+  }
+  .legend-color-complete {
+    background-color: var(--complete);
+    fill: var(--complete); 
+  }
+  .legend-color-discontinued {
+    background-color: var(--discontinued);
+    fill: var(--discontinued);
+  }
+  .legend-color-expired {
+    background-color: var(--expired);
+    fill: var(--expired);
+  }
+ .svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; 
+    vertical-align: top;
+    overflow: hidden;
+ }
+ .svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+ }
+ .pie-chart {
+    padding: 15px;
+    width: min(50%, 400px, 1000px);
+ }
  .button
  {
      background-color: var(--primary-accent);
@@ -179,6 +248,10 @@ form {
     font-size: 32px;
  }
 
+ .mailto-icon {
+    font-size: 20px;
+ }
+
  .modal-dialog {
     max-width: fit-content;
     margin-left: auto;
@@ -228,6 +301,12 @@ form {
 ------------------------------------------------------------------- 
  */
 
+ div.change-suggested-form input[type=submit]
+ {
+     background-color: var(--primary-accent);
+     border-radius: 15px;
+     color: var(--accent-text);
+ }
 
  div.default-form input[type=submit]
  {
@@ -289,13 +368,6 @@ form {
      box-sizing: border-box;
      display: inline-block;
      width: 100%;
- }
-
-.selectSuggestedForm input[type=submit]
- {
-     background-color: var(--primary-accent);
-     border-radius: 15px;
-     color: var(--accent-text);
  }
 
 

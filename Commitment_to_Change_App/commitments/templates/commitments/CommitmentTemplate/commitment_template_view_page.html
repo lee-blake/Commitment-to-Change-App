@@ -4,29 +4,32 @@
 
 {% block page_content %}
 <div class="container-fluid">
-  <div class="container-fluid p-2 my-3 commitment-title round-corners primary-accent">
-    <h1>{{ commitment_template.title }}</h1>
-  </div>
-  <div class="container-fluid p-3 round-corners foreground">
-    <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
-      <p>{{ commitment_template.description }}</p>
+  <div class="container-fluid px-0 round-corners foreground">
+    <div class="container-fluid p-2 my-3 commitment-title round-top-corners primary-accent">
+      <h1>{{ commitment_template.title }}</h1>
     </div>
-    <div class="container-fluid text-center">
-      {% block edit_button %}
-      <a href="{% url 'edit CommitmentTemplate' commitment_template_id=commitment_template.id %}">
-        <button class="standard-button primary-accent" type="submit">
-        Edit
-        </button>
-      </a>
-      {% endblock edit_button %}
+    <div class="container-fluid px-3">
+      <div class="my-1 p-1 round-corners secondary-accent text-center">
+        <p>{{ commitment_template.description }}</p>
+      </div>
+      {% include "commitments/CommitmentTemplate/commitment_template_view_page_statistics.html" %}
+      <div class="container-fluid text-center">
+        {% block edit_button %}
+        <a href="{% url 'edit CommitmentTemplate' commitment_template_id=commitment_template.id %}">
+          <button class="standard-button primary-accent" type="submit">
+          Edit
+          </button>
+        </a>
+        {% endblock edit_button %}
 
-      {% block delete_button %}
-      <a href="{% url 'delete CommitmentTemplate' commitment_template_id=commitment_template.id %}">
-        <button class="standard-button primary-accent" type="submit">
-        Delete
-        </button>
-      </a>
-      {% endblock delete_button %}
+        {% block delete_button %}
+        <a href="{% url 'delete CommitmentTemplate' commitment_template_id=commitment_template.id %}">
+          <button class="standard-button primary-accent" type="submit">
+          Delete
+          </button>
+        </a>
+        {% endblock delete_button %}
+      </div>
     </div>
   </div>
 </div>

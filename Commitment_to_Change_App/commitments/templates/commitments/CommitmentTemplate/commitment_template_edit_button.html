@@ -1,7 +1,0 @@
-<form 
-  action="{% url 'edit CommitmentTemplate' commitment_template_id=commitment_template.id %}" 
-  method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="Submit">
-</form>

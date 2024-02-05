@@ -10,6 +10,7 @@ class FakeClinicianData:
     first_name = "Fake first name"
     last_name = "Fake last name"
     insitution = "Fake institution"
+    email = "fake@ema.il"
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
@@ -59,6 +60,7 @@ class FakeCommitmentTemplateData:
     title = "Fake CommitmentTemplate Title"
     description = "Fake CommitmentTemplate Description"
     owner = FakeProviderData()
+    derived_commitments = []
 
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)

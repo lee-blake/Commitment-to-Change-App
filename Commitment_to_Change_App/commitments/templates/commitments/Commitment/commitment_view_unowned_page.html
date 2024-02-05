@@ -4,18 +4,21 @@
 
 {% block page_content %}
 <div class="container-fluid">
-  <div class="container-fluid p-2 my-3 commitment-title round-corners primary-accent">
-    <h1>{{ commitment.title }}</h1>
-  </div>
-  <div class="container-fluid p-3 round-corners foreground">
-    <div class="container-fluid p-1 my-1 round-corners secondary-accent text-center">
-      <p>Started: {{ commitment.created.date }}</p>
-      <p>Due: {{ commitment.deadline }}</p>
-      <p>Status: {{ commitment.status_text }}</p>
+  <div class="px-0 mb-3 foreground round-corners">
+    <div class="container-fluid p-2 my-3 commitment-title round-top-corners primary-accent">
+      <h1>{{ commitment.title }}</h1>
     </div>
-    <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
-      <p>{{ commitment.description }}</p>
+    <div class="container-fluid px-3">
+      <div class="my-1 p-1 round-corners background text-center">
+        <p>Started: {{ commitment.created.date }}</p>
+        <p>Due: {{ commitment.deadline }}</p>
+        <p>Status: {{ commitment.status_text }}</p>
+      </div>
+      <div class="my-1 p-1 round-corners background text-center">
+        <p>{{ commitment.description }}</p>
+      </div>
     </div>
+    
     <div class="container-fluid text-center">
       {% block edit_button %} {% endblock edit_button %}
       {% block delete_button %} {% endblock delete_button %}

@@ -1108,7 +1108,6 @@ class TestCreateFromSuggestedCommitmentView:
             )
             client.force_login(saved_clinician_user)
             html = client.get(target_url).content.decode()
-            print(html)
             course_select_regex = re.compile(
                 r"\<select[^\>]*name=\"associated_course\"[^\>]*\>"
             )

@@ -8,11 +8,14 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 
+from commitments.business_logic import write_course_commitments_as_csv, \
+    write_aggregate_course_statistics_as_csv
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
     DiscontinueCommitmentForm, ReopenCommitmentForm, JoinCourseForm, \
     CreateCommitmentFromSuggestedCommitmentForm
+from commitments.generic_views import GeneratedTemporaryTextFileDownloadView
 from commitments.mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from commitments.models import Commitment, ClinicianProfile, ProviderProfile, Course, \
     CommitmentTemplate
@@ -60,6 +63,17 @@ class ProviderDashboardView(ProviderLoginRequiredMixin, TemplateView):
         context["courses"] = Course.objects.filter(owner=viewer)
         context["commitment_templates"] = CommitmentTemplate.objects.filter(owner=viewer)
         return context
+
+
+class AggregateCourseStatisticsCSVDownloadView(
+    ProviderLoginRequiredMixin, GeneratedTemporaryTextFileDownloadView
+):
+    filename = "course_statistics.csv"
+
+    def write_text_to_file(self, temporary_file):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        courses = Course.objects.filter(owner=viewer).all()
+        write_aggregate_course_statistics_as_csv(courses, temporary_file)
 
 
 class CreateCommitmentView(ClinicianLoginRequiredMixin, CreateView):
@@ -226,6 +240,13 @@ class ViewCourseView(LoginRequiredMixin, DetailView):
     model = Course
     pk_url_kwarg = "course_id"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Enrich the course object with its statistics
+        course = context["course"]
+        course.enrich_with_statistics()
+        return context
+
     def get_template_names(self):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
             return ["commitments/Course/course_view_owned_page.html"]
@@ -326,11 +347,29 @@ class CreateCommitmentTemplateView(ProviderLoginRequiredMixin, CreateView):
         )
 
 
+class DownloadCourseCommitmentsCSVView(
+    ProviderLoginRequiredMixin, GeneratedTemporaryTextFileDownloadView
+):
+    filename = "course_commitments.csv"
+
+    def write_text_to_file(self, temporary_file):
+        course_id = self.kwargs["course_id"]
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        course = get_object_or_404(Course, id=course_id, owner=viewer)
+        write_course_commitments_as_csv(course, temporary_file)
+
+
 class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
     model = CommitmentTemplate
     template_name = "commitments/CommitmentTemplate/commitment_template_view_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        commitment_template = context["commitment_template"]
+        commitment_template.enrich_with_statistics()
+        return context
 
     def get_queryset(self):
         viewer = ProviderProfile.objects.get(user=self.request.user)
