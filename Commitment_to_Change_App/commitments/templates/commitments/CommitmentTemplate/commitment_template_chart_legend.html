@@ -1,40 +1,40 @@
-<div class="chart-legend-container">
-    {% if commitment_template.statistics.derived_commitments.statuses.counts.in_progress %}
+<div class="col-xs-6 chart-legend-container">
+    {% if commitment_data_object.counts.in_progress %}
         <div class="chart-legend-item-container">
             <div class="chart-legend-color legend-color-in-progress"></div>
             <span>
-                In-progress: {{ commitment_template.statistics.derived_commitments.statuses.counts.in_progress }} 
-                ({{ commitment_template.statistics.derived_commitments.statuses.percentages.in_progress | floatformat:1 }}%)
+                In-progress: {{ commitment_data_object.counts.in_progress }} 
+                ({{ commitment_data_object.percentages.in_progress | floatformat:1 }}%)
             </span>
         </div>
     {% endif %}
 
-    {% if commitment_template.statistics.derived_commitments.statuses.counts.complete %}
+    {% if commitment_data_object.counts.complete %}
         <div class="chart-legend-item-container">
             <div class="chart-legend-color legend-color-complete"></div>
             <span>
-                Complete: {{ commitment_template.statistics.derived_commitments.statuses.counts.complete }} 
-                ({{ commitment_template.statistics.derived_commitments.statuses.percentages.complete | floatformat:1 }}%)
+                Complete: {{ commitment_data_object.counts.complete }} 
+                ({{ commitment_data_object.percentages.complete | floatformat:1 }}%)
             </span>
         </div>
     {% endif %}
 
-    {% if commitment_template.statistics.derived_commitments.statuses.counts.discontinued %}
+    {% if commitment_data_object.counts.discontinued %}
         <div class="chart-legend-item-container">
             <div class="chart-legend-color legend-color-discontinued"></div>
             <span>
-                Discontinued: {{ commitment_template.statistics.derived_commitments.statuses.counts.discontinued }} 
-                ({{ commitment_template.statistics.derived_commitments.statuses.percentages.discontinued | floatformat:1 }}%)
+                Discontinued: {{ commitment_data_object.counts.discontinued }} 
+                ({{ commitment_data_object.percentages.discontinued | floatformat:1 }}%)
             </span>
         </div>
     {% endif %}
 
-    {% if commitment_template.statistics.derived_commitments.statuses.counts.expired %}
+    {% if commitment_data_object.counts.expired %}
         <div class="chart-legend-item-container">
             <div class="chart-legend-color legend-color-expired"></div>
             <span>
-                Past-due: {{ commitment_template.statistics.derived_commitments.statuses.counts.expired }} 
-                ({{ commitment_template.statistics.derived_commitments.statuses.percentages.expired | floatformat:1 }}%)
+                Past-due: {{ commitment_data_object.counts.expired }} 
+                ({{ commitment_data_object.percentages.expired | floatformat:1 }}%)
             </span>
         </div>
     {% endif %}

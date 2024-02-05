@@ -131,11 +131,18 @@ form {
 ------------------------------------------------------------------- 
  */
 
+ .pie-chart-and-legend-container {
+    display:flex;
+    justify-content: center;
+ }
  .chart-legend-container {
-    max-width: 300px;
-    margin: auto;
+    padding: 15px;
+    margin-top: auto;
+    margin-bottom: auto;
+
   }
   .chart-legend-item-container {
+    font-size: 18px;
     display: flex;
     align-items: center;
     margin-bottom: 8px;
@@ -165,7 +172,7 @@ form {
  .svg-container {
     display: inline-block;
     position: relative;
-    width: 85%;
+    width: 100%;
     padding-bottom: 100%; 
     vertical-align: top;
     overflow: hidden;
@@ -177,11 +184,9 @@ form {
     left: 0;
  }
  .pie-chart {
-    max-width: 400px;
-    height: auto;
-    margin: 0 auto;
+    padding: 15px;
+    width: min(50%, 400px, 1000px);
  }
-
  .button
  {
      background-color: var(--primary-accent);
