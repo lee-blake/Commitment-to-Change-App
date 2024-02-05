@@ -68,7 +68,6 @@ class CommitmentTemplateLogic:
 class CourseLogic:
     def __init__(self, data_object):
         self._data = data_object
-        self._statistics = None
 
     def __str__(self):
         return self._data.title.__str__()
