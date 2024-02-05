@@ -9,7 +9,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 
 from commitments.business_logic import write_course_commitments_as_csv, \
-    write_aggregate_course_statistics_as_csv
+    write_aggregate_course_statistics_as_csv, CommitmentStatusStatistics
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CommitmentTemplateForm, \
     CourseSelectSuggestedCommitmentsForm, GenericDeletePostKeySetForm, CompleteCommitmentForm, \
@@ -240,6 +240,15 @@ class ViewCourseView(LoginRequiredMixin, DetailView):
     model = Course
     pk_url_kwarg = "course_id"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Enrich the course object with its statistics
+        course = context["course"]
+        course.commitment_statistics = CommitmentStatusStatistics(
+            *course.associated_commitments_list
+        ).as_json()
+        return context
+
     def get_template_names(self):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
             return ["commitments/Course/course_view_owned_page.html"]
@@ -357,6 +366,14 @@ class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
     template_name = "commitments/CommitmentTemplate/commitment_template_view_page.html"
     pk_url_kwarg = "commitment_template_id"
     context_object_name = "commitment_template"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        commitment_template = context["commitment_template"]
+        commitment_template.commitment_statistics = CommitmentStatusStatistics(
+            *commitment_template.derived_commitments
+        ).as_json()
+        return context
 
     def get_queryset(self):
         viewer = ProviderProfile.objects.get(user=self.request.user)

@@ -177,53 +177,6 @@ class TestCommitmentTemplate:
             assert template.derived_commitments == [commitment]
 
 
-    @pytest.mark.django_db
-    class TestStatistics:
-        """Integration tests for CommitmentTemplate.statistics"""
-
-        def test_no_derived_commitments_returns_correct_stats(self, minimal_provider):
-            template = CommitmentTemplate.objects.create(
-                title="Test CommitmentTemplate",
-                description="No derived commitments",
-                owner=minimal_provider
-            )
-            stats = template.statistics
-            # Assert only a subset and let the business logic tests cover the test
-            assert stats["derived_commitments"]["statuses"]["counts"]["total"] == 0
-            assert stats["derived_commitments"]["statuses"]["counts"]["in_progress"] == 0
-            assert stats["derived_commitments"]["statuses"]["percentages"]["discontinued"] == "N/A"
-
-        def test_two_derived_commitments_returns_correct_stats(
-            self, minimal_provider, minimal_clinician
-        ):
-            template = CommitmentTemplate.objects.create(
-                title="Test CommitmentTemplate",
-                description="Two derived commitments",
-                owner=minimal_provider
-            )
-            Commitment.objects.create(
-                title="Test Commitment1",
-                description="Derived from a CommitmentTemplate",
-                deadline=date.today(),
-                owner=minimal_clinician,
-                source_template=template,
-                status=CommitmentStatus.COMPLETE
-            )
-            Commitment.objects.create(
-                title="Test Commitment2",
-                description="Derived from a CommitmentTemplate",
-                deadline=date.today(),
-                owner=minimal_clinician,
-                source_template=template,
-                status=CommitmentStatus.EXPIRED
-            )
-            stats = template.statistics
-            # Assert only a subset and let the business logic tests cover the test
-            assert stats["derived_commitments"]["statuses"]["counts"]["total"] == 2
-            assert stats["derived_commitments"]["statuses"]["counts"]["expired"] == 1
-            assert stats["derived_commitments"]["statuses"]["percentages"]["complete"] == 50
-
-
 class TestCourse:
     """Tests for Course"""
 
@@ -250,17 +203,6 @@ class TestCourse:
             minimal_commitment.save()
             assert minimal_commitment in minimal_course.associated_commitments_list
             assert iter(minimal_course.associated_commitments_list)
-
-    @pytest.mark.django_db
-    class TestStatistics:
-        """Tests for checking that CourseLogic.statistics integrates with Course"""
-
-        def test_associated_commitment_generates_statistics_total_1(
-            self, minimal_course, minimal_commitment
-        ):
-            minimal_commitment.associated_course = minimal_course
-            minimal_commitment.save()
-            assert minimal_course.statistics["associated_commitments"]["total"] == 1
 
 
     @pytest.mark.django_db

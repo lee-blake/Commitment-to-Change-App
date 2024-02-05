@@ -6,7 +6,7 @@ but could break in a way that damages usability should be tested here."""
 
 from django.template import loader
 
-from commitments.business_logic import CommitmentTemplateLogic
+from commitments.business_logic import CommitmentTemplateLogic, CommitmentStatusStatistics
 from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData
 
 
@@ -39,6 +39,7 @@ class TestCommitmentViewPageStatistics:
         commitment_template = CommitmentTemplateLogic(
             FakeCommitmentTemplateData(derived_commitments=[])
         )
+        commitment_template.commitment_statistics = CommitmentStatusStatistics().as_json()
         template = loader.get_template(
             "commitments/CommitmentTemplate/commitment_template_view_page_statistics.html"
         )

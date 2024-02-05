@@ -5,7 +5,8 @@ import io
 import pytest
 
 from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic, \
-    ClinicianLogic, write_course_commitments_as_csv, write_aggregate_course_statistics_as_csv
+    ClinicianLogic, write_course_commitments_as_csv, write_aggregate_course_statistics_as_csv, \
+    CommitmentStatusStatistics
 from commitments.enums import CommitmentStatus
 from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
     FakeCourseData, FakeClinicianData
@@ -200,62 +201,6 @@ class TestCommitmentTemplateLogic:
             assert commitment_template.description == passed_description
 
 
-    class TestStatistics:
-        """Tests for CommitmentTemplateLogic.statistics"""
-
-        def test_counts_for_no_derived_commitments_are_correct(self):
-            commitment_template = CommitmentTemplateLogic(
-                FakeCommitmentTemplateData(derived_commitments=[])
-            )
-            stats = commitment_template.statistics
-            assert stats["derived_commitments"]["statuses"]["counts"]["total"] == 0
-            assert stats["derived_commitments"]["statuses"]["counts"]["in_progress"] == 0
-            assert stats["derived_commitments"]["statuses"]["counts"]["complete"] == 0
-            assert stats["derived_commitments"]["statuses"]["counts"]["discontinued"] == 0
-            assert stats["derived_commitments"]["statuses"]["counts"]["expired"] == 0
-
-        def test_counts_for_one_of_each_status_derived_commitments_are_correct(self):
-            commitment_template = CommitmentTemplateLogic(
-                FakeCommitmentTemplateData(derived_commitments=[
-                    FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
-                    FakeCommitmentData(status=CommitmentStatus.COMPLETE),
-                    FakeCommitmentData(status=CommitmentStatus.EXPIRED),
-                    FakeCommitmentData(status=CommitmentStatus.DISCONTINUED),
-                ])
-            )
-            stats = commitment_template.statistics
-            assert stats["derived_commitments"]["statuses"]["counts"]["total"] == 4
-            assert stats["derived_commitments"]["statuses"]["counts"]["in_progress"] == 1
-            assert stats["derived_commitments"]["statuses"]["counts"]["complete"] == 1
-            assert stats["derived_commitments"]["statuses"]["counts"]["discontinued"] == 1
-            assert stats["derived_commitments"]["statuses"]["counts"]["expired"] == 1
-
-        def test_percentages_for_no_derived_commitments_are_correct(self):
-            commitment_template = CommitmentTemplateLogic(
-                FakeCommitmentTemplateData(derived_commitments=[])
-            )
-            stats = commitment_template.statistics
-            assert stats["derived_commitments"]["statuses"]["percentages"]["in_progress"] == "N/A"
-            assert stats["derived_commitments"]["statuses"]["percentages"]["complete"] == "N/A"
-            assert stats["derived_commitments"]["statuses"]["percentages"]["discontinued"] == "N/A"
-            assert stats["derived_commitments"]["statuses"]["percentages"]["expired"] == "N/A"
-
-        def test_percentages_for_one_of_each_status_derived_commitments_are_correct(self):
-            commitment_template = CommitmentTemplateLogic(
-                FakeCommitmentTemplateData(derived_commitments=[
-                    FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
-                    FakeCommitmentData(status=CommitmentStatus.COMPLETE),
-                    FakeCommitmentData(status=CommitmentStatus.EXPIRED),
-                    FakeCommitmentData(status=CommitmentStatus.DISCONTINUED),
-                ])
-            )
-            stats = commitment_template.statistics
-            assert stats["derived_commitments"]["statuses"]["percentages"]["in_progress"] == 25
-            assert stats["derived_commitments"]["statuses"]["percentages"]["complete"] == 25
-            assert stats["derived_commitments"]["statuses"]["percentages"]["discontinued"] == 25
-            assert stats["derived_commitments"]["statuses"]["percentages"]["expired"] == 25
-
-
 class TestCourseLogic:
     """Tests for CourseLogic"""
 
@@ -270,51 +215,6 @@ class TestCourseLogic:
                 )
             )
             assert str(course) == title
-
-
-    class TestStatistics:
-        """Tests for CourseLogic.statistics"""
-
-        def test_total_correct_0(self):
-            course = CourseLogic(
-                FakeCourseData(associated_commitments_list=[])
-            )
-            assert course.statistics["associated_commitments"]["total"] == 0
-
-        def test_total_correct_1(self):
-            course = CourseLogic(
-                FakeCourseData(associated_commitments_list=[
-                    FakeCommitmentData()
-                ])
-            )
-            assert course.statistics["associated_commitments"]["total"] == 1
-
-        def test_associated_commitments_status_counts_correct_all_0(self):
-            course = CourseLogic(
-                FakeCourseData(associated_commitments_list=[])
-            )
-            status_stats = course.statistics["associated_commitments"]["statuses"]
-            assert status_stats["in_progress"] == 0
-            assert status_stats["complete"] == 0
-            assert status_stats["past_due"] == 0
-            assert status_stats["discontinued"] == 0
-
-        def test_associated_commitments_status_counts_correct_all_1(self):
-            course = CourseLogic(
-                FakeCourseData(
-                    associated_commitments_list=[
-                        FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
-                        FakeCommitmentData(status=CommitmentStatus.COMPLETE),
-                        FakeCommitmentData(status=CommitmentStatus.EXPIRED),
-                        FakeCommitmentData(status=CommitmentStatus.DISCONTINUED)
-                    ]
-                )
-            )
-            status_stats = course.statistics["associated_commitments"]["statuses"]
-            assert status_stats["in_progress"] == 1
-            assert status_stats["complete"] == 1
-            assert status_stats["past_due"] == 1
-            assert status_stats["discontinued"] == 1
 
 
     class TestGenerateJoinCodeIfNoneExists:
@@ -390,6 +290,146 @@ class TestCourseLogic:
             )
             assert student in course._data.students
             assert len(course._data.students) == 1
+
+
+class TestCommitmentStatusStatistics:
+    """Tests for CommitmentStatusStatistics"""
+
+    class TestTotal:
+        """Tests for CommitmentStatusStatistics.total"""
+
+        def test_returns_zero_when_empty(self):
+            stats = CommitmentStatusStatistics()
+            assert stats.total() == 0
+
+        def test_returns_one_with_single_commitment(self):
+            stats = CommitmentStatusStatistics(FakeCommitmentData())
+            assert stats.total() == 1
+
+
+    class TestCountWithStatus:
+        """Tests for CommitmentStatusStatistics.count_with_status"""
+
+        def test_returns_zero_when_empty(self):
+            stats = CommitmentStatusStatistics()
+            for status in CommitmentStatus.values:
+                assert stats.count_with_status(status) == 0
+
+        @pytest.mark.parametrize("status", CommitmentStatus.values)
+        def test_returns_one_with_commitment_of_that_status(self, status):
+            stats = CommitmentStatusStatistics(FakeCommitmentData(status=status))
+            assert stats.count_with_status(status) == 1
+
+        def test_returns_zero_if_none_of_that_type(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            for status in CommitmentStatus.values:
+                if status == CommitmentStatus.IN_PROGRESS:
+                    continue
+                assert stats.count_with_status(status) == 0
+
+
+    class TestFractionWithStatus:
+        """Tests for CommitmentStatusStatistics.fraction_with_status"""
+
+        def test_raises_error_when_empty(self):
+            stats = CommitmentStatusStatistics()
+            with pytest.raises(ArithmeticError):
+                stats.fraction_with_status(CommitmentStatus.IN_PROGRESS)
+
+        def test_returns_one_for_only_status_present(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            assert stats.fraction_with_status(CommitmentStatus.IN_PROGRESS) == 1
+
+        def test_returns_zero_for_not_present(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            assert stats.fraction_with_status(CommitmentStatus.COMPLETE) == 0
+
+        def test_returns_half_when_one_of_two(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
+                FakeCommitmentData(status=CommitmentStatus.COMPLETE)
+            )
+            assert stats.fraction_with_status(CommitmentStatus.IN_PROGRESS) == pytest.approx(0.5)
+            assert stats.fraction_with_status(CommitmentStatus.COMPLETE) == pytest.approx(0.5)
+
+
+    class TestPercentageWithStatus:
+        """Tests for CommitmentStatusStatistics.percentage_with_status"""
+
+        def test_raises_error_when_empty(self):
+            stats = CommitmentStatusStatistics()
+            with pytest.raises(ArithmeticError):
+                stats.percentage_with_status(CommitmentStatus.IN_PROGRESS)
+
+        def test_returns_one_hundred_for_only_status_present(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            assert stats.percentage_with_status(CommitmentStatus.IN_PROGRESS) == 100
+
+        def test_returns_zero_for_not_present(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+            )
+            assert stats.percentage_with_status(CommitmentStatus.COMPLETE) == 0
+
+        def test_returns_fifty_when_one_of_two(self):
+            stats = CommitmentStatusStatistics(
+                FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
+                FakeCommitmentData(status=CommitmentStatus.COMPLETE)
+            )
+            assert stats.percentage_with_status(CommitmentStatus.IN_PROGRESS) == pytest.approx(50)
+            assert stats.percentage_with_status(CommitmentStatus.COMPLETE) == pytest.approx(50)
+
+
+    class TestDataAsJSON:
+        """Tests for CommitmentStatusStatistics.as_json"""
+
+        def test_empty_returns_correctly(self):
+            stats = CommitmentStatusStatistics()
+            expected_json = {
+                "total": 0,
+                "counts": {
+                    "in_progress": 0,
+                    "complete": 0,
+                    "discontinued": 0,
+                    "expired": 0
+                },
+                "percentages": {
+                    "in_progress": "N/A",
+                    "complete": "N/A",
+                    "discontinued": "N/A",
+                    "expired": "N/A"
+                }
+            }
+            assert stats.as_json() == expected_json
+
+        def test_one_of_each_returns_correctly(self):
+            stats = CommitmentStatusStatistics(
+                *[FakeCommitmentData(status=status) for status in CommitmentStatus.values]
+            )
+            expected_json = {
+                "total": 4,
+                "counts": {
+                    "in_progress": 1,
+                    "complete": 1,
+                    "discontinued": 1,
+                    "expired": 1
+                },
+                "percentages": {
+                    "in_progress": 25,
+                    "complete": 25,
+                    "discontinued": 25,
+                    "expired": 25
+                }
+            }
+            assert stats.as_json() == expected_json
 
 
 class TestWriteCourseCommitmentsAsCSV:
