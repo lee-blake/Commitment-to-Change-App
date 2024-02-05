@@ -6,8 +6,10 @@ but could break in a way that damages usability should be tested here."""
 
 from django.template import loader
 
-from commitments.business_logic import CommitmentTemplateLogic, CommitmentStatusStatistics
-from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData
+from commitments.business_logic import CommitmentTemplateLogic, CommitmentStatusStatistics, \
+    CourseLogic
+from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
+    FakeCourseData
 
 
 class TestCommitmentEditPrefaceModals:
@@ -101,3 +103,17 @@ class TestCommitmentTemplateChartLegend:
         assert "Complete" not in rendered_content
         assert "Discontinued: 1" in rendered_content
         assert "Past-due: 1" in rendered_content
+
+class TestCourseStatisticsBreakdownSection:
+    """Tests for 'commitments/Course/course_commitment_statistics_breakdown_section.html'"""
+
+    def test_legend_does_not_show_for_no_associated_commitments(self):
+        course_logic = CourseLogic(
+            FakeCourseData(associated_commitments=[])
+        )
+        course_logic.enrich_with_statistics()
+        template = loader.get_template(
+            "commitments/Course/course_commitment_statistics_breakdown_section.html"
+        )
+        rendered_content = template.render({"course": course_logic._data})
+        assert "No commitments have been made in this course." in rendered_content
