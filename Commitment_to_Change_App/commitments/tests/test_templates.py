@@ -38,14 +38,14 @@ class TestCommitmentViewPageStatistics:
     """Tests for 'commitments/CommitmentTemplate/commitment_template_view_page_statistics.html'"""
 
     def test_legend_does_not_show_for_no_derived_commitments(self):
-        commitment_template = CommitmentTemplateLogic(
+        commitment_template_logic = CommitmentTemplateLogic(
             FakeCommitmentTemplateData(derived_commitments=[])
         )
-        commitment_template.commitment_statistics = CommitmentStatusStatistics().as_json()
+        commitment_template_logic.enrich_with_statistics()
         template = loader.get_template(
             "commitments/CommitmentTemplate/commitment_template_view_page_statistics.html"
         )
-        rendered_content = template.render({"commitment_template": commitment_template})
+        rendered_content = template.render({"commitment_template": commitment_template_logic._data})
         assert "No commitments have been made from this template." in rendered_content
 
 
