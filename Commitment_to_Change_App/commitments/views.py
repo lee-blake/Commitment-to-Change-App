@@ -370,9 +370,7 @@ class ViewCommitmentTemplateView(ProviderLoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         commitment_template = context["commitment_template"]
-        commitment_template.commitment_statistics = CommitmentStatusStatistics(
-            *commitment_template.derived_commitments
-        ).as_json()
+        commitment_template.enrich_with_statistics()
         return context
 
     def get_queryset(self):

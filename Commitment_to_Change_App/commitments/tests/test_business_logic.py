@@ -213,6 +213,29 @@ class TestCommitmentTemplateLogic:
             )
             assert commitment_template.derived_commitments[0].title == commitment_title
 
+
+    class TestEnrichWithStatistics:
+        """Tests for CommitmentTemplateLogic.enrich_with_statistics"""
+
+        def test_sets_stats_correctly_on_empty_list(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    derived_commitments=[]
+                )
+            )
+            commitment_template.enrich_with_statistics()
+            assert commitment_template._data.commitment_statistics["total"] == 0
+
+        def test_sets_stats_correctly_on_single_derived_commitment(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    derived_commitments=[FakeCommitmentData()]
+                )
+            )
+            commitment_template.enrich_with_statistics()
+            assert commitment_template._data.commitment_statistics["total"] == 1
+
+
 class TestCourseLogic:
     """Tests for CourseLogic"""
 
