@@ -3,8 +3,8 @@
 
 {% block page_content %}
 <div class="container-fluid p-3 ">
-    <div class="container-xl px-2 round-corners foreground">
-        <div class="py-1 primary-accent-only round-corners text-center">
+    <div class="container-xl px-0 round-corners foreground">
+        <div class="py-1 primary-accent-only round-top-corners text-center">
             <span class="h1 accent-text">{{ course.title }}</span>
             <span>
                 {% block course_help_modal %}
@@ -13,26 +13,28 @@
             </span>
 
         </div>
-        <div class="py-1 secondary-accent round-corners text-center">
+        <div class="py-1 secondary-accent text-center">
             <h2>{{ course.owner.institution }}</h2>
         </div>
 
-        <div class="row py-3 g-5">
+        <div class="row py-3 px-2 g-5">
             <div class="col-md-6 p-3">
                 <div class="background round-corners pb-3">
-                    <div class="text-center primary-accent round-corners">
+                    <div class="text-center primary-accent round-top-corners">
                         <h2>Description</h2>
                     </div>
                     <div class="text-center foreground p-1 round-corners mt-3 mx-3">
                         <p>{{ course.description }}</p>
                     </div>
-                    <div class="text-center primary-accent round-corners mt-3">
+                </div>
+                <div class="background round-corners pb-3">
+                    <div class="text-center primary-accent round-top-corners mt-3">
                         <h2>Students</h2>
                     </div>
 
                     {% block join_link %} {% endblock join_link %}
                     <div class="foreground round-corners mt-3 mx-3 pb-2">
-                        <div class="text-center secondary-accent round-corners">
+                        <div class="text-center secondary-accent round-top-corners">
                             <h3>List of Students Enrolled:</h3>
                         </div>
 
@@ -52,11 +54,11 @@
             </div>
             <div class="col-md-6 p-3">
                 <div class="background round-corners pb-3">
-                    <div class="text-center primary-accent round-corners">
+                    <div class="text-center primary-accent round-top-corners">
                         <h2>Commitments in This Course</h2>
                     </div>
                     <div class="foreground round-corners pb-3 mt-3 mx-3">
-                        <div class="text-center secondary-accent round-corners">
+                        <div class="text-center secondary-accent round-top-corners">
                             <h3>Suggested Commitments</h3>
                         </div>
                         <div class="px-4">
@@ -77,7 +79,7 @@
                         {% include "commitments/Course/course_commitment_statistics_breakdown_section.html" %}
                     </div>
                     <div class="foreground round-corners pb-3 mt-3 mx-3">
-                        <div class="text-center secondary-accent round-corners">
+                        <div class="text-center secondary-accent round-top-corners">
                             <h3>Commitments Made in This Course:</h3>
                         </div>
                         {% block course_commitment_csv_download_link %}
