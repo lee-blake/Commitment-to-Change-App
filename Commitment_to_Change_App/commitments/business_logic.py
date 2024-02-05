@@ -64,6 +64,11 @@ class CommitmentTemplateLogic:
     def derived_commitments(self):
         return self._data.derived_commitments
 
+    def enrich_with_statistics(self):
+        self._data.commitment_statistics = CommitmentStatusStatistics(
+            *self.derived_commitments
+        ).as_json()
+
 
 class CourseLogic:
     def __init__(self, data_object):
@@ -88,6 +93,11 @@ class CourseLogic:
     def _add_student(self, student):
         if student not in self._data.students:
             self._data.students.append(student)
+
+    def enrich_with_statistics(self):
+        self._data.commitment_statistics = CommitmentStatusStatistics(
+            *self._data.associated_commitments_list
+        ).as_json()
 
 
 class CommitmentStatusStatistics:
