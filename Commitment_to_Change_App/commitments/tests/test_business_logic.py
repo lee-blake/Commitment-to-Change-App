@@ -199,7 +199,7 @@ class TestCommitmentTemplateLogic:
                 FakeCommitmentTemplateData(description=passed_description)
             )
             assert commitment_template.description == passed_description
- 
+
 
 class TestCourseLogic:
     """Tests for CourseLogic"""

@@ -174,7 +174,7 @@ class TestCommitmentTemplate:
                 owner=minimal_clinician,
                 source_template=template
             )
-            assert template.derived_commitments == [commitment]    
+            assert template.derived_commitments == [commitment]
 
 
 class TestCourse:
