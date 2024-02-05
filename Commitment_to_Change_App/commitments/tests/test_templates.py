@@ -6,8 +6,7 @@ but could break in a way that damages usability should be tested here."""
 
 from django.template import loader
 
-from commitments.business_logic import CommitmentTemplateLogic, CommitmentStatusStatistics, \
-    CourseLogic
+from commitments.business_logic import CommitmentTemplateLogic, CourseLogic
 from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
     FakeCourseData
 
@@ -38,14 +37,12 @@ class TestCommitmentViewPageStatistics:
     """Tests for 'commitments/CommitmentTemplate/commitment_template_view_page_statistics.html'"""
 
     def test_legend_does_not_show_for_no_derived_commitments(self):
-        commitment_template_logic = CommitmentTemplateLogic(
-            FakeCommitmentTemplateData(derived_commitments=[])
-        )
-        commitment_template_logic.enrich_with_statistics()
+        commitment_template = FakeCommitmentTemplateData(derived_commitments=[])
+        CommitmentTemplateLogic(commitment_template).enrich_with_statistics()
         template = loader.get_template(
             "commitments/CommitmentTemplate/commitment_template_view_page_statistics.html"
         )
-        rendered_content = template.render({"commitment_template": commitment_template_logic._data})
+        rendered_content = template.render({"commitment_template": commitment_template})
         assert "No commitments have been made from this template." in rendered_content
 
 
@@ -108,12 +105,10 @@ class TestCourseStatisticsBreakdownSection:
     """Tests for 'commitments/Course/course_commitment_statistics_breakdown_section.html'"""
 
     def test_legend_does_not_show_for_no_associated_commitments(self):
-        course_logic = CourseLogic(
-            FakeCourseData(associated_commitments=[])
-        )
-        course_logic.enrich_with_statistics()
+        course=  FakeCourseData(associated_commitments=[])
+        CourseLogic(course).enrich_with_statistics()
         template = loader.get_template(
             "commitments/Course/course_commitment_statistics_breakdown_section.html"
         )
-        rendered_content = template.render({"course": course_logic._data})
+        rendered_content = template.render({"course": course})
         assert "No commitments have been made in this course." in rendered_content
