@@ -472,12 +472,11 @@ class TestViewCourseView:
             html = client.get(
                 reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
-            # This can change if we do something other than a table.
-            assert re.compile(r"<td>In progress:</td>\s*<td>1</td>").search(html)
-            assert re.compile(r"<td>Completed:</td>\s*<td>1</td>").search(html)
-            assert re.compile(r"<td>Past Due:</td>\s*<td>0</td>").search(html)
-            assert re.compile(r"<td>Discontinued:</td>\s*<td>1</td>").search(html)
-            assert re.compile(r"<th>Total:</th>\s*<th>3</th>").search(html)
+            assert "In-progress: 1" in html
+            assert "Complete: 1" in html
+            assert "Past-due: 0" in html or "Past-due:" not in html
+            assert "Discontinued: 1" in html
+            assert "Total Commitments: 3" in html
 
         def test_general_commitment_statistics_show_in_page_for_provider_2(
             self, client, saved_provider_profile,
@@ -495,11 +494,11 @@ class TestViewCourseView:
                 reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             # This can change if we do something other than a table.
-            assert re.compile(r"<td>In progress:</td>\s*<td>0</td>").search(html)
-            assert re.compile(r"<td>Completed:</td>\s*<td>0</td>").search(html)
-            assert re.compile(r"<td>Past Due:</td>\s*<td>2</td>").search(html)
-            assert re.compile(r"<td>Discontinued:</td>\s*<td>0</td>").search(html)
-            assert re.compile(r"<th>Total:</th>\s*<th>2</th>").search(html)
+            assert "In-progress: 0" in html or "In-progress:" not in html
+            assert "Complete: 0" in html or "Complete:" not in html
+            assert "Past-due: 2" in html
+            assert "Discontinued: 0" in html or "Discontinued:" not in html
+            assert "Total Commitments: 2" in html
 
         def test_course_commitments_csv_download_shows_in_page_for_provider(
             self, client, saved_provider_profile, enrolled_course
@@ -617,11 +616,11 @@ class TestViewCourseView:
                 reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
             # This can change if we do something other than a table.
-            assert re.compile(r"<td>In progress:</td>\s*<td>1</td>").search(html)
-            assert re.compile(r"<td>Completed:</td>\s*<td>1</td>").search(html)
-            assert re.compile(r"<td>Past Due:</td>\s*<td>0</td>").search(html)
-            assert re.compile(r"<td>Discontinued:</td>\s*<td>1</td>").search(html)
-            assert re.compile(r"<th>Total:</th>\s*<th>3</th>").search(html)
+            assert "In-progress: 1" in html
+            assert "Complete: 1" in html
+            assert "Past-due: 0" in html or "Past-due:" not in html
+            assert "Discontinued: 1" in html
+            assert "Total Commitments: 3" in html
 
         def test_course_commitments_csv_download_does_not_show_in_page_for_student(
             self, client, saved_clinician_profile, enrolled_course

@@ -6,8 +6,9 @@ but could break in a way that damages usability should be tested here."""
 
 from django.template import loader
 
-from commitments.business_logic import CommitmentTemplateLogic, CommitmentStatusStatistics
-from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData
+from commitments.business_logic import CommitmentTemplateLogic, CourseLogic
+from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
+    FakeCourseData
 
 
 class TestCommitmentEditPrefaceModals:
@@ -36,10 +37,8 @@ class TestCommitmentViewPageStatistics:
     """Tests for 'commitments/CommitmentTemplate/commitment_template_view_page_statistics.html'"""
 
     def test_legend_does_not_show_for_no_derived_commitments(self):
-        commitment_template = CommitmentTemplateLogic(
-            FakeCommitmentTemplateData(derived_commitments=[])
-        )
-        commitment_template.commitment_statistics = CommitmentStatusStatistics().as_json()
+        commitment_template = FakeCommitmentTemplateData(derived_commitments=[])
+        CommitmentTemplateLogic(commitment_template).enrich_with_statistics()
         template = loader.get_template(
             "commitments/CommitmentTemplate/commitment_template_view_page_statistics.html"
         )
@@ -101,3 +100,15 @@ class TestCommitmentTemplateChartLegend:
         assert "Complete" not in rendered_content
         assert "Discontinued: 1" in rendered_content
         assert "Past-due: 1" in rendered_content
+
+class TestCourseStatisticsBreakdownSection:
+    """Tests for 'commitments/Course/course_commitment_statistics_breakdown_section.html'"""
+
+    def test_legend_does_not_show_for_no_associated_commitments(self):
+        course=  FakeCourseData(associated_commitments=[])
+        CourseLogic(course).enrich_with_statistics()
+        template = loader.get_template(
+            "commitments/Course/course_commitment_statistics_breakdown_section.html"
+        )
+        rendered_content = template.render({"course": course})
+        assert "No commitments have been made in this course." in rendered_content
