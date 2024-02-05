@@ -26,7 +26,7 @@ class GeneratedTemporaryFileDownloadView(View, ABC):
 
     @abstractmethod
     def _write_content_to_file(self, temporary_file):
-        return NotImplemented
+        raise NotImplementedError
 
 
 class GeneratedTemporaryBinaryFileDownloadView(GeneratedTemporaryFileDownloadView):
@@ -45,7 +45,7 @@ class GeneratedTemporaryBinaryFileDownloadView(GeneratedTemporaryFileDownloadVie
 
     @abstractmethod
     def write_bytes_to_file(self, temporary_file):
-        return NotImplemented
+        raise NotImplementedError
 
 
 class GeneratedTemporaryTextFileDownloadView(GeneratedTemporaryFileDownloadView):
@@ -70,4 +70,4 @@ class GeneratedTemporaryTextFileDownloadView(GeneratedTemporaryFileDownloadView)
 
     @abstractmethod
     def write_text_to_file(self, temporary_file):
-        return NotImplemented
+        raise NotImplementedError
