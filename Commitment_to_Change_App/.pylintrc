@@ -441,9 +441,14 @@ disable=raw-checker-failed,
         use-implicit-booleaness-not-comparison-to-string,
         use-implicit-booleaness-not-comparison-to-zero,
         use-symbolic-message-instead,
+        # We consider docstrings to be noise when not explicitly needed to explain
+        # a class, function, or module and therefore do not require them.
         missing-module-docstring,
         missing-class-docstring,
         missing-function-docstring,
+        # We have a lot of these refactor inspections right now. Some are from Django,
+        # some are from pytest, and some can be fixed. For now we suppress them so
+        # we can fix other refactors without clogging the pylint logs.
         duplicate-code,
         too-few-public-methods,
         too-many-ancestors,
