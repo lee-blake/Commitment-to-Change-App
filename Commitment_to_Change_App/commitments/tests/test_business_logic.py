@@ -498,7 +498,7 @@ class TestWriteCourseCommitmentsAsCSV:
             write_course_commitments_as_csv(course, fake_file)
             fake_file.seek(0)
             csv_reader = csv.reader(fake_file)
-            rows = [row for row in csv_reader]
+            rows= list(csv_reader)
             assert len(rows) == 1
             expected_headers = [
                 "Commitment Title", 
@@ -523,7 +523,7 @@ class TestWriteCourseCommitmentsAsCSV:
             write_course_commitments_as_csv(course, fake_file)
             fake_file.seek(0)
             csv_reader = csv.DictReader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             expected_values = {
                 "Commitment Title": commitment.title, 
                 "Commitment Description": commitment.description,
@@ -549,7 +549,7 @@ class TestWriteCourseCommitmentsAsCSV:
             write_course_commitments_as_csv(course, fake_file)
             fake_file.seek(0)
             csv_reader = csv.DictReader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             assert rows[0]["Status"] == str(CommitmentStatus.COMPLETE)
 
 
@@ -562,7 +562,7 @@ class TestWriteAggregateCourseStatisticsAsCSV:
             write_aggregate_course_statistics_as_csv(courses, fake_file)
             fake_file.seek(0)
             csv_reader = csv.reader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             assert len(rows) == 1
             expected_headers = [
                 "Course Identifier",
@@ -594,7 +594,7 @@ class TestWriteAggregateCourseStatisticsAsCSV:
             write_aggregate_course_statistics_as_csv(courses, fake_file)
             fake_file.seek(0)
             csv_reader = csv.DictReader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             expected_values = {
                 "Course Identifier": "",
                 "Course Title": "Empty Course",
@@ -627,7 +627,7 @@ class TestWriteAggregateCourseStatisticsAsCSV:
             write_aggregate_course_statistics_as_csv(courses, fake_file)
             fake_file.seek(0)
             csv_reader = csv.DictReader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             expected_values = {
                 "Course Identifier": "FAKE-001",
                 "Course Title": "One of each status",
