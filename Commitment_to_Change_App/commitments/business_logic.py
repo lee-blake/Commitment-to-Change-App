@@ -196,6 +196,10 @@ def write_aggregate_course_statistics_as_csv(courses, file_object_to_write_to):
         "Num. Past Due",
         "Num. Completed",
         "Num. Discontinued",
+        "Perc. In Progress",
+        "Perc. Past Due",
+        "Perc. Completed",
+        "Perc. Discontinued",
         ]
     writer = csv.DictWriter(file_object_to_write_to, headers)
     writer.writeheader()
@@ -211,4 +215,8 @@ def write_aggregate_course_statistics_as_csv(courses, file_object_to_write_to):
             "Num. Past Due": statistics["counts"]["expired"],
             "Num. Completed": statistics["counts"]["complete"],
             "Num. Discontinued": statistics["counts"]["discontinued"],
+            "Perc. In Progress": statistics["percentages"]["in_progress"],
+            "Perc. Past Due": statistics["percentages"]["expired"],
+            "Perc. Completed": statistics["percentages"]["complete"],
+            "Perc. Discontinued": statistics["percentages"]["discontinued"],
         })
