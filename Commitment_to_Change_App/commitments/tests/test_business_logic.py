@@ -574,6 +574,10 @@ class TestWriteAggregateCourseStatisticsAsCSV:
                 "Num. Past Due",
                 "Num. Completed",
                 "Num. Discontinued",
+                "Perc. In Progress",
+                "Perc. Past Due",
+                "Perc. Completed",
+                "Perc. Discontinued",
             ]
             assert rows[0] == expected_headers
 
@@ -601,6 +605,10 @@ class TestWriteAggregateCourseStatisticsAsCSV:
                 "Num. Past Due": "0",
                 "Num. Completed": "0",
                 "Num. Discontinued": "0",
+                "Perc. In Progress": "N/A",
+                "Perc. Past Due": "N/A",
+                "Perc. Completed": "N/A",
+                "Perc. Discontinued": "N/A",
             }
             assert rows[0] == expected_values
 
@@ -630,5 +638,9 @@ class TestWriteAggregateCourseStatisticsAsCSV:
                 "Num. Past Due": "1",
                 "Num. Completed": "1",
                 "Num. Discontinued": "1",
+                "Perc. In Progress": "25.0",
+                "Perc. Past Due": "25.0",
+                "Perc. Completed": "25.0",
+                "Perc. Discontinued": "25.0",
             }
             assert rows[0] == expected_values
