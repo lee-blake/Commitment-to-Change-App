@@ -3,18 +3,16 @@
 {% block page_content %}
 <div class="container-fluid p-3 pt-3 text-center background">
     <div class="container-xl px-0 mb-3 foreground round-corners">
-        <div class="py-1 primary-accent-only round-top-corners text-center">
-            <span class="h1 accent-text">Active Commitments</span> <span>{% include "commitments/dashboard/clinician/dashboard_clinician_active_help_modal.html" %}</span>
-
+        <div class="primary-header-container">
+            <span>Active Commitments {% include "commitments/dashboard/clinician/dashboard_clinician_active_help_modal.html" %}</span>
         </div>
         <div class="row py-5 px-2 g-5">
             <div class="col-md-6">
                 <div class="pb-3 mb-4 background round-corners">
-                    <div class="py-1 secondary-accent round-top-corners text-center">
-                        <h3>In-progress Commitments</h3>
+                    <div class="secondary-header-container">
+                        In-progress Commitments
                     </div>
                     <div class="py-1 background round-corners">
-
                         {% for commitment in commitments.in_progress %}
                         {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_active.html" %}
                         {% endfor %}
@@ -23,27 +21,24 @@
             </div>
             <div class="col-md-6">
                 <div class="pb-3 background round-corners">
-                    <div class="py-1 secondary-accent round-top-corners text-center">
-                        <h3>Past Due Commitments</h3>
+                    <div class="secondary-header-container">
+                        Past Due Commitments
                     </div>
                     <div class="py-1 background round-corners">
-
                         {% for commitment in commitments.expired %}
                         {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_active.html" %}
                         {% endfor %}
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <div class="container-xl px-0 mb-3 foreground round-corners">
         <div class="row g-5">
 
             <div class="col-md-12">
-                <div class="py-1 primary-accent-only round-top-corners text-center">
-                    <span class="h1 accent-text">My Courses</span>
-                    <span>{% include "commitments/dashboard/clinician/dashboard_clinician_courses_help_modal.html" %}</span>
+                <div class="primary-header-container">
+                    <span>My Courses {% include "commitments/dashboard/clinician/dashboard_clinician_courses_help_modal.html" %}</span>
                 </div>
                 <div class="py-1 round-corners">
                     {% for course in enrolled_courses %}
@@ -54,32 +49,28 @@
         </div>
     </div>
     <div class="container-xl px-0 foreground round-corners">
-        <div class="py-1 primary-accent-only round-top-corners text-center">
-            <span class="h1 accent-text">Inactive Commitments</span>
-            <span>{% include "commitments/dashboard/clinician/dashboard_clinician_inactive_help_modal.html" %}</span>
+        <div class="primary-header-container">
+            <span>Inactive Commitments {% include "commitments/dashboard/clinician/dashboard_clinician_inactive_help_modal.html" %}</span>
         </div>
         <div class="row py-5 px-2 g-5">
             <div class="col-md-6">
                 <div class="pb-3 background round-corners">
-                    <div class="py-1 secondary-accent round-top-corners text-center">
-                        <h3>Completed Commitments</h3>
+                    <div class="secondary-header-container">
+                        Completed Commitments
                     </div>
                     <div class="py-1 background round-corners">
-
                         {% for commitment in commitments.completed %}
                         {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_inactive.html" %}
                         {% endfor %}
                     </div>
                 </div>
             </div>
-
             <div class="col-md-6">
                 <div class="pb-3 background round-corners">
-                    <div class="py-1 secondary-accent round-top-corners text-center">
-                        <h3>Discontinued Commitments</h3>
+                    <div class="secondary-header-container">
+                        Discontinued Commitments
                     </div>
                     <div class="py-1 background round-corners">
-
                         {% for commitment in commitments.discontinued %}
                         {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_inactive.html" %}
                         {% endfor %}

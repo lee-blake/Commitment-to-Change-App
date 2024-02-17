@@ -9,8 +9,8 @@
         <div class="col">
             <div class="container-xl">
             <div class="pb-3 mb-3 foreground round-corners">
-                <div class="py-1 primary-accent-only round-top-corners text-center">
-                    <span class="h1 accent-text">Courses</span> 
+                <div class="primary-header-container">
+                    Courses
                     <span>{% include "commitments/dashboard/provider/dashboard_provider_course_help_modal.html" %}</span>
                 </div>
                 <div class="text-center py-1">
@@ -24,8 +24,8 @@
                 {% include "commitments/dashboard/dashboard_courses_list.html" %}
             </div>
             <div class="pb-3 foreground round-corners">
-                <div class="py-1 primary-accent-only round-top-corners text-center">
-                    <span class="h1 accent-text">Commitment Templates</span> 
+                <div class="primary-header-container">
+                    Commitment Templates
                     <span>{% include "commitments/dashboard/provider/dashboard_provider_commitment_templates_help_modal.html" %}</span>
                 </div>
                 {% for commitment_template in commitment_templates %}
