@@ -75,10 +75,6 @@ form {
      border-radius: var(--standard-round);
  }
 
- .round-top-corners {
-    border-radius: var(--standard-round) var(--standard-round) 0 0;
- }
-
 /* 
 -------------------------------------------------------------------
     --- Containers --- 
@@ -98,6 +94,24 @@ form {
     justify-content: space-between;
 }
 
+.primary-header-container, .secondary-header-container {
+    border-radius: var(--standard-round) var(--standard-round) 0 0;
+    padding: 1px;
+    text-align: center !important;
+}
+.primary-header-container {
+    background-color: var(--primary-accent);
+    color: var(--accent-text);
+    font-size: 34px;
+    font-weight: 500;
+}
+
+.secondary-header-container {
+    background-color: var(--secondary-accent);
+    color: var(--accent-text);
+    font-size: 28px;
+    font-weight: 400;
+}
 /* 
 -------------------------------------------------------------------
     --- Generic Transitions --- 
@@ -253,6 +267,9 @@ form {
  }
 
  .modal-dialog {
+    color: var(--primary-text) !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
     max-width: fit-content;
     margin-left: auto;
     margin-right: auto;
@@ -369,7 +386,6 @@ form {
      display: inline-block;
      width: 100%;
  }
-
 
 /* 
 -------------------------------------------------------------------

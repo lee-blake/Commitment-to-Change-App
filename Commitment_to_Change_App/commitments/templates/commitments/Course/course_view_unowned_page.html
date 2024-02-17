@@ -4,8 +4,8 @@
 {% block page_content %}
 <div class="container-fluid p-3 ">
     <div class="container-xl px-0 round-corners foreground">
-        <div class="py-1 primary-accent-only round-top-corners text-center">
-            <span class="h1 accent-text">{{ course.title }}</span>
+        <div class="primary-header-container">
+            <span class="accent-text">{{ course.title }}</span>
             <span>
                 {% block course_help_modal %}
                 {% include "commitments/Course/course_view_unowned_page_help_modal.html" %}
@@ -14,28 +14,28 @@
 
         </div>
         <div class="py-1 secondary-accent text-center">
-            <h2>{{ course.owner.institution }}</h2>
+            <h3>{{ course.owner.institution }}</h3>
         </div>
 
         <div class="row py-3 px-2 g-5">
             <div class="col-md-6 p-3">
                 <div class="background round-corners pb-3">
-                    <div class="text-center primary-accent round-top-corners">
-                        <h2>Description</h2>
+                    <div class="primary-header-container">
+                        Description
                     </div>
                     <div class="text-center foreground p-1 round-corners mt-3 mx-3">
                         <p>{{ course.description }}</p>
                     </div>
                 </div>
                 <div class="background round-corners pb-3">
-                    <div class="text-center primary-accent round-top-corners mt-3">
-                        <h2>Students</h2>
+                    <div class="primary-header-container">
+                        Students
                     </div>
 
                     {% block join_link %} {% endblock join_link %}
                     <div class="foreground round-corners mt-3 mx-3 pb-2">
-                        <div class="text-center secondary-accent round-top-corners">
-                            <h3>List of Students Enrolled:</h3>
+                        <div class="secondary-header-container">
+                            List of Students Enrolled:
                         </div>
 
                         {% for clinician in course.students.all %}
@@ -54,12 +54,12 @@
             </div>
             <div class="col-md-6 p-3">
                 <div class="background round-corners pb-3">
-                    <div class="text-center primary-accent round-top-corners">
-                        <h2>Commitments in This Course</h2>
+                    <div class="primary-header-container">
+                        Commitments in This Course
                     </div>
                     <div class="foreground round-corners pb-3 mt-3 mx-3">
-                        <div class="text-center secondary-accent round-top-corners">
-                            <h3>Suggested Commitments</h3>
+                        <div class="secondary-header-container">
+                            Suggested Commitments
                         </div>
                         <div class="px-4">
                             <div class="list-group">
@@ -79,8 +79,8 @@
                         {% include "commitments/Course/course_commitment_statistics_breakdown_section.html" %}
                     </div>
                     <div class="foreground round-corners pb-3 mt-3 mx-3">
-                        <div class="text-center secondary-accent round-top-corners">
-                            <h3>Commitments Made in This Course:</h3>
+                        <div class="secondary-header-container">
+                            Commitments Made in This Course:
                         </div>
                         {% block course_commitment_csv_download_link %}
                         {% endblock course_commitment_csv_download_link %}
