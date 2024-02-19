@@ -9,7 +9,7 @@
     Share this link to invite students to the course:
     <div>
         <p id="courseJoinLink">http://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}</p>
-        <p><a href="#" class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</a></p>
+        <p><button class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</button></p>
     </div>
 </div>
 {% endblock join_link %}
