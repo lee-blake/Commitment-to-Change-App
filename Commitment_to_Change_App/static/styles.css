@@ -84,9 +84,10 @@ form {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
-.flex-box {
+.header-with-modal{
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
 }
 .primary-header-container, .secondary-header-container {
     border-radius: var(--standard-round) var(--standard-round) 0 0;
@@ -96,11 +97,6 @@ form {
 .primary-header-container {
     background-color: var(--primary-accent);
     color: var(--accent-text);
-}
-.primary-header-container > .header-with-modal{
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 .secondary-header-container {
     background-color: var(--secondary-accent);
