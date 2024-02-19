@@ -15,12 +15,11 @@ class DashboardRedirectingView(LoginRequiredMixin, View):
     def get(request, *args, **kwargs):
         if request.user.is_clinician:
             return HttpResponseRedirect("/app/dashboard/clinician/")
-        elif request.user.is_provider:
+        if request.user.is_provider:
             return HttpResponseRedirect("/app/dashboard/provider/")
-        else:
-            return HttpResponseServerError(
-                "This user is neither a clinician nor a provider and therefore no dashboard exists!"
-            )
+        return HttpResponseServerError(
+            "This user is neither a clinician nor a provider and therefore no dashboard exists!"
+        )
 
 
 class ClinicianDashboardView(ClinicianLoginRequiredMixin, TemplateView):

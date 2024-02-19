@@ -43,11 +43,10 @@ class ViewCourseView(LoginRequiredMixin, DetailView):
     def get_template_names(self):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
             return ["commitments/Course/course_view_owned_page.html"]
-        else:
-            # The viewer must be a student or we should 404 for plausibile deniability of
-            # the existence of the course. Filtering the students for the user works in one line.
-            get_object_or_404(self.object.students, user=self.request.user)
-            return ["commitments/Course/course_view_unowned_page.html"]
+        # The viewer must be a student or we should 404 for plausibile deniability of
+        # the existence of the course. Filtering the students for the user works in one line.
+        get_object_or_404(self.object.students, user=self.request.user)
+        return ["commitments/Course/course_view_unowned_page.html"]
 
 
 class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
