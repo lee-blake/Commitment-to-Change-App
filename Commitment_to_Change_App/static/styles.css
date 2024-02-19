@@ -31,10 +31,6 @@
  */
 
  body {background-color: var(--background);}
- 
- h3 {
-    font-weight: 400;
- }
 
  ul.errorlist > li {
     color: red;
@@ -88,29 +84,27 @@ form {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
-
 .flex-box {
     display: flex;
     justify-content: space-between;
 }
-
 .primary-header-container, .secondary-header-container {
     border-radius: var(--standard-round) var(--standard-round) 0 0;
-    padding: 1px;
+    padding: 2px 4px;
     text-align: center !important;
 }
 .primary-header-container {
     background-color: var(--primary-accent);
     color: var(--accent-text);
-    font-size: 34px;
-    font-weight: 500;
 }
-
+.primary-header-container > .header-with-modal{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .secondary-header-container {
     background-color: var(--secondary-accent);
     color: var(--accent-text);
-    font-size: 28px;
-    font-weight: 400;
 }
 /* 
 -------------------------------------------------------------------
