@@ -4,13 +4,16 @@
 <div class="container-fluid p-3 pt-3 text-center background">
     <div class="container-xl px-0 mb-3 foreground round-corners">
         <div class="primary-header-container">
-            <span>Active Commitments {% include "commitments/dashboard/clinician/dashboard_clinician_active_help_modal.html" %}</span>
+            <span class="header-with-modal">
+                <h1>Active Commitments</h1>
+                {% include "commitments/dashboard/clinician/dashboard_clinician_active_help_modal.html" %}
+            </span>
         </div>
         <div class="row py-5 px-2 g-5">
             <div class="col-md-6">
                 <div class="pb-3 mb-4 background round-corners">
                     <div class="secondary-header-container">
-                        In-progress Commitments
+                        <h2>In-progress Commitments</h2>
                     </div>
                     <div class="py-1 background round-corners">
                         {% for commitment in commitments.in_progress %}
@@ -22,7 +25,7 @@
             <div class="col-md-6">
                 <div class="pb-3 background round-corners">
                     <div class="secondary-header-container">
-                        Past Due Commitments
+                        <h2>Past Due Commitments</h2>
                     </div>
                     <div class="py-1 background round-corners">
                         {% for commitment in commitments.expired %}
@@ -38,7 +41,10 @@
 
             <div class="col-md-12">
                 <div class="primary-header-container">
-                    <span>My Courses {% include "commitments/dashboard/clinician/dashboard_clinician_courses_help_modal.html" %}</span>
+                    <span class="header-with-modal">
+                        <h1>My Courses</h1> 
+                        {% include "commitments/dashboard/clinician/dashboard_clinician_courses_help_modal.html" %}
+                    </span>
                 </div>
                 <div class="py-1 round-corners">
                     {% for course in enrolled_courses %}
@@ -50,13 +56,16 @@
     </div>
     <div class="container-xl px-0 foreground round-corners">
         <div class="primary-header-container">
-            <span>Inactive Commitments {% include "commitments/dashboard/clinician/dashboard_clinician_inactive_help_modal.html" %}</span>
+            <span class="header-with-modal">
+                <h1>Inactive Commitments</h1>
+                {% include "commitments/dashboard/clinician/dashboard_clinician_inactive_help_modal.html" %}
+            </span>
         </div>
         <div class="row py-5 px-2 g-5">
             <div class="col-md-6">
                 <div class="pb-3 background round-corners">
                     <div class="secondary-header-container">
-                        Completed Commitments
+                        <h2>Completed Commitments</h2>
                     </div>
                     <div class="py-1 background round-corners">
                         {% for commitment in commitments.completed %}
@@ -68,7 +77,7 @@
             <div class="col-md-6">
                 <div class="pb-3 background round-corners">
                     <div class="secondary-header-container">
-                        Discontinued Commitments
+                        <h2>Discontinued Commitments</h2>
                     </div>
                     <div class="py-1 background round-corners">
                         {% for commitment in commitments.discontinued %}
