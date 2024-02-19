@@ -5,6 +5,8 @@ services:
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     ports:
       - "8000:8000"
+    environment:
+      PYTHONUNBUFFERED: 1
     volumes:
       # General policy: unless the app SHOULD write to a dir, it should be RO.
       # For Django, only migrations dirs should have write permissions.
