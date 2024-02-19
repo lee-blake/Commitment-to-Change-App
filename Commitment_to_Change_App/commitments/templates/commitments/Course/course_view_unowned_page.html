@@ -70,10 +70,8 @@
                                 {% endfor %}
                                 </tbody>
                             </table>
-                            <div class="text-center pt-1">
-                                {% block select_suggested_commitments_button %}
-                                {% endblock select_suggested_commitments_button %}
-                            </div>
+                            {% block select_suggested_commitments_button %}
+                            {% endblock select_suggested_commitments_button %}
                     </div>
                     <div class="foreground text-center round-corners pb-3 mt-3 mx-3">
                         {% include "commitments/Course/course_commitment_statistics_breakdown_section.html" %}

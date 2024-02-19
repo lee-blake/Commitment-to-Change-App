@@ -31,9 +31,11 @@
 {% endblock clinician_email_button %}
 
 {% block select_suggested_commitments_button %}
-<a href="{% url 'change Course suggested commitments' course_id=course.id %}">
-    <button class="standard-button">Select Templates</button>
-</a>
+<div class="text-center pb-3">
+    <a href="{% url 'change Course suggested commitments' course_id=course.id %}">
+        <button class="standard-button">Select Templates</button>
+    </a>
+</div>
 {% endblock select_suggested_commitments_button %}
 
 {% block course_commitment_csv_download_link %}
