@@ -9,7 +9,7 @@
     Share this link to invite students to the course:
     <div>
         <p id="courseJoinLink">http://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}</p>
-        <p><a href="#" class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</a></p>
+        <p><button class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</button></p>
     </div>
 </div>
 {% endblock join_link %}
@@ -31,13 +31,15 @@
 {% endblock clinician_email_button %}
 
 {% block select_suggested_commitments_button %}
-<a href="{% url 'change Course suggested commitments' course_id=course.id %}">
-    <button class="standard-button">Select Templates</button>
-</a>
+<div class="text-center pb-3">
+    <a href="{% url 'change Course suggested commitments' course_id=course.id %}">
+        <button class="standard-button">Select Templates</button>
+    </a>
+</div>
 {% endblock select_suggested_commitments_button %}
 
 {% block course_commitment_csv_download_link %}
-<div class="text-center">
+<div class="text-center pt-3">
     <a href="{% url "download Course Commitments as csv" course_id=course.id %}">
         <button class="standard-button">
             Download commitments list
