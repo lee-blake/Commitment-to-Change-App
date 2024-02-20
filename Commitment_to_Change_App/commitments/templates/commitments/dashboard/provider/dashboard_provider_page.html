@@ -9,9 +9,11 @@
         <div class="col">
             <div class="container-xl">
             <div class="pb-3 mb-3 foreground round-corners">
-                <div class="py-1 primary-accent-only round-top-corners text-center">
-                    <span class="h1 accent-text">Courses</span> 
-                    <span>{% include "commitments/dashboard/provider/dashboard_provider_course_help_modal.html" %}</span>
+                <div class="primary-header-container">
+                    <span class="header-with-modal">
+                        <h1>Courses</h1>
+                        {% include "commitments/dashboard/provider/dashboard_provider_course_help_modal.html" %}
+                    </span>
                 </div>
                 <div class="text-center py-1">
                     <a href="{% url "download aggregate Course statistics as csv" %}">
@@ -24,9 +26,11 @@
                 {% include "commitments/dashboard/dashboard_courses_list.html" %}
             </div>
             <div class="pb-3 foreground round-corners">
-                <div class="py-1 primary-accent-only round-top-corners text-center">
-                    <span class="h1 accent-text">Commitment Templates</span> 
-                    <span>{% include "commitments/dashboard/provider/dashboard_provider_commitment_templates_help_modal.html" %}</span>
+                <div class="primary-header-container">
+                    <span class="header-with-modal">
+                        <h1>Commitment Templates</h1>
+                        {% include "commitments/dashboard/provider/dashboard_provider_commitment_templates_help_modal.html" %}
+                    </span>
                 </div>
                 {% for commitment_template in commitment_templates %}
                     {% include "commitments/dashboard/provider/dashboard_provider_commitment_template_list.html" %}
