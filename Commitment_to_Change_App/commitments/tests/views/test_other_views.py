@@ -31,7 +31,7 @@ class TestAggregateCourseStatisticsCSVDownloadView:
             response = client.get(target_url)
             file_content = b"".join(response.streaming_content).decode()
             csv_reader = csv.reader(io.StringIO(file_content))
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             assert len(rows) == 1
             # Check at least one of the column headers to make sure they're getting written.
             # Changing the index/content here is expected if the csv format changes.
@@ -45,7 +45,7 @@ class TestAggregateCourseStatisticsCSVDownloadView:
             response = client.get(target_url)
             file_content = b"".join(response.streaming_content).decode()
             csv_reader = csv.reader(io.StringIO(file_content))
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             assert len(rows) == 1
             # Check at least one of the column headers to make sure they're getting written.
             # Changing the index/content here is expected if the csv format changes.
@@ -65,7 +65,7 @@ class TestAggregateCourseStatisticsCSVDownloadView:
             response = client.get(target_url)
             file_content = b"".join(response.streaming_content).decode()
             csv_reader = csv.DictReader(io.StringIO(file_content))
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             expected_values = {
                 "Course Title": "One Course",
                 "Total Commitments": "0",

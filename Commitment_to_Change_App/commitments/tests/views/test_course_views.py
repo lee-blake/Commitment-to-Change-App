@@ -941,7 +941,7 @@ class TestEditCourseView:
         def test_valid_request_does_not_alter_enrolled_students(
             self, client, saved_provider_profile, enrolled_course
         ):
-            students_before = [ student for student in enrolled_course.students.all() ]
+            students_before = list(enrolled_course.students.all())
             assert len(students_before) > 0
             target_url = reverse(
                 "edit Course", 
@@ -1501,7 +1501,7 @@ class TestDownloadCourseCommitmentsCSVView:
             response = client.get(target_url)
             file_content = b"".join(response.streaming_content).decode()
             csv_reader = csv.reader(io.StringIO(file_content))
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             assert len(rows) == 1
             # Check at least one of the column headers to make sure they're getting written.
             # Changing the index/content here is expected if the csv format changes.
@@ -1525,7 +1525,7 @@ class TestDownloadCourseCommitmentsCSVView:
             response = client.get(target_url)
             file_content = b"".join(response.streaming_content).decode()
             csv_reader = csv.DictReader(io.StringIO(file_content))
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             expected_values = {
                 "Commitment Title": "Sample title", 
                 "Commitment Description": "Sample commitment for csv",

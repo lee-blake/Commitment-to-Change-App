@@ -36,8 +36,7 @@ class ViewCommitmentView(DetailView):
     def get_template_names(self):
         if self.request.user.is_authenticated and self.request.user == self.object.owner.user:
             return ["commitments/Commitment/commitment_view_owned_page.html"]
-        else:
-            return ["commitments/Commitment/commitment_view_unowned_page.html"]
+        return ["commitments/Commitment/commitment_view_unowned_page.html"]
 
     def get_object(self, queryset=None):
         commitment = super().get_object(queryset=queryset)
@@ -120,10 +119,9 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
-        else:
-            return HttpResponseBadRequest(
-                "'complete' key must be nonempty to complete a commitment"
-            )
+        return HttpResponseBadRequest(
+            "'complete' key must be nonempty to complete a commitment"
+        )
 
 
 class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
@@ -135,10 +133,9 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
-        else:
-            return HttpResponseBadRequest(
-                "'discontinue' key must be nonempty to discontinue a commitment"
-            )
+        return HttpResponseBadRequest(
+            "'discontinue' key must be nonempty to discontinue a commitment"
+        )
 
 
 class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
@@ -150,8 +147,7 @@ class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("clinician dashboard"))
-        else:
-            return HttpResponseBadRequest(
-                "'reopen' key must be nonempty to reopen a commitment"
-            )
+        return HttpResponseBadRequest(
+            "'reopen' key must be nonempty to reopen a commitment"
+        )
             
