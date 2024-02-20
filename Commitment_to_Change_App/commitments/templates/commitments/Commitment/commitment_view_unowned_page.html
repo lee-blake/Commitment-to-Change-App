@@ -3,26 +3,23 @@
 {% block title %} {{ commitment.title }} {% endblock title %} 
 
 {% block page_content %}
-<div class="container-fluid pt-3">
-  <div class="px-0 mb-3 foreground round-corners">
-    <div class="primary-header-container">
-      <h1>{{ commitment.title }}</h1>
+<div class="px-0 mb-3 foreground round-corners">
+  <div class="primary-header-container">
+    <h1>{{ commitment.title }}</h1>
+  </div>
+  <div class="container-fluid px-3">
+    <div class="my-1 p-1 round-corners background text-center">
+      <p>Started: {{ commitment.created.date }}</p>
+      <p>Due: {{ commitment.deadline }}</p>
+      <p>Status: {{ commitment.status_text }}</p>
     </div>
-    <div class="container-fluid px-3">
-      <div class="my-1 p-1 round-corners background text-center">
-        <p>Started: {{ commitment.created.date }}</p>
-        <p>Due: {{ commitment.deadline }}</p>
-        <p>Status: {{ commitment.status_text }}</p>
-      </div>
-      <div class="my-1 p-1 round-corners background text-center">
-        <p>{{ commitment.description }}</p>
-      </div>
+    <div class="my-1 p-1 round-corners background text-center">
+      <p>{{ commitment.description }}</p>
     </div>
-    
-    <div class="container-fluid p-2 text-center">
-      {% block edit_button %} {% endblock edit_button %}
-      {% block delete_button %} {% endblock delete_button %}
-    </div>
+  </div>
+  <div class="container-fluid p-2 text-center">
+    {% block edit_button %} {% endblock edit_button %}
+    {% block delete_button %} {% endblock delete_button %}
   </div>
 </div>
 {% endblock page_content %}

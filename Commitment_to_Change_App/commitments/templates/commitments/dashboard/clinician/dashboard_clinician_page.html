@@ -1,89 +1,86 @@
 {% extends "commitments/common/base.html" %}
 {% block title %} Dashboard {% endblock title %}
 {% block page_content %}
-<div class="container-fluid p-3 pt-3 text-center background">
-    <div class="container-xl px-0 mb-3 foreground round-corners">
-        <div class="primary-header-container">
-            <span class="header-with-modal">
-                <h1>Active Commitments</h1>
-                {% include "commitments/dashboard/clinician/dashboard_clinician_active_help_modal.html" %}
-            </span>
-        </div>
-        <div class="row py-5 px-2 g-5">
-            <div class="col-md-6">
-                <div class="pb-3 mb-4 background round-corners">
-                    <div class="secondary-header-container">
-                        <h2>In-progress Commitments</h2>
-                    </div>
-                    <div class="py-1 background round-corners">
-                        {% for commitment in commitments.in_progress %}
-                        {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_active.html" %}
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="pb-3 background round-corners">
-                    <div class="secondary-header-container">
-                        <h2>Past Due Commitments</h2>
-                    </div>
-                    <div class="py-1 background round-corners">
-                        {% for commitment in commitments.expired %}
-                        {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_active.html" %}
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="container-xl px-0 mb-3 foreground round-corners">
+    <div class="primary-header-container">
+        <span class="header-with-modal">
+            <h1>Active Commitments</h1>
+            {% include "commitments/dashboard/clinician/dashboard_clinician_active_help_modal.html" %}
+        </span>
     </div>
-    <div class="container-xl px-0 mb-3 foreground round-corners">
-        <div class="row g-5">
-
-            <div class="col-md-12">
-                <div class="primary-header-container">
-                    <span class="header-with-modal">
-                        <h1>My Courses</h1> 
-                        {% include "commitments/dashboard/clinician/dashboard_clinician_courses_help_modal.html" %}
-                    </span>
+    <div class="row py-5 px-2 g-5">
+        <div class="col-md-6">
+            <div class="pb-3 mb-4 background round-corners">
+                <div class="secondary-header-container">
+                    <h2>In-progress Commitments</h2>
                 </div>
-                <div class="py-1 round-corners">
-                    {% for course in enrolled_courses %}
-                    {% include "commitments/dashboard/clinician/dashboard_clinician_course_list.html" %}
+                <div class="py-1 background round-corners">
+                    {% for commitment in commitments.in_progress %}
+                    {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_active.html" %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="pb-3 background round-corners">
+                <div class="secondary-header-container">
+                    <h2>Past Due Commitments</h2>
+                </div>
+                <div class="py-1 background round-corners">
+                    {% for commitment in commitments.expired %}
+                    {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_active.html" %}
                     {% endfor %}
                 </div>
             </div>
         </div>
     </div>
-    <div class="container-xl px-0 foreground round-corners">
-        <div class="primary-header-container">
-            <span class="header-with-modal">
-                <h1>Inactive Commitments</h1>
-                {% include "commitments/dashboard/clinician/dashboard_clinician_inactive_help_modal.html" %}
-            </span>
+</div>
+<div class="container-xl px-0 mb-3 foreground round-corners">
+    <div class="row g-5">
+        <div class="col-md-12">
+            <div class="primary-header-container">
+                <span class="header-with-modal">
+                    <h1>My Courses</h1> 
+                    {% include "commitments/dashboard/clinician/dashboard_clinician_courses_help_modal.html" %}
+                </span>
+            </div>
+            <div class="py-1 round-corners">
+                {% for course in enrolled_courses %}
+                {% include "commitments/dashboard/clinician/dashboard_clinician_course_list.html" %}
+                {% endfor %}
+            </div>
         </div>
-        <div class="row py-5 px-2 g-5">
-            <div class="col-md-6">
-                <div class="pb-3 background round-corners">
-                    <div class="secondary-header-container">
-                        <h2>Completed Commitments</h2>
-                    </div>
-                    <div class="py-1 background round-corners">
-                        {% for commitment in commitments.completed %}
-                        {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_inactive.html" %}
-                        {% endfor %}
-                    </div>
+    </div>
+</div>
+<div class="container-xl px-0 foreground round-corners">
+    <div class="primary-header-container">
+        <span class="header-with-modal">
+            <h1>Inactive Commitments</h1>
+            {% include "commitments/dashboard/clinician/dashboard_clinician_inactive_help_modal.html" %}
+        </span>
+    </div>
+    <div class="row py-5 px-2 g-5">
+        <div class="col-md-6">
+            <div class="pb-3 background round-corners">
+                <div class="secondary-header-container">
+                    <h2>Completed Commitments</h2>
+                </div>
+                <div class="py-1 background round-corners">
+                    {% for commitment in commitments.completed %}
+                    {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_inactive.html" %}
+                    {% endfor %}
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="pb-3 background round-corners">
-                    <div class="secondary-header-container">
-                        <h2>Discontinued Commitments</h2>
-                    </div>
-                    <div class="py-1 background round-corners">
-                        {% for commitment in commitments.discontinued %}
-                        {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_inactive.html" %}
-                        {% endfor %}
-                    </div>
+        </div>
+        <div class="col-md-6">
+            <div class="pb-3 background round-corners">
+                <div class="secondary-header-container">
+                    <h2>Discontinued Commitments</h2>
+                </div>
+                <div class="py-1 background round-corners">
+                    {% for commitment in commitments.discontinued %}
+                    {% include "commitments/dashboard/clinician/dashboard_clinician_commitment_buttons_inactive.html" %}
+                    {% endfor %}
                 </div>
             </div>
         </div>

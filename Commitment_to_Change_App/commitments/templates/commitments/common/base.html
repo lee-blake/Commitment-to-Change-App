@@ -14,7 +14,9 @@
     {% include "commitments/common/navbar.html" %}
 </header>
 <main>
-    {% block page_content %}{% endblock page_content %}
+    <div class="py-3 px-1">
+        {% block page_content %}{% endblock page_content %}
+    </div>
 </main>
 {% block static_scripts %}
 {% include "commitments/common/base_scripts.html" %}
