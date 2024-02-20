@@ -1,18 +1,18 @@
 
         {% if request.user.is_provider %}
-        <span>
+        <td>
             <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
                 {{ suggested_commitment }}
             </a>
-        </span>
+        </td>
         
         {% elif request.user.is_clinician %}
-        <span>
+        <td>
             {{ suggested_commitment }}
-        </span>
-        <span>
+        </td>
+        <td align="right">
             <a href="{% url 'create Commitment from suggested commitment' course_id=course.id commitment_template_id=suggested_commitment.id %}">
                 <button class="standard-button">Make This Commitment</button>
             </a>
-        </span>
+        </td>
         {% endif %}
