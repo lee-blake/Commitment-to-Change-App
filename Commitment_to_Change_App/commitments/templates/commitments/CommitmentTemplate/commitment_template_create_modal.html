@@ -20,23 +20,40 @@
             <div class="modal-body text-left">
                 <div class="text-center container-sm p-1 py-3 foreground round-corners default-form">
                     <div class="change-suggested-form px-4 py-3 foreground round-corners">
-                        <span class="header-with-modal">
-                            <h1>Create a Commitment Template</h1>
-                            {% include "commitments/CommitmentTemplate/commitment_template_create_page_help_modal.html" %}
-                        </span>
                         <form 
+                        id="create-commitment-template-form"
                         action="{% url 'create CommitmentTemplate' %}" 
                         method="post">
                             {% csrf_token %}
                             {{ CommitmentTemplateForm.as_p }}
                             <div class="modal-footer d-flex align-items-center justify-content-between">
                                 <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal">Cancel</button>
-                                <input type="submit" value="Submit" class="py-1 px-3">
+                                <button type="button" id="submit-create-template" data-bs-dismiss="modal" class="py-1 px-3">Create</button>
                             </div>
                         </form>
                     </div>
+                    
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<Script>
+    $(document).ready(function() {
+        $('#submit-create-template').click(function(e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: $('#create-commitment-template-form').attr('action'),
+                data: $('#create-commitment-template-form').serialize(),
+                success: function() {
+                    window.location.reload();
+                },
+                error: function(){
+                    alert("Failed to create new template");
+                }
+            });
+        });
+    });
+</Script>
