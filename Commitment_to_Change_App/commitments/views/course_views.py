@@ -6,8 +6,8 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 
 from commitments.business_logic import write_course_commitments_as_csv
-from commitments.forms import CourseForm, CourseSelectSuggestedCommitmentsForm, \
-    JoinCourseForm
+from commitments.forms import CommitmentTemplateForm, CourseForm, \
+    CourseSelectSuggestedCommitmentsForm, JoinCourseForm 
 from commitments.generic_views import GeneratedTemporaryTextFileDownloadView
 from commitments.mixins import ProviderLoginRequiredMixin
 from commitments.models import ClinicianProfile, ProviderProfile, Course
@@ -121,6 +121,10 @@ class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateVie
             "view Course",
             kwargs={"course_id": self.object.id}
         )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['CommitmentTemplateForm'] = CommitmentTemplateForm
+        return context
 
 
 class DownloadCourseCommitmentsCSVView(
