@@ -1,16 +1,21 @@
+// JQuery event listener. Listens for submit once document is ready
 $(document).ready(function() {
-    $('#submit-create-template').click(function(e) {
+    $('#submit-create-template').submit(function(e) {
         e.preventDefault();
-        $.ajax({
-            type: "POST",
-            url: $('#create-commitment-template-form').attr('action'),
-            data: $('#create-commitment-template-form').serialize(),
-            success: function() {
-                window.location.reload();
-            },
-            error: function(){
-                alert("Failed to create new template");
-            }
-        });
+        createObjectFromForm('#create-commitment-template-form', 'Failed to create new template');
     });
 });
+
+function createObjectFromForm(form_id, error_message) {
+    $.ajax({
+        type: "POST",
+        url: $(form_id).attr('action'),
+        data: $(form_id).serialize(),
+        success: function() {
+            window.location.reload();
+        },
+        error: function(){
+            alert(error_message);
+        }
+    });
+}
