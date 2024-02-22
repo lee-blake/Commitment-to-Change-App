@@ -1,6 +1,6 @@
 // JQuery event listener. Listens for submit once document is ready
 $(document).ready(function() {
-    $('#submit-create-template').submit(function(e) {
+    $('#create-commitment-template-form').submit(function(e) {
         e.preventDefault();
         createObjectFromForm('#create-commitment-template-form', 'Failed to create new template');
     });
