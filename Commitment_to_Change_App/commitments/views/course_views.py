@@ -121,6 +121,7 @@ class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateVie
             "view Course",
             kwargs={"course_id": self.object.id}
         )
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['CommitmentTemplateForm'] = CommitmentTemplateForm
