@@ -1,9 +1,9 @@
 <a class="info-button p-1" 
     role="button"  data-bs-toggle="modal" 
-    data-bs-target="#create-commitment-template-modal">Create new template <i class="bi bi-plus-circle-fill"></i>
+    data-bs-target="#create-commitment-template-modal">Create new template
+    <br><i class="bi bi-plus-circle-fill"></i>
 </a>
 
-<!-- Modal -->
 <div class="modal fade" 
     id="create-commitment-template-modal" 
     tabindex="-1" 
@@ -28,32 +28,12 @@
                             {{ CommitmentTemplateForm.as_p }}
                             <div class="modal-footer d-flex align-items-center justify-content-between">
                                 <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" id="submit-create-template" data-bs-dismiss="modal" class="py-1 px-3">Create</button>
+                                <button type="button" class="standard-button" id="submit-create-template" data-bs-dismiss="modal" class="py-1 px-3">Create</button>
                             </div>
                         </form>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<Script>
-    $(document).ready(function() {
-        $('#submit-create-template').click(function(e) {
-            e.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: $('#create-commitment-template-form').attr('action'),
-                data: $('#create-commitment-template-form').serialize(),
-                success: function() {
-                    window.location.reload();
-                },
-                error: function(){
-                    alert("Failed to create new template");
-                }
-            });
-        });
-    });
-</Script>
