@@ -2,7 +2,7 @@ version: '3'
 services:
   cme-ctc-web:
     build: Commitment_to_Change_App/
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    command: sh -c "./on_docker_startup.sh && exec python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     environment:
