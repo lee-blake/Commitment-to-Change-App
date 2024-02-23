@@ -124,6 +124,9 @@ class CourseChangeSuggestedCommitmentsView(ProviderLoginRequiredMixin, UpdateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # This is necessary to enable creating CommitmentTemplates with AJAX.
+        # None of the actual logic is handled by this view, it just supplies the
+        # fields that would be used by the logic view to avoid duplication.
         context['CommitmentTemplateForm'] = CommitmentTemplateForm
         return context
 
