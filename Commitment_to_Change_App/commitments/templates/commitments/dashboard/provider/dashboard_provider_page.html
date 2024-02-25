@@ -29,6 +29,14 @@
                     {% include "commitments/dashboard/provider/dashboard_provider_commitment_templates_help_modal.html" %}
                 </span>
             </div>
+            <div class="text-center py-1">
+                <a href="{% url "download aggregate CommitmentTemplate statistics as csv" %}">
+                    <button class="btn view-button m-2">
+                        Download aggregate commitment template statistics
+                        <i class="bi bi-file-earmark-arrow-down"></i>
+                    </button>
+                </a>
+            </div>
             {% for commitment_template in commitment_templates %}
                 {% include "commitments/dashboard/provider/dashboard_provider_commitment_template_list.html" %}
             {% endfor %}
