@@ -12,6 +12,8 @@
 /Commitment_to_Change_App/pytest.ini @lee-blake
 /Commitment_to_Change_App/.coveragerc @lee-blake
 /Commitment_to_Change_App/.pylintrc @lee-blake
+# Frontend linting - North
+/Commitment_to_Change_App/.djlintrc @North-Kaster
 
 # Python = usually backend - Lee
 *.py @lee-blake
