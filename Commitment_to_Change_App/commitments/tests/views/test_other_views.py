@@ -37,21 +37,6 @@ class TestAggregateCourseStatisticsCSVDownloadView:
             # Changing the index/content here is expected if the csv format changes.
             assert rows[0][0] == "Course Identifier"
 
-        def test_one_course_gives_correct_csv(
-            self, client, saved_provider_profile
-        ):
-            target_url = reverse("download aggregate Course statistics as csv")
-            client.force_login(saved_provider_profile.user)
-            response = client.get(target_url)
-            file_content = b"".join(response.streaming_content).decode()
-            csv_reader = csv.reader(io.StringIO(file_content))
-            rows = list(csv_reader)
-            assert len(rows) == 1
-            # Check at least one of the column headers to make sure they're getting written.
-            # Changing the index/content here is expected if the csv format changes.
-            assert rows[0][0] == "Course Identifier"
-
-
         def test_one_course_correctly_writes_row(
             self, client, saved_provider_profile
         ):
