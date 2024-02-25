@@ -66,8 +66,12 @@ form {
     --- Modifiers --- 
 ------------------------------------------------------------------- 
  */
- .round-corners
- {
+
+ .full-width-textarea textarea {
+    width: 100%;
+}
+
+ .round-corners {
      border-radius: var(--standard-round);
  }
 
@@ -84,7 +88,7 @@ form {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
-.header-with-modal{
+.header-with-modal {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -246,7 +250,7 @@ form {
     font-size: 20px;
  }
 
- .modal-dialog {
+ .standard-modal-dialog {
     color: var(--primary-text) !important;
     font-size: 16px !important;
     font-weight: 400 !important;
