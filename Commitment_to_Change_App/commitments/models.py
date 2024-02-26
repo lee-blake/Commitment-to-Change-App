@@ -1,5 +1,3 @@
-import datetime
-
 from django.db import models
 
 import cme_accounts.models
@@ -110,9 +108,3 @@ class Commitment(CommitmentLogic, models.Model):
     def __init__(self, *args, **kwargs):
         CommitmentLogic.__init__(self, data_object=self)
         models.Model.__init__(self, *args, **kwargs)
-
-    def save_expired_if_past_deadline(self):
-        today = datetime.date.today()
-        if self.deadline < today and self.status == CommitmentStatus.IN_PROGRESS:
-            self.status = CommitmentStatus.EXPIRED
-            self.save()
