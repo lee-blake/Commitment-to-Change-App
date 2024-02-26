@@ -16,7 +16,7 @@
         {# normal use of this form.#}
         {{ form.non_field_errors }}
         {{ form.delete.errors }}
-        <a href="{% url "edit Course" course=course.id %}">Cancel</a>
+        <a href="{% url "delete Course" course=course.id %}">Cancel</a>
         {% include "commitments/Course/course_delete_button.html" %}
     </div>
 </div>
