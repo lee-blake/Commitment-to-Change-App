@@ -28,9 +28,6 @@ class ClinicianDashboardView(ClinicianLoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         viewer = ClinicianProfile.objects.get(user=self.request.user)
         commitments = Commitment.objects.filter(owner=viewer)
-        # We need to auto-expire them to make sure they are grouped correctly.
-        for commitment in commitments:
-            commitment.save_expired_if_past_deadline()
         context = super().get_context_data(**kwargs)
         context["enrolled_courses"] = viewer.course_set.all()
         context["commitments"] = {
