@@ -36,6 +36,10 @@
 </a>
 {% endblock select_suggested_commitments_button %}
 
+{% block delete_button %}
+{% include "commitments/Course/course_delete_modal.html" %}
+{% endblock delete_button %}
+
 {% block course_commitment_csv_download_link %}
 <div class="text-center">
     <a href="{% url "download Course Commitments as csv" course_id=course.id %}">

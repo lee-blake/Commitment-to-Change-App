@@ -76,6 +76,11 @@ urlpatterns = [
           name="edit Course"
      ),
      path(
+          "course/<int:course_id>/delete/",
+          views.DeleteCourseView.as_view(),
+          name="delete Course"
+     ),
+     path(
           "course/<int:course_id>/suggested-commitments/select/",
           views.CourseChangeSuggestedCommitmentsView.as_view(),
           name="change Course suggested commitments"
