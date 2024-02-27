@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponseRedirect, HttpResponseServerError
-from django.views.generic.base import View, TemplateView
+from django.core.exceptions import ObjectDoesNotExist
+from django.urls import reverse
+from django.views.generic.base import RedirectView, TemplateView
 
 from commitments.business_logic import write_aggregate_course_statistics_as_csv, \
     write_aggregate_commitment_template_statistics_as_csv
@@ -11,14 +12,15 @@ from commitments.models import Commitment, ClinicianProfile, ProviderProfile, Co
     CommitmentTemplate
 
 
-class DashboardRedirectingView(LoginRequiredMixin, View):
-    @staticmethod
-    def get(request, *args, **kwargs):
-        if request.user.is_clinician:
-            return HttpResponseRedirect("/app/dashboard/clinician/")
-        if request.user.is_provider:
-            return HttpResponseRedirect("/app/dashboard/provider/")
-        return HttpResponseServerError(
+class DashboardRedirectingView(LoginRequiredMixin, RedirectView):
+    http_method_names = ["get"]
+
+    def get_redirect_url(self, *args, **kwargs):
+        if self.request.user.is_clinician:
+            return reverse("clinician dashboard")
+        if self.request.user.is_provider:
+            return reverse("provider dashboard")
+        raise ObjectDoesNotExist(
             "This user is neither a clinician nor a provider and therefore no dashboard exists!"
         )
 
