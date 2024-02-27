@@ -5,7 +5,61 @@ import pytest
 
 from django.urls import reverse
 
+from cme_accounts.models import User
 from commitments.models import Course, CommitmentTemplate
+
+
+@pytest.mark.django_db
+class TestDashboardRedirectingView:
+    """Tests for DashboardRedirectingView"""
+
+    class TestGet:
+        """Tests for DashboardRedirectingView.get"""
+
+        def test_clinician_user_gets_clinician_dashboard_redirect(
+            self, client, saved_clinician_profile
+        ):
+            target_url = reverse("dashboard")
+            client.force_login(saved_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 302
+            assert response.url == reverse("clinician dashboard")
+
+        def test_provider_user_gets_provider_dashboard_redirect(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("dashboard")
+            client.force_login(saved_provider_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 302
+            assert response.url == reverse("provider dashboard")
+
+        def test_non_clinician_or_provider_user_gets_server_error(
+            self, client
+        ):
+            target_url = reverse("dashboard")
+            neither_type_user = User.objects.create(
+                username="neither",
+                email="neither@localhost",
+                password="p@ssword11"
+            )
+            # Tell the Django client return 500 instead of reraising the exception
+            client.raise_request_exception = False
+            client.force_login(neither_type_user)
+            response = client.get(target_url)
+            assert response.status_code == 500
+
+
+    class TestPost:
+        """Tests for DashboardRedirectingView.post
+        
+        post is not defined, tests exist to make sure it does not have unexpected functionality."""
+
+        def test_post_returns_405(self, client, saved_provider_profile):
+            target_url = reverse("dashboard")
+            client.force_login(saved_provider_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 405
 
 
 @pytest.mark.django_db
