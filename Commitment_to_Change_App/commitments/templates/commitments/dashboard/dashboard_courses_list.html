@@ -1,44 +1,46 @@
 <div class="container-fluid">
   <div class="row foreground p-1 round-corners">
-      <div class="col-md-12">
-        {% block course_module_content %}
-          <div class="datatable-container">
-                  <table id="provider-course-datatable" class="display">
-                      <thead>
-                          <tr>
-                              <th scope="col">Course Name</th>
-                              <th scope="col">Course ID</th>
-                              <th scope="col">Start Date</th>
-                              <th scope="col">End Date</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                        {% for course in courses %}
-                          <tr>
-                              <td><a href="{% url "view Course" course_id=course.id %}">
-                                <button type="button" id="view-course-button" class="btn dashboard-button background round-corners p-2">{{ course.title }}</button></a>
-                              </td>
-                              <td>
-                                {% if course.identifier %}
-                                {{ course.identifier }}
-                                {% endif %}
-                              </td>
-                              <td>
-                                  {% if course.start_date %}
-                                  {{ course.start_date }}
-                                  {% endif %}
-                              </td>
-                              <td>
-                                  {% if course.end_date %}
-                                  {{ course.end_date }}
-                                  {% endif %}
-                              </td>
-                          </tr>
-                          {% endfor %}
-                      </tbody>
-                  </table>
-          </div>
-          {% endblock course_module_content %}
-      </div>
+    <div class="col-md-12">
+
+      {% block course_module_content %}
+        <div class="datatable-container">
+          <table id="provider-course-datatable" class="display">
+            <thead>
+              <tr>
+                <th scope="col">Course Name</th>
+                <th scope="col">Course ID</th>
+                <th scope="col">Start Date</th>
+                <th scope="col">End Date</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              {% for course in courses %}
+                <tr>
+                  <td>
+                    <a href="{% url "view Course" course_id=course.id %}">
+                      <button type="button"
+                              id="view-course-button"
+                              class="btn dashboard-button background round-corners p-2">{{ course.title }}</button>
+                    </a>
+                  </td>
+                  <td>
+                    {% if course.identifier %}{{ course.identifier }}{% endif %}
+                  </td>
+                  <td>
+                    {% if course.start_date %}{{ course.start_date }}{% endif %}
+                  </td>
+                  <td>
+                    {% if course.end_date %}{{ course.end_date }}{% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+        </div>
+      {% endblock course_module_content %}
+
+    </div>
   </div>
 </div>
