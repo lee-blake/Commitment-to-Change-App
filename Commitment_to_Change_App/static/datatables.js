@@ -11,8 +11,6 @@ function createStandardDataTable(table_id){
         "paging": false,
         // Remove pagination information ("Showing 1 to N of N entries")
         "bInfo" : false,
-        // Wraps the search bar with a "text-center" div
-        "dom": '<"text-center"f>i',
         // Adds dt-center (dataTables class) to all columns to center column content
         "columnDefs": [
             {"className": "dt-center", "targets": "_all"}
