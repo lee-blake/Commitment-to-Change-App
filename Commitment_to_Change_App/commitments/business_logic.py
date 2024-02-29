@@ -220,3 +220,39 @@ def write_aggregate_course_statistics_as_csv(courses, file_object_to_write_to):
             "Perc. Completed": statistics["percentages"]["complete"],
             "Perc. Discontinued": statistics["percentages"]["discontinued"],
         })
+
+def write_aggregate_commitment_template_statistics_as_csv(
+    commitment_templates, file_object_to_write_to
+):
+    headers = [
+        "Commitment Title",
+        "Commitment Description",
+        "Total Commitments",
+        "Num. In Progress",
+        "Num. Past Due",
+        "Num. Completed",
+        "Num. Discontinued",
+        "Perc. In Progress",
+        "Perc. Past Due",
+        "Perc. Completed",
+        "Perc. Discontinued",
+        ]
+    writer = csv.DictWriter(file_object_to_write_to, headers)
+    writer.writeheader()
+    for commitment_template in commitment_templates:
+        statistics = CommitmentStatusStatistics(
+            *commitment_template.derived_commitments
+        ).as_json()
+        writer.writerow({
+            "Commitment Title": commitment_template.title,
+            "Commitment Description": commitment_template.description,
+            "Total Commitments": statistics["total"],
+            "Num. In Progress": statistics["counts"]["in_progress"],
+            "Num. Past Due": statistics["counts"]["expired"],
+            "Num. Completed": statistics["counts"]["complete"],
+            "Num. Discontinued": statistics["counts"]["discontinued"],
+            "Perc. In Progress": statistics["percentages"]["in_progress"],
+            "Perc. Past Due": statistics["percentages"]["expired"],
+            "Perc. Completed": statistics["percentages"]["complete"],
+            "Perc. Discontinued": statistics["percentages"]["discontinued"],
+        })
