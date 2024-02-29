@@ -644,7 +644,7 @@ class TestEditCommitmentView:
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
-            new_deadline = date.today().replace(year=date.today().year+1)
+            new_deadline = date.today().replace(year=date.today().year+1, day=1)
             client.post(
                 target_url,
                 {
@@ -666,7 +666,7 @@ class TestEditCommitmentView:
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
-            new_deadline = date.today().replace(year=date.today().year+1)
+            new_deadline = date.today().replace(year=date.today().year+1, day=1)
             response = client.post(
                 target_url,
                 {
