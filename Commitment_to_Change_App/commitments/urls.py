@@ -121,5 +121,10 @@ urlpatterns = [
          "statistics/commitment-templates/aggregate/",
           views.AggregateCommitmentTemplateStatisticsCSVDownloadView.as_view(),
           name="download aggregate CommitmentTemplate statistics as csv"
-     )
+     ),
+     path(
+          "statistics/dashboard/",
+          views.StatisticsDashboardView.as_view(),
+          name="statistics dashboard"
+     ),
 ]

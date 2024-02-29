@@ -1,0 +1,25 @@
+<div class="text-center py-1">
+  <div class="table-responsive">
+    <table class="table">
+      {# NORTH: Perhaps this should be a caption? Currently captions look bad so #}
+      {#        I did this instead. #}
+      <tr>
+        <th scope="col" colspan="5">Commitment averages in your courses</th>
+      </tr>
+      <tr>
+        <th scope="col">% in progress</th>
+        <th scope="col">% past due</th>
+        <th scope="col">% completed</th>
+        <th scope="col">% discontinued</th>
+        <th scope="col">Total number</th>
+      </tr>
+      <tr>
+        <td>{{ overall_course_stats.percentages.in_progress | floatformat:1 }}</td>
+        <td>{{ overall_course_stats.percentages.expired | floatformat:1 }}</td>
+        <td>{{ overall_course_stats.percentages.complete | floatformat:1 }}</td>
+        <td>{{ overall_course_stats.percentages.discontinued | floatformat:1 }}</td>
+        <td>{{ overall_course_stats.total }}</td>
+      </tr>
+    </table>
+  </div>
+</div>

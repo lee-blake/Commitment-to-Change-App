@@ -1,0 +1,13 @@
+{% extends "commitments/common/base.html" %}
+{% block title %}
+  Statistics Dashboard
+{% endblock title %}
+{% block page_content %}
+  <div class="container-xl px-0 mb-3 foreground round-corners">
+    <div class="primary-header-container">
+      <h1>Course Statistics</h1>
+    </div>
+    {% include "commitments/statistics/dashboard_statistics_overall_course_stats.html" %}
+    {% include "commitments/statistics/dashboard_statistics_courses_list.html" %}
+  </div>
+{% endblock page_content %}
