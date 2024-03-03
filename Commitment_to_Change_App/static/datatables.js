@@ -1,6 +1,8 @@
 $(document).ready(function() {
     createStandardDataTable('#provider-course-datatable');
     createStandardDataTable('#provider-commitment-template-datatable');
+    createStandardDataTable('#clinician-course-view-datatable');
+    createStandardDataTable('#provider-course-view-datatable');
 });
 
 function createStandardDataTable(table_id){

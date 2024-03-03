@@ -37,16 +37,25 @@
                         <h4>List of Students Enrolled:</h4>
                     </div>
 
-                    {% for clinician in course.students.all %}
-                    <div class="d-flex justify-content-between list-group-item">
-                        <span>
-                            <li>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</li>
-                        </span>
-                        <span>
-                            {% block clinician_email_button %} {% endblock clinician_email_button %}
-                        </span>
+                    {% block student_table %}
+                    <div class="datatable-container">
+                        <table id="clinician-course-view-datatable" class="display">
+                            <thead>
+                                <tr>
+                                  <th scope="col">Student Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for clinician in course.students.all %}
+                                <tr>
+                                    <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    {% endfor %}
+
+                    {% endblock student_table %}
 
                 </div>
             </div>
