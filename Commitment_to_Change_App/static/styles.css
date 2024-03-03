@@ -81,6 +81,11 @@ form {
 ------------------------------------------------------------------- 
  */
 
+.datatable-container {
+    overflow:auto; 
+    width:100%;
+    position:relative;
+}
 .small-box-container {
     max-width: 400px;
     padding: 10px;
