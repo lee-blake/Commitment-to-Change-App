@@ -13,7 +13,7 @@ function createStandardDataTable(table_id){
         "paging": false,
         // Remove pagination information ("Showing 1 to N of N entries")
         "bInfo" : false,
-        // Adds dt-center (dataTables class) to all columns to center column content
+        // Adds dt-center (DataTables class) to all columns to center column content
         "columnDefs": [
             {"className": "dt-center", "targets": "_all"}
         ],
@@ -29,9 +29,12 @@ function createStudentListDataTable(table_id){
         "paging": false,
         // Remove pagination information ("Showing 1 to N of N entries")
         "bInfo" : false,
-        // Adds dt-center (dataTables class) to the mailto button column
+        // Allows DataTables to hide columns with a higher data-priority tag, based on screensize at generation
+        "responsive": true,
+        // Adds dt-center (DataTables class) to the mailto button column
         "columnDefs": [
-            {"className": "dt-center", "targets": "#mailto-button-column"}
+            {"className": "dt-center", "targets": "#mailto-button-column"},
+            { "orderable": false, "targets": "#mailto-button-column" }
         ],
     });
 }

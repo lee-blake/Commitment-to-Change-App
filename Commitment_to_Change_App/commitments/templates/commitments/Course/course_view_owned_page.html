@@ -27,14 +27,18 @@
     <table id="provider-course-view-datatable" class="display">
         <thead>
             <tr>
-              <th scope="col">Name</th>
-              <th scope="col" id="mailto-button-column">Email</th>
+              <th scope="col" data-priority="1">Name</th>
+              <th scope="col" data-priority="3">Email</th>
+              <th scope="col" data-priority="2" id="mailto-button-column">Send</th>
             </tr>
         </thead>
         <tbody>
             {% for clinician in course.students.all %}
             <tr>
                 <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
+                <td>
+                    <a href="mailto:{{ clinician.email }}">{{ clinician.email }}</a>
+                </td>
                 <td>
                     <a href="mailto:{{ clinician.email }}">
                     <button class="mailto-icon standard-button align-self-end">
