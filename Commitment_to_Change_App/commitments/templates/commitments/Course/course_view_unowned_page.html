@@ -33,12 +33,12 @@
 
                 {% block join_link %} {% endblock join_link %}
                 <div class="foreground round-corners mt-3 mx-3">
-                    <div class="secondary-header-container">
+                    <div class="secondary-header-container mb-3">
                         <h4>List of Students Enrolled:</h4>
                     </div>
-
-                    {% block student_table %}
-                    <div class="datatable-container">
+                    <div class="datatable-container round-corners">
+                    
+                        {% block student_table %}
                         <table id="clinician-course-view-datatable" class="display">
                             <thead>
                                 <tr>
@@ -53,10 +53,9 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                        {% endblock student_table %}
+
                     </div>
-
-                    {% endblock student_table %}
-
                 </div>
             </div>
         </div>

@@ -29,11 +29,15 @@ function createStudentListDataTable(table_id){
         "paging": false,
         // Remove pagination information ("Showing 1 to N of N entries")
         "bInfo" : false,
+        // Wrap search bar element in "text-center" div
+        "dom": '<"text-center"f>i',
         // Allows DataTables to hide columns with a higher data-priority tag, based on screensize at generation
         "responsive": true,
-        // Adds dt-center (DataTables class) to the mailto button column
+        
         "columnDefs": [
+            // Adds dt-center (DataTables class) to the mailto button column
             {"className": "dt-center", "targets": "#mailto-button-column"},
+            // Remove sortability and sort arrow from mailto button column
             { "orderable": false, "targets": "#mailto-button-column" }
         ],
     });
