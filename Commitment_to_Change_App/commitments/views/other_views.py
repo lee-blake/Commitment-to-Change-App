@@ -92,4 +92,7 @@ class StatisticsOverviewView(ProviderLoginRequiredMixin, TemplateView):
         ).as_json()
         for course in context["courses"]:
             course.enrich_with_statistics()
+        context["commitment_templates"] = CommitmentTemplate.objects.filter(owner=viewer)
+        for commitment_template in context["commitment_templates"]:
+            commitment_template.enrich_with_statistics()
         return context
