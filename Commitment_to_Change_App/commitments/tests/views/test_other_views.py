@@ -315,6 +315,103 @@ class TestStatisticsOverviewView:
             html = client.get(target_url).content.decode()
             assert enrolled_course.title in html
 
+        def test_individual_and_overall_commitment_template_stats_show_correctly(
+            self, client, saved_provider_profile, commitment_template_1,
+            make_quick_commitment
+        ):
+            make_quick_commitment(
+                source_template=commitment_template_1, status=CommitmentStatus.IN_PROGRESS
+            )
+            target_url = reverse("statistics overview")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            in_progress_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*100.0\s*</td>"
+            ).findall(html)
+            non_in_progress_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*0.0\s*</td>"
+            ).findall(html)
+            total_commitment_count_matches = re.compile(
+                r"\<td[^\>]*\>\s*1\s*</td>"
+            ).findall(html)
+            # Because this scenario has only one course, the overall counts are the same
+            # and therefore we double the expected number of matching elements.
+            assert len(in_progress_td_matches) == 2
+            assert len(non_in_progress_td_matches) == 6
+            assert len(total_commitment_count_matches) == 2
+
+        def test_overall_commitment_template_stats_are_correct_with_multiple_templates(
+            self, client, saved_provider_profile, commitment_template_1, commitment_template_2,
+            make_quick_commitment
+        ):
+            make_quick_commitment(
+                source_template=commitment_template_2, status=CommitmentStatus.IN_PROGRESS
+            )
+            make_quick_commitment(
+                source_template=commitment_template_1, status=CommitmentStatus.EXPIRED
+            )
+            make_quick_commitment(
+                source_template=commitment_template_1, status=CommitmentStatus.COMPLETE
+            )
+            make_quick_commitment(
+                source_template=commitment_template_1, status=CommitmentStatus.DISCONTINUED
+            )
+            target_url = reverse("statistics overview")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            overall_status_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*25.0\s*</td>"
+            ).findall(html)
+            assert len(overall_status_td_matches) == 4
+            total_commitment_count_matches = re.compile(
+                r"\<td[^\>]*\>\s*4\s*</td>"
+            ).findall(html)
+            assert len(total_commitment_count_matches) == 1
+
+        def test_individual_commitment_template_stats_are_correct_with_multiple_templates(
+            self, client, saved_provider_profile, commitment_template_1, commitment_template_2,
+            make_quick_commitment
+        ):
+            make_quick_commitment(
+                source_template=commitment_template_2, status=CommitmentStatus.IN_PROGRESS
+            )
+            make_quick_commitment(
+                source_template=commitment_template_1, status=CommitmentStatus.EXPIRED
+            )
+            make_quick_commitment(
+                source_template=commitment_template_1, status=CommitmentStatus.COMPLETE
+            )
+            make_quick_commitment(
+                source_template=commitment_template_1, status=CommitmentStatus.DISCONTINUED
+            )
+            target_url = reverse("statistics overview")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            enrolled_course_nonzero_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*33.3\s*</td>"
+            ).findall(html)
+            assert len(enrolled_course_nonzero_td_matches) == 3
+            non_enrolled_course_nonzero_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*100.0\s*</td>"
+            ).findall(html)
+            assert len(non_enrolled_course_nonzero_td_matches) == 1
+            zero_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*0.0\s*</td>"
+            ).findall(html)
+            assert len(zero_td_matches) == 4
+            total_for_non_enrolled_course_matches = re.compile(
+                r"\<td[^\>]*\>\s*3\s*</td>"
+            ).findall(html)
+            assert len(total_for_non_enrolled_course_matches) == 1
+
+        def test_commitment_template_titles_show_in_page(
+            self, client, saved_provider_profile, commitment_template_1
+        ):
+            target_url = reverse("statistics overview")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            assert commitment_template_1.title in html
+
         def test_statistics_overview_links_to_aggregate_course_stats_csv_downlaod(
             self, client, saved_provider_profile
         ):
@@ -339,7 +436,7 @@ class TestStatisticsOverviewView:
             )
             assert create_course_link_regex.search(html)
 
-        
+
     class TestPost:
         """Tests for StatisticsOverviewView.post"""
 
