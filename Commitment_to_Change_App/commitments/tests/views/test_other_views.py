@@ -315,7 +315,31 @@ class TestStatisticsOverviewView:
             html = client.get(target_url).content.decode()
             assert enrolled_course.title in html
 
+        def test_statistics_overview_links_to_aggregate_course_stats_csv_downlaod(
+            self, client, saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("statistics overview")).content.decode()
+            download_course_stats_csv_link = reverse("download aggregate Course statistics as csv")
+            create_course_link_regex = re.compile(
+                r"\<a\s[^\>]*href=\"" + download_course_stats_csv_link + r"\"[^\>]*\>"
+            )
+            assert create_course_link_regex.search(html)
 
+        def test_statistics_overview_links_to_aggregate_commitment_template_stats_csv_downlaod(
+            self, client, saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("statistics overview")).content.decode()
+            download_course_stats_csv_link = reverse(
+                "download aggregate CommitmentTemplate statistics as csv"
+            )
+            create_course_link_regex = re.compile(
+                r"\<a\s[^\>]*href=\"" + download_course_stats_csv_link + r"\"[^\>]*\>"
+            )
+            assert create_course_link_regex.search(html)
+
+        
     class TestPost:
         """Tests for StatisticsOverviewView.post"""
 
