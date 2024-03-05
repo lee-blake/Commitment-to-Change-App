@@ -207,14 +207,14 @@ class TestAggregateCommitmentTemplateStatisticsCSVDownloadView:
 
 
 @pytest.mark.django_db
-class TestStatisticsDashboardView:
-    """Tests for StatisticsDashboardView"""
+class TestStatisticsOverviewView:
+    """Tests for StatisticsOverviewView"""
 
     class TestGet:
-        """Tests for StatisticsDashboardView.get"""
+        """Tests for StatisticsOverviewView.get"""
 
         def test_rejects_clinician_accounts_with_403(self, client, saved_clinician_user):
-            target_url = reverse("statistics dashboard")
+            target_url = reverse("statistics overview")
             client.force_login(saved_clinician_user)
             response = client.get(target_url)
             assert response.status_code == 403
@@ -225,7 +225,7 @@ class TestStatisticsDashboardView:
             make_quick_commitment(
                 associated_course=enrolled_course, status=CommitmentStatus.IN_PROGRESS
             )
-            target_url = reverse("statistics dashboard")
+            target_url = reverse("statistics overview")
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             in_progress_td_matches = re.compile(
@@ -259,7 +259,7 @@ class TestStatisticsDashboardView:
             make_quick_commitment(
                 associated_course=enrolled_course, status=CommitmentStatus.DISCONTINUED
             )
-            target_url = reverse("statistics dashboard")
+            target_url = reverse("statistics overview")
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             overall_status_td_matches = re.compile(
@@ -287,7 +287,7 @@ class TestStatisticsDashboardView:
             make_quick_commitment(
                 associated_course=enrolled_course, status=CommitmentStatus.DISCONTINUED
             )
-            target_url = reverse("statistics dashboard")
+            target_url = reverse("statistics overview")
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             enrolled_course_nonzero_td_matches = re.compile(
@@ -310,19 +310,19 @@ class TestStatisticsDashboardView:
         def test_course_titles_show_in_page(
             self, client, saved_provider_profile, enrolled_course
         ):
-            target_url = reverse("statistics dashboard")
+            target_url = reverse("statistics overview")
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             assert enrolled_course.title in html
 
 
     class TestPost:
-        """Tests for StatisticsDashboardView.post"""
+        """Tests for StatisticsOverviewView.post"""
 
         def test_post_rejected_with_405(self, client, saved_provider_profile):
             client.force_login(saved_provider_profile.user)
             response = client.post(
-                reverse("statistics dashboard"),
+                reverse("statistics overview"),
                 {}
             )
             assert response.status_code == 405

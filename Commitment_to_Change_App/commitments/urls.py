@@ -124,7 +124,7 @@ urlpatterns = [
      ),
      path(
           "statistics/dashboard/",
-          views.StatisticsDashboardView.as_view(),
-          name="statistics dashboard"
+          views.StatisticsOverviewView.as_view(),
+          name="statistics overview"
      ),
 ]

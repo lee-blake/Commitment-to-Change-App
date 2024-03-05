@@ -77,8 +77,8 @@ class AggregateCommitmentTemplateStatisticsCSVDownloadView(
         write_aggregate_commitment_template_statistics_as_csv(commitment_templates, temporary_file)
 
 
-class StatisticsDashboardView(ProviderLoginRequiredMixin, TemplateView):
-    template_name = "commitments/statistics/dashboard_statistics_page.html"
+class StatisticsOverviewView(ProviderLoginRequiredMixin, TemplateView):
+    template_name = "commitments/statistics/statistics_overview_page.html"
 
     def get_context_data(self, **kwargs):
         viewer = ProviderProfile.objects.get(user=self.request.user)
