@@ -1,11 +1,13 @@
 import csv
 import io
+import re
 
 import pytest
 
 from django.urls import reverse
 
 from cme_accounts.models import User
+from commitments.enums import CommitmentStatus
 from commitments.models import Course, CommitmentTemplate
 
 
@@ -201,4 +203,126 @@ class TestAggregateCommitmentTemplateStatisticsCSVDownloadView:
             target_url = reverse("download aggregate CommitmentTemplate statistics as csv")
             client.force_login(saved_provider_profile.user)
             response = client.post(target_url)
+            assert response.status_code == 405
+
+
+@pytest.mark.django_db
+class TestStatisticsDashboardView:
+    """Tests for StatisticsDashboardView"""
+
+    class TestGet:
+        """Tests for StatisticsDashboardView.get"""
+
+        def test_rejects_clinician_accounts_with_403(self, client, saved_clinician_user):
+            target_url = reverse("statistics dashboard")
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_individual_and_overall_course_stats_show_correctly(
+            self, client, saved_provider_profile, enrolled_course, make_quick_commitment
+        ):
+            make_quick_commitment(
+                associated_course=enrolled_course, status=CommitmentStatus.IN_PROGRESS
+            )
+            target_url = reverse("statistics dashboard")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            in_progress_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*100.0\s*</td>"
+            ).findall(html)
+            non_in_progress_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*0.0\s*</td>"
+            ).findall(html)
+            total_commitment_count_matches = re.compile(
+                r"\<td[^\>]*\>\s*1\s*</td>"
+            ).findall(html)
+            # Because this scenario has only one course, the overall counts are the same
+            # and therefore we double the expected number of matching elements.
+            assert len(in_progress_td_matches) == 2
+            assert len(non_in_progress_td_matches) == 6
+            assert len(total_commitment_count_matches) == 2
+
+        def test_overall_course_stats_are_correct_with_multiple_courses(
+            self, client, saved_provider_profile, enrolled_course, non_enrolled_course,
+            make_quick_commitment
+        ):
+            make_quick_commitment(
+                associated_course=non_enrolled_course, status=CommitmentStatus.IN_PROGRESS
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course, status=CommitmentStatus.EXPIRED
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course, status=CommitmentStatus.COMPLETE
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course, status=CommitmentStatus.DISCONTINUED
+            )
+            target_url = reverse("statistics dashboard")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            overall_status_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*25.0\s*</td>"
+            ).findall(html)
+            assert len(overall_status_td_matches) == 4
+            total_commitment_count_matches = re.compile(
+                r"\<td[^\>]*\>\s*4\s*</td>"
+            ).findall(html)
+            assert len(total_commitment_count_matches) == 1
+
+        def test_individual_course_stats_are_correct_with_multiple_courses(
+            self, client, saved_provider_profile, enrolled_course, non_enrolled_course,
+            make_quick_commitment
+        ):
+            make_quick_commitment(
+                associated_course=non_enrolled_course, status=CommitmentStatus.IN_PROGRESS
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course, status=CommitmentStatus.EXPIRED
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course, status=CommitmentStatus.COMPLETE
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course, status=CommitmentStatus.DISCONTINUED
+            )
+            target_url = reverse("statistics dashboard")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            enrolled_course_nonzero_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*33.3\s*</td>"
+            ).findall(html)
+            assert len(enrolled_course_nonzero_td_matches) == 3
+            non_enrolled_course_nonzero_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*100.0\s*</td>"
+            ).findall(html)
+            assert len(non_enrolled_course_nonzero_td_matches) == 1
+            zero_td_matches = re.compile(
+                r"\<td[^\>]*\>\s*0.0\s*</td>"
+            ).findall(html)
+            assert len(zero_td_matches) == 4
+            total_for_non_enrolled_course_matches = re.compile(
+                r"\<td[^\>]*\>\s*3\s*</td>"
+            ).findall(html)
+            assert len(total_for_non_enrolled_course_matches) == 1
+
+        def test_course_titles_show_in_page(
+            self, client, saved_provider_profile, enrolled_course
+        ):
+            target_url = reverse("statistics dashboard")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            assert enrolled_course.title in html
+
+
+    class TestPost:
+        """Tests for StatisticsDashboardView.post"""
+
+        def test_post_rejected_with_405(self, client, saved_provider_profile):
+            client.force_login(saved_provider_profile.user)
+            response = client.post(
+                reverse("statistics dashboard"),
+                {}
+            )
             assert response.status_code == 405
