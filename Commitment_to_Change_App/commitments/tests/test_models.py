@@ -145,6 +145,23 @@ class TestCourse:
 
 
     @pytest.mark.django_db
+    class TestSuggestedCommitmentsList:
+        """Tests for Course.suggested_commitments_list"""
+
+        def test_no_suggested_commitments_returns_empty_iterable(self, minimal_course):
+            assert len(minimal_course.suggested_commitments_list) == 0
+            assert iter(minimal_course.suggested_commitments_list)
+
+        def test_one_suggested_commitment_returns_iterable_containing_it(
+            self, minimal_course, minimal_commitment_template
+        ):
+            minimal_course.suggested_commitments.add(minimal_commitment_template)
+            minimal_course.save()
+            assert minimal_commitment_template in minimal_course.suggested_commitments_list
+            assert iter(minimal_course.suggested_commitments_list)
+
+
+    @pytest.mark.django_db
     class TestEnrollStudentWithJoinCode:
         """Tests for checking that CourseLogic.enroll_student_with_join_code integrates
         with Course."""
