@@ -129,7 +129,7 @@ class TestCourse:
 
     @pytest.mark.django_db
     class TestAssociatedCommitmentsList:
-        """Tests for Commitment.associated_commitments_list"""
+        """Tests for Course.associated_commitments_list"""
 
         def test_no_associated_commitments_returns_empty_iterable(self, minimal_course):
             assert len(minimal_course.associated_commitments_list) == 0
