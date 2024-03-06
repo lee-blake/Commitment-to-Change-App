@@ -74,6 +74,13 @@ class Course(CourseLogic, models.Model):
         # Django ManyToManyFields are not iterable, we must wrap them with a property.
         return self.associated_commitments.all()
 
+    @property
+    def suggested_commitments_list(self):
+        # Suppressed because this mistakenly triggers an error in the VSCode extension:
+        # https://github.com/pylint-dev/pylint-django/issues/404
+        # pylint does not show such an error from the command line.
+        return self.suggested_commitments.all() #pylint: disable=no-member
+
     def _add_student(self, student):
         # We must override this due to ManyToManyField using different methods than list.
         # Pylint doesn't understand that contains(...) is applied to the field at runtime.

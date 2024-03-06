@@ -32,7 +32,7 @@ class FakeCourseData:
     identifier = "FAKE-001"
     start_date = datetime.date.today()
     end_date = datetime.date.today()
-    suggested_commitments = []
+    suggested_commitments_list = []
     join_code = ""
     students = []
     associated_commitments_list = []
