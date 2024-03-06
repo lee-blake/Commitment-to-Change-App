@@ -38,6 +38,7 @@ class ViewCourseView(LoginRequiredMixin, DetailView):
         # Enrich the course object with its statistics
         course = context["course"]
         course.enrich_with_statistics()
+        context["suggested_commitments"] = course.suggested_commitments_list
         return context
 
     def get_template_names(self):
