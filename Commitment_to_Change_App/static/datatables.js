@@ -1,8 +1,18 @@
 $(document).ready(function() {
     createStandardDataTable('#provider-course-datatable');
     createStandardDataTable('#provider-commitment-template-datatable');
-    createStudentListDataTable('#clinician-course-view-datatable');
-    createStudentListDataTable('#provider-course-view-datatable');
+    createStudentListDataTable('#clinician-course-student-datatable');
+    createStudentListDataTable('#provider-course-student-datatable');
+});
+
+// Toggle whether button or email link is shown
+$(document).ready(function() {
+    tableWidthBreakpoint = 400;
+    $(window).on("resize", function() {
+        var containerWidth = $("#course-student-datatable-container").width();
+        $(".hide-when-smaller").toggle(containerWidth >= tableWidthBreakpoint);
+        $(".show-when-smaller").toggle(containerWidth < tableWidthBreakpoint);
+    });
 });
 
 function createStandardDataTable(table_id){
@@ -20,7 +30,6 @@ function createStandardDataTable(table_id){
     });
 }
 
-
 function createStudentListDataTable(table_id){
     $(table_id).DataTable({
         // autoWidth scales onlyon page refresh. Disabling allows us to use bootstrap class scaling
@@ -30,16 +39,6 @@ function createStudentListDataTable(table_id){
         // Remove pagination information ("Showing 1 to N of N entries")
         "bInfo" : false,
         // Wrap search bar element in "text-center" div
-        "dom": '<"text-center"f>i',
-        // Allows DataTables to hide columns with a higher data-priority tag, based on screensize at generation
-        "responsive": true,
-        
-        "columnDefs": [
-            // Adds dt-center (DataTables class) to the mailto button column
-            {"className": "dt-center", "targets": "#mailto-button-column"},
-            // Remove sortability and sort arrow from mailto button column
-            { "orderable": false, "targets": "#mailto-button-column" }
-        ],
+        "dom": '<"text-center"f>i'
     });
 }
-
