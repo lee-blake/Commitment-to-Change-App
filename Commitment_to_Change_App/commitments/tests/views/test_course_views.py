@@ -580,7 +580,7 @@ class TestViewCourseView:
             commitment_template_1, make_quick_commitment
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
-            # We make two commitments with different status, only one of which 
+            # We make two commitments with different status, only one of which
             # is for the template - this way we can distinguish the two stats types.
             make_quick_commitment(
                 associated_course=enrolled_course,
@@ -595,7 +595,7 @@ class TestViewCourseView:
             html = client.get(
                 reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
-            # Mixed statuses means course stats won't show 100%, so we know this 
+            # Mixed statuses means course stats won't show 100%, so we know this
             # is for suggested commitments if it is present.
             assert re.compile(r"100.0\s*\%").search(html)
 
@@ -726,7 +726,7 @@ class TestViewCourseView:
             commitment_template_1, make_quick_commitment
         ):
             enrolled_course.suggested_commitments.add(commitment_template_1)
-            # We make two commitments with different status, only one of which 
+            # We make two commitments with different status, only one of which
             # is for the template - this way we can distinguish the two stats types.
             make_quick_commitment(
                 associated_course=enrolled_course,
@@ -741,7 +741,7 @@ class TestViewCourseView:
             html = client.get(
                 reverse("view Course", kwargs={ "course_id": enrolled_course.id })
             ).content.decode()
-            # Mixed statuses means course stats won't show 100%, so we know this 
+            # Mixed statuses means course stats won't show 100%, so we know this
             # is for suggested commitments if it is present.
             assert re.compile(r"100.0\s*\%").search(html)
 
