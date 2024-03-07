@@ -2,8 +2,21 @@ import datetime
 
 import pytest
 
+from django.core import mail
+
 from cme_accounts.models import User
 from commitments.models import ClinicianProfile, ProviderProfile, Commitment, Course
+
+
+@pytest.fixture(name="captured_email")
+def fixture_captured_email(settings):
+    """This fixture ensures that Django uses the memory backend for email during tests. 
+    If a test case will send an email, you should call this to ensure email is not sent
+    out incorrectly.
+    """
+    settings.EMAIL_BACKEND = "django.core.mail.backends.locmem.EmailBackend"
+    # This attribute does exist if the locmem backend is set - Django sets it at runtime.
+    return mail.outbox #pylint: disable=no-member
 
 
 @pytest.fixture(name="minimal_clinician")

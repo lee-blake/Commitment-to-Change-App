@@ -6,7 +6,9 @@ from django.core.management import call_command
 from commitments.enums import CommitmentStatus
 from commitments.management.commands.expire_commitments import \
     expire_in_progress_commitments_past_deadline
-from commitments.models import Commitment
+from commitments.management.commands.send_reminder_emails import \
+    send_reminder_emails_for_commitments
+from commitments.models import Commitment, CommitmentReminderEmail
 
 
 @pytest.mark.django_db
@@ -55,3 +57,69 @@ class TestExpireCommitmentCommand:
         call_command("expire_commitments")
         reloaded_commitment = Commitment.objects.get(id=minimal_commitment.id)
         assert reloaded_commitment.status == CommitmentStatus.EXPIRED
+
+
+@pytest.mark.django_db
+class TestSendReminderEmailsForCommitments:
+    """Tests for send_reminder_emails_for_commitments"""
+
+    def test_reminder_emails_are_sent_for_all_non_future_dates(
+        self, minimal_commitment, captured_email
+    ):
+        CommitmentReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            date=datetime.date.today() - datetime.timedelta(days=1)
+        )
+        CommitmentReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            date=datetime.date.today()
+        )
+        CommitmentReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            date=datetime.date.today() + datetime.timedelta(days=1)
+        )
+        send_reminder_emails_for_commitments()
+        assert len(captured_email) == 2
+
+    def test_correct_reminder_email_objects_are_deleted(
+        self, minimal_commitment
+    ):
+        yesterday = CommitmentReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            date=datetime.date.today() - datetime.timedelta(days=1)
+        )
+        today = CommitmentReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            date=datetime.date.today()
+        )
+        tomorrow = CommitmentReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            date=datetime.date.today() + datetime.timedelta(days=1)
+        )
+        send_reminder_emails_for_commitments()
+        assert CommitmentReminderEmail.objects.filter(id=yesterday.id).count() == 0
+        assert CommitmentReminderEmail.objects.filter(id=today.id).count() == 0
+        assert CommitmentReminderEmail.objects.filter(id=tomorrow.id).count() == 1
+
+
+@pytest.mark.django_db
+class TestSendReminderEmailsCommand:
+    """Tests for send_reminder_emails.Command integration"""
+
+    def test_called_command_sends_correct_emails(
+        self, minimal_commitment, captured_email
+    ):
+        CommitmentReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            date=datetime.date.today() - datetime.timedelta(days=1)
+        )
+        CommitmentReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            date=datetime.date.today()
+        )
+        CommitmentReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            date=datetime.date.today() + datetime.timedelta(days=1)
+        )
+        call_command("send_reminder_emails")
+        assert len(captured_email) == 2
