@@ -1,6 +1,7 @@
 """Helper functions for testing"""
 
 import re
+from smtplib import SMTPException
 
 
 def convert_date_to_general_regex(date):
@@ -18,3 +19,13 @@ def convert_date_to_general_regex(date):
         f"({re_month_first_slashes}|{re_iso_format}|{re_month_text_first}|" +
         f"{re_short_month_text_first}|{re_year_first_slashes})"
     )
+
+
+class FailBackend:
+    """Mock email backend for testing behavior when email sending fails with an exception"""
+    
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def send_messages(self, messages):
+        raise SMTPException()
