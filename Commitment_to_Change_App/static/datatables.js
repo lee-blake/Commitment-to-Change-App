@@ -3,17 +3,21 @@ $(document).ready(function() {
     createStandardDataTable('#provider-commitment-template-datatable');
     createStudentListDataTable('#clinician-course-student-datatable');
     createStudentListDataTable('#provider-course-student-datatable');
+
+    // Trigger toggleBasedOnScreenSize on document ready
+    toggleBasedOnScreenSize(400, '#course-student-datatable-container');
+    // Trigger toggleBasedOnScreenSize on window "resize"
+    $(window).on("resize", function() {
+        toggleBasedOnScreenSize(400, '#course-student-datatable-container');
+    });
 });
 
 // Toggle whether button or email link is shown
-$(document).ready(function() {
-    tableWidthBreakpoint = 400;
-    $(window).on("resize", function() {
-        var containerWidth = $("#course-student-datatable-container").width();
-        $(".hide-when-smaller").toggle(containerWidth >= tableWidthBreakpoint);
-        $(".show-when-smaller").toggle(containerWidth < tableWidthBreakpoint);
-    });
-});
+function toggleBasedOnScreenSize(tableWidthBreakpoint, container_id) {
+    var containerWidth = $(container_id).width();
+    $(".hide-when-smaller").toggle(containerWidth >= tableWidthBreakpoint);
+    $(".show-when-smaller").toggle(containerWidth < tableWidthBreakpoint);
+}
 
 function createStandardDataTable(table_id){
     $(table_id).DataTable({
