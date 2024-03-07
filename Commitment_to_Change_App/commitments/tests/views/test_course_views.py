@@ -575,6 +575,30 @@ class TestViewCourseView:
                 assert commitment.title in html
             assert non_associated_commitment.title not in html
 
+        def test_suggested_commitments_stats_show_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course,
+            commitment_template_1, make_quick_commitment
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            # We make two commitments with different status, only one of which 
+            # is for the template - this way we can distinguish the two stats types.
+            make_quick_commitment(
+                associated_course=enrolled_course,
+                source_template=commitment_template_1,
+                status=CommitmentStatus.COMPLETE
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course,
+                status=CommitmentStatus.DISCONTINUED
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            # Mixed statuses means course stats won't show 100%, so we know this 
+            # is for suggested commitments if it is present.
+            assert re.compile(r"100.0\s*\%").search(html)
+
 
     class TestGetStudentView:
         """Tests for ViewCourseView.get viewing from the perspective of a student."""
@@ -696,6 +720,30 @@ class TestViewCourseView:
             for commitment in associated_commitments:
                 assert commitment.title in html
             assert non_associated_commitment.title not in html
+
+        def test_suggested_commitments_stats_show_in_page_for_clinician(
+            self, client, saved_clinician_profile, enrolled_course,
+            commitment_template_1, make_quick_commitment
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            # We make two commitments with different status, only one of which 
+            # is for the template - this way we can distinguish the two stats types.
+            make_quick_commitment(
+                associated_course=enrolled_course,
+                source_template=commitment_template_1,
+                status=CommitmentStatus.COMPLETE
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course,
+                status=CommitmentStatus.DISCONTINUED
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            # Mixed statuses means course stats won't show 100%, so we know this 
+            # is for suggested commitments if it is present.
+            assert re.compile(r"100.0\s*\%").search(html)
 
 
     class TestPost:
