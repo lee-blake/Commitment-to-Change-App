@@ -1,86 +1,86 @@
 {% extends "commitments/common/base.html" %}
-{% block title %} {{ course.title }} {% endblock title %}
-
+{% block title %}
+  {{ course.title }}
+{% endblock title %}
 {% block page_content %}
-<div class="container-xl px-0 round-corners foreground">
+  <div class="container-xl px-0 round-corners foreground">
     <div class="primary-header-container">
-        <span class="header-with-modal">
-            <h1>{{ course.title }}</h1>
-            {% block course_help_modal %}
-            {% include "commitments/Course/course_view_unowned_page_help_modal.html" %}
-            {% endblock course_help_modal %}
-        </span>
-
+      <span class="header-with-modal">
+        <h1>{{ course.title }}</h1>
+        {% block course_help_modal %}
+          {% include "commitments/Course/course_view_unowned_page_help_modal.html" %}
+        {% endblock course_help_modal %}
+      </span>
     </div>
     <div class="py-1 secondary-accent text-center">
-        <h2>{{ course.owner.institution }}</h2>
+      <h2>{{ course.owner.institution }}</h2>
     </div>
-
     <div class="row py-3 px-2 g-5">
-        <div class="col-md-6 p-3">
-            <div class="background round-corners pb-3">
-                <div class="primary-header-container">
-                    <h3>Description</h3>
-                </div>
-                <div class="text-center foreground p-1 round-corners mt-3 mx-3">
-                    <p>{{ course.description }}</p>
-                </div>
-            </div>
-            <div class="background round-corners mt-3 pb-3">
-                <div class="primary-header-container">
-                    <h3>Students</h3>
-                </div>
-
-                {% block join_link %} {% endblock join_link %}
-                <div class="foreground round-corners mt-3 mx-3">
-                    <div class="secondary-header-container">
-                        <h4>List of Students Enrolled:</h4>
-                    </div>
-
-                    {% for clinician in course.students.all %}
-                    <div class="d-flex justify-content-between list-group-item">
-                        <span>
-                            <li>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</li>
-                        </span>
-                        <span>
-                            {% block clinician_email_button %} {% endblock clinician_email_button %}
-                        </span>
-                    </div>
-                    {% endfor %}
-
-                </div>
-            </div>
+      <div class="col-md-6 p-3">
+        <div class="background round-corners pb-3">
+          <div class="primary-header-container">
+            <h3>Description</h3>
+          </div>
+          <div class="text-center foreground p-1 round-corners mt-3 mx-3">
+            <p>{{ course.description }}</p>
+          </div>
         </div>
-        <div class="col-md-6 p-3">
-            <div class="background round-corners pb-3">
-                <div class="primary-header-container">
-                    <h3>Commitments in This Course</h3>
-                </div>
-                <div class="foreground round-corners mt-3 mx-3">
-                    <div class="secondary-header-container">
-                        <h4>Suggested Commitments</h4>
-                    </div>  
-                    {% include "commitments/Course/course_suggested_commitments_panel.html" %}            
-                    {% block select_suggested_commitments_button %}
-                    {% endblock select_suggested_commitments_button %}
-                </div>
-                <div class="foreground text-center round-corners pb-3 mt-3 mx-3">
-                    {% include "commitments/Course/course_commitment_statistics_breakdown_section.html" %}
-                </div>
-                <div class="foreground round-corners pb-3 mt-3 mx-3">
-                    <div class="secondary-header-container">
-                        <h4>Commitments Made in This Course:</h4>
-                    </div>
-                    {% block course_commitment_csv_download_link %}
-                    {% endblock course_commitment_csv_download_link %}
-                    {% include "commitments/Course/course_associated_commitments_panel.html" %}
-                </div>
+        <div class="background round-corners mt-3 pb-3">
+          <div class="primary-header-container">
+            <h3>Students</h3>
+          </div>
+          {% block join_link %}
+          {% endblock join_link %}
+          <div class="foreground round-corners mt-3 mx-3">
+            <div class="secondary-header-container">
+              <h4>List of Students Enrolled:</h4>
             </div>
+            {% for clinician in course.students.all %}
+              <div class="d-flex justify-content-between list-group-item">
+                <span>
+                  <li>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</li>
+                </span>
+                <span>
+                  {% block clinician_email_button %}
+                  {% endblock clinician_email_button %}
+                </span>
+              </div>
+            {% endfor %}
+          </div>
         </div>
+      </div>
+      <div class="col-md-6 p-3">
+        <div class="background round-corners pb-3">
+          <div class="primary-header-container">
+            <h3>Commitments in This Course</h3>
+          </div>
+          <div class="foreground round-corners mt-3 mx-3">
+            <div class="secondary-header-container">
+              <h4>Suggested Commitments</h4>
+            </div>
+            {% include "commitments/Course/course_suggested_commitments_panel.html" %}
+            {% block select_suggested_commitments_button %}
+            {% endblock select_suggested_commitments_button %}
+          </div>
+          <div class="foreground text-center round-corners pb-3 mt-3 mx-3">
+            {% include "commitments/Course/course_commitment_statistics_breakdown_section.html" %}
+          </div>
+          <div class="foreground round-corners pb-3 mt-3 mx-3">
+            <div class="secondary-header-container">
+              <h4>Commitments Made in This Course:</h4>
+            </div>
+            {% block course_commitment_csv_download_link %}
+            {% endblock course_commitment_csv_download_link %}
+            {% include "commitments/Course/course_associated_commitments_panel.html" %}
+          </div>
+        </div>
+      </div>
     </div>
     <div class="container-fluid py-3 text-center">
-        {% block edit_button %} {% endblock edit_button %}
-        {% block delete_button %} {% endblock delete_button %}
+      {% block edit_button %}
+      {% endblock edit_button %}
+      {% block delete_button %}
+      {% endblock delete_button %}
     </div>
-</div>
+  </div>
 {% endblock page_content %}
