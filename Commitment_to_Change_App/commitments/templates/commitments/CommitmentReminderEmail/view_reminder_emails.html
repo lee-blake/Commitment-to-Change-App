@@ -1,0 +1,47 @@
+{% extends "commitments/common/base.html" %} 
+
+{% block title %} Reminder emails for {{ commitment.title }} {% endblock title %} 
+
+{% block page_content %}
+  <div class="container-xl px-0 round-corners foreground">
+    <div class="primary-header-container">
+      <h1>Reminder emails for {{ commitment.title }}</h1>
+    </div>
+    <div>
+      <div class="table-responsive text-center">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Date of email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for reminder_email in reminder_emails %}
+              <tr>
+                <td>{{ reminder_email.date }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td>
+                {% block create_button %}
+                  <a href="{% url 'create CommitmentReminderEmail' commitment_id=commitment.id %}">
+                    <button class="standard-button primary-accent" type="submit">
+                      Schedule a reminder email
+                    </button>
+                  </a>
+                {% endblock create_button %}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+        <a href="{% url 'view Commitment' commitment_id=commitment.id %}">
+            <button class="button btn" type="submit">
+              Back to commitment
+            </button>
+          </a>
+      </div>
+    </div>
+  </div>
+{% endblock page_content %}

@@ -127,4 +127,15 @@ urlpatterns = [
           views.StatisticsOverviewView.as_view(),
           name="statistics overview"
      ),
+
+     path(
+          "commitment/<int:commitment_id>/reminders/create/",
+          views.CreateCommitmentReminderEmailView.as_view(),
+          name="create CommitmentReminderEmail"
+     ),
+     path(
+          "commitment/<int:commitment_id>/reminders/view-all/",
+          views.ViewCommitmentReminderEmailsView.as_view(),
+          name="view CommitmentReminderEmails"
+     ),
 ]
