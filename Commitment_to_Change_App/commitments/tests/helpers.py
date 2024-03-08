@@ -23,7 +23,7 @@ def convert_date_to_general_regex(date):
 
 class FailBackend:
     """Mock email backend for testing behavior when email sending fails with an exception"""
-    
+
     def __init__(self, *args, **kwargs):
         pass
 

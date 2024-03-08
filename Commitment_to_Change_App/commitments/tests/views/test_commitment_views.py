@@ -432,7 +432,7 @@ class TestViewCommitmentView:
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             assert link_url in html
-        
+
         def test_link_to_reminder_email_view_does_not_shows_for_providers(
             self, client, saved_provider_profile, viewable_commitment_1
         ):
@@ -476,8 +476,6 @@ class TestViewCommitmentView:
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             assert link_url not in html
-
-
 
 
     class TestPost:
