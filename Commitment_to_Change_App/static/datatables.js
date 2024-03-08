@@ -4,19 +4,19 @@ $(document).ready(function() {
     createStudentListDataTable('#clinician-course-student-datatable');
     createStudentListDataTable('#provider-course-student-datatable');
 
-    // Trigger toggleBasedOnScreenSize on document ready
-    toggleBasedOnScreenSize(400, '#course-student-datatable-container');
-    // Trigger toggleBasedOnScreenSize on window "resize"
+    // Trigger toggleVisibilityBasedOnDivWidth on document ready
+    toggleVisibilityBasedOnDivWidth(400, '#course-student-datatable-container');
+    // Trigger toggleVisibilityBasedOnDivWidth on window "resize"
     $(window).on("resize", function() {
-        toggleBasedOnScreenSize(400, '#course-student-datatable-container');
+        toggleVisibilityBasedOnDivWidth(400, '#course-student-datatable-container');
     });
 });
 
 // Toggle whether button or email link is shown
-function toggleBasedOnScreenSize(tableWidthBreakpoint, container_id) {
-    var containerWidth = $(container_id).width();
-    $(".hide-when-smaller").toggle(containerWidth >= tableWidthBreakpoint);
-    $(".show-when-smaller").toggle(containerWidth < tableWidthBreakpoint);
+function toggleVisibilityBasedOnDivWidth(containerBreakpoint, parentContainerID) {
+    var parentContainerWidth = $(parentContainerID).width();
+    $(".hide-when-smaller").toggle(parentContainerWidth >= containerBreakpoint);
+    $(".show-when-smaller").toggle(parentContainerWidth < containerBreakpoint);
 }
 
 function createStandardDataTable(table_id){
