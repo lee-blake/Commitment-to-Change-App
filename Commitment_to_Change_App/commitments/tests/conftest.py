@@ -3,7 +3,8 @@ import datetime
 import pytest
 
 from cme_accounts.models import User
-from commitments.models import ClinicianProfile, ProviderProfile, Commitment, Course
+from commitments.models import ClinicianProfile, ProviderProfile, Commitment, Course, \
+    CommitmentTemplate
 
 
 @pytest.fixture(name="minimal_clinician")
@@ -42,4 +43,12 @@ def fixture_minimal_course(minimal_provider):
         owner=minimal_provider,
         title="Minimal Course title",
         description="Minimal Course description"
+    )
+
+@pytest.fixture(name="minimal_commitment_template")
+def fixture_minimal_commitment_template(minimal_provider):
+    return CommitmentTemplate.objects.create(
+        owner=minimal_provider,
+        title="Minimal CommitmentTemplate title",
+        description="Minimal CommitmentTemplate description"
     )

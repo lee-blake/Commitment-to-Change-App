@@ -62,7 +62,7 @@
                     </div>
                         <table class="table vertically-center-td">
                             <tbody>
-                                {% for suggested_commitment in course.suggested_commitments.all %}
+                                {% for suggested_commitment in suggested_commitments %}
                                 <tr>
                                     {% include "commitments/Course/course_suggested_commitments_panel.html" %}
                                 </tr>

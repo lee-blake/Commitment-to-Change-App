@@ -4,11 +4,15 @@
             <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
                 {{ suggested_commitment }}
             </a>
+            <br>
+            {% include "commitments/Course/course_suggested_commitment_stats_popover.html" %}
         </td>
         
         {% elif request.user.is_clinician %}
         <td>
             {{ suggested_commitment }}
+            <br>
+            {% include "commitments/Course/course_suggested_commitment_stats_popover.html" %}
         </td>
         <td align="right">
             <a href="{% url 'create Commitment from suggested commitment' course_id=course.id commitment_template_id=suggested_commitment.id %}">
