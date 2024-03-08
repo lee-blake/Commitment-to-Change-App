@@ -75,39 +75,11 @@
                 <div class="foreground round-corners mt-3 mx-3">
                     <div class="secondary-header-container">
                         <h4>Suggested Commitments</h4>
-                    </div>
-                        <table class="table vertically-center-td">
-                            <tbody>
-                                {% for suggested_commitment in suggested_commitments %}
-                                <tr>
-                                    {% include "commitments/Course/course_suggested_commitments_panel.html" %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                        {% block select_suggested_commitments_button %}
-                        {% endblock select_suggested_commitments_button %}
-                </div>
-                <div class="foreground text-center round-corners pb-3 mt-3 mx-3">
-                    {% include "commitments/Course/course_commitment_statistics_breakdown_section.html" %}
-                </div>
-                <div class="foreground round-corners pb-3 mt-3 mx-3">
-                    <div class="secondary-header-container">
-                        <h4>Commitments Made in This Course:</h4>
-                    </div>
-                    {% block course_commitment_csv_download_link %}
-                    {% endblock course_commitment_csv_download_link %}
-                    <ul>
-                        {% for commitment in course.associated_commitments_list %}
-                        <li>{% include "commitments/Course/course_associated_commitments_panel.html" %}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
             </div>
             <table class="table vertically-center-td">
               <tbody>
 
-                {% for suggested_commitment in course.suggested_commitments.all %}
+                {% for suggested_commitment in suggested_commitments %}
                   <tr>{% include "commitments/Course/course_suggested_commitments_panel.html" %}</tr>
                 {% endfor %}
 
