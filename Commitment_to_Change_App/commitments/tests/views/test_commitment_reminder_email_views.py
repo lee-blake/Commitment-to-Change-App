@@ -204,6 +204,40 @@ class TestViewCommitmentReminderEmailView:
         future_date_regex_2 = convert_date_to_general_regex(future_date_2)
         assert future_date_regex_2.search(html)
 
+    def test_includes_delete_url_somewhere_in_page_for_all_reminder_emails(
+        self, client, saved_clinician_profile, existing_commitment
+    ):
+        reminder_email_1 = CommitmentReminderEmail.objects.create(
+            commitment=existing_commitment,
+            date=datetime.date.today() + datetime.timedelta(days=99)
+        )
+        reminder_email_2 = CommitmentReminderEmail.objects.create(
+            commitment=existing_commitment,
+            date=datetime.date.today() + datetime.timedelta(days=199)
+        )
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        reminder_email_url_1 = reverse(
+            "delete CommitmentReminderEmail", 
+            kwargs={
+                "commitment_id": existing_commitment.id,
+                "reminder_email_id": reminder_email_1.id
+            }
+        )
+        assert reminder_email_url_1 in html
+        reminder_email_url_2 = reverse(
+            "delete CommitmentReminderEmail", 
+            kwargs={
+                "commitment_id": existing_commitment.id,
+                "reminder_email_id": reminder_email_2.id
+            }
+        )
+        assert reminder_email_url_2 in html
+
     def test_links_to_create_page(
         self, client, saved_clinician_profile, existing_commitment
     ):
