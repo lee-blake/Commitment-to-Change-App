@@ -6,7 +6,7 @@ import pytest
 
 from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic, \
     ClinicianLogic, write_course_commitments_as_csv, write_aggregate_course_statistics_as_csv, \
-    CommitmentStatusStatistics
+    write_aggregate_commitment_template_statistics_as_csv, CommitmentStatusStatistics
 from commitments.enums import CommitmentStatus
 from commitments.fake_data_objects import FakeCommitmentData, FakeCommitmentTemplateData, \
     FakeCourseData, FakeClinicianData
@@ -234,6 +234,53 @@ class TestCommitmentTemplateLogic:
             )
             commitment_template.enrich_with_statistics()
             assert commitment_template._data.commitment_statistics["total"] == 1
+
+    class TestEnrichWithCourseSpecificStatistics:
+        """Tests for CommitmentTemplateLogic.enrich_with_course_specific_statistics"""
+
+        def test_method_raises_error_when_template_is_not_a_suggested_commitment(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData()
+            )
+            course = FakeCourseData(
+                sugggested_commitments_list=[]
+            )
+            with pytest.raises(ValueError):
+                commitment_template.enrich_with_course_specific_statistics(course)
+
+        def test_non_course_commitments_are_not_counted(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    derived_commitments=[
+                        FakeCommitmentData(
+                            associated_course=None
+                        )
+                    ]
+                )
+            )
+            course = FakeCourseData(
+                suggested_commitments_list=[commitment_template]
+            )
+            commitment_template.enrich_with_course_specific_statistics(course)
+            stats = commitment_template._data.commitment_statistics_within_course
+            assert stats["total"] == 0
+
+
+        def test_course_commitments_are_counted(self):
+            course = FakeCourseData()
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    derived_commitments=[
+                        FakeCommitmentData(
+                            associated_course=course
+                        )
+                    ]
+                )
+            )
+            course.suggested_commitments_list=[commitment_template]
+            commitment_template.enrich_with_course_specific_statistics(course)
+            stats = commitment_template._data.commitment_statistics_within_course
+            assert stats["total"] == 1
 
 
 class TestCourseLogic:
@@ -498,7 +545,7 @@ class TestWriteCourseCommitmentsAsCSV:
             write_course_commitments_as_csv(course, fake_file)
             fake_file.seek(0)
             csv_reader = csv.reader(fake_file)
-            rows = [row for row in csv_reader]
+            rows= list(csv_reader)
             assert len(rows) == 1
             expected_headers = [
                 "Commitment Title", 
@@ -523,7 +570,7 @@ class TestWriteCourseCommitmentsAsCSV:
             write_course_commitments_as_csv(course, fake_file)
             fake_file.seek(0)
             csv_reader = csv.DictReader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             expected_values = {
                 "Commitment Title": commitment.title, 
                 "Commitment Description": commitment.description,
@@ -549,7 +596,7 @@ class TestWriteCourseCommitmentsAsCSV:
             write_course_commitments_as_csv(course, fake_file)
             fake_file.seek(0)
             csv_reader = csv.DictReader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             assert rows[0]["Status"] == str(CommitmentStatus.COMPLETE)
 
 
@@ -562,7 +609,7 @@ class TestWriteAggregateCourseStatisticsAsCSV:
             write_aggregate_course_statistics_as_csv(courses, fake_file)
             fake_file.seek(0)
             csv_reader = csv.reader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             assert len(rows) == 1
             expected_headers = [
                 "Course Identifier",
@@ -574,6 +621,10 @@ class TestWriteAggregateCourseStatisticsAsCSV:
                 "Num. Past Due",
                 "Num. Completed",
                 "Num. Discontinued",
+                "Perc. In Progress",
+                "Perc. Past Due",
+                "Perc. Completed",
+                "Perc. Discontinued",
             ]
             assert rows[0] == expected_headers
 
@@ -590,7 +641,7 @@ class TestWriteAggregateCourseStatisticsAsCSV:
             write_aggregate_course_statistics_as_csv(courses, fake_file)
             fake_file.seek(0)
             csv_reader = csv.DictReader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             expected_values = {
                 "Course Identifier": "",
                 "Course Title": "Empty Course",
@@ -601,6 +652,10 @@ class TestWriteAggregateCourseStatisticsAsCSV:
                 "Num. Past Due": "0",
                 "Num. Completed": "0",
                 "Num. Discontinued": "0",
+                "Perc. In Progress": "N/A",
+                "Perc. Past Due": "N/A",
+                "Perc. Completed": "N/A",
+                "Perc. Discontinued": "N/A",
             }
             assert rows[0] == expected_values
 
@@ -619,7 +674,7 @@ class TestWriteAggregateCourseStatisticsAsCSV:
             write_aggregate_course_statistics_as_csv(courses, fake_file)
             fake_file.seek(0)
             csv_reader = csv.DictReader(fake_file)
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             expected_values = {
                 "Course Identifier": "FAKE-001",
                 "Course Title": "One of each status",
@@ -630,5 +685,103 @@ class TestWriteAggregateCourseStatisticsAsCSV:
                 "Num. Past Due": "1",
                 "Num. Completed": "1",
                 "Num. Discontinued": "1",
+                "Perc. In Progress": "25.0",
+                "Perc. Past Due": "25.0",
+                "Perc. Completed": "25.0",
+                "Perc. Discontinued": "25.0",
+            }
+            assert rows[0] == expected_values
+
+
+class TestWriteAggregateCommitmentTemplateStatisticsAsCSV:
+    """Tests for write_aggregate_commitment_template_statistics_as_csv"""
+
+    def test_empty_commitment_template_list_only_prints_headers(self):
+        commitment_templates = []
+        with io.StringIO() as fake_file:
+            write_aggregate_commitment_template_statistics_as_csv(
+                commitment_templates, fake_file
+            )
+            fake_file.seek(0)
+            csv_reader = csv.reader(fake_file)
+            rows = list(csv_reader)
+            assert len(rows) == 1
+            expected_headers = [
+                "Commitment Title",
+                "Commitment Description",
+                "Total Commitments",
+                "Num. In Progress",
+                "Num. Past Due",
+                "Num. Completed",
+                "Num. Discontinued",
+                "Perc. In Progress",
+                "Perc. Past Due",
+                "Perc. Completed",
+                "Perc. Discontinued",
+            ]
+            assert rows[0] == expected_headers
+
+    def test_empty_commitment_template_prints_csv_correctly(self):
+        empty_commitment_template = FakeCommitmentTemplateData(
+            title="Empty Commitment Template",
+            description="No derived commitments",
+            derived_commitments=[]
+        )
+        commitment_templates = [empty_commitment_template]
+        with io.StringIO() as fake_file:
+            write_aggregate_commitment_template_statistics_as_csv(
+                commitment_templates, fake_file
+            )
+            fake_file.seek(0)
+            csv_reader = csv.DictReader(fake_file)
+            rows = list(csv_reader)
+            expected_values = {
+                "Commitment Title": "Empty Commitment Template",
+                "Commitment Description": "No derived commitments",
+                "Total Commitments": "0",
+                "Num. In Progress": "0",
+                "Num. Past Due": "0",
+                "Num. Completed": "0",
+                "Num. Discontinued": "0",
+                "Perc. In Progress": "N/A",
+                "Perc. Past Due": "N/A",
+                "Perc. Completed": "N/A",
+                "Perc. Discontinued": "N/A",
+            }
+            print(rows[0])
+            print(expected_values)
+            assert rows[0] == expected_values
+
+    def test_one_of_each_status_commitment_template_prints_csv_correctly(self):
+        one_of_each_commitment_status = []
+        owner = FakeClinicianData()
+        for status in CommitmentStatus.values:
+            commitment = FakeCommitmentData(owner=owner, status=status)
+            one_of_each_commitment_status.append(commitment)
+        one_of_each_status_commitment_template = FakeCommitmentTemplateData(
+            title="One of each status",
+            description="Test counts and percentages",
+            derived_commitments=one_of_each_commitment_status
+        )
+        commitment_templates = [one_of_each_status_commitment_template]
+        with io.StringIO() as fake_file:
+            write_aggregate_commitment_template_statistics_as_csv(
+                commitment_templates, fake_file
+            )
+            fake_file.seek(0)
+            csv_reader = csv.DictReader(fake_file)
+            rows = list(csv_reader)
+            expected_values = {
+                "Commitment Title": "One of each status",
+                "Commitment Description": "Test counts and percentages",
+                "Total Commitments": "4",
+                "Num. In Progress": "1",
+                "Num. Past Due": "1",
+                "Num. Completed": "1",
+                "Num. Discontinued": "1",
+                "Perc. In Progress": "25.0",
+                "Perc. Past Due": "25.0",
+                "Perc. Completed": "25.0",
+                "Perc. Discontinued": "25.0",
             }
             assert rows[0] == expected_values

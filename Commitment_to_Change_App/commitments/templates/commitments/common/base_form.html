@@ -3,21 +3,18 @@
 {% block title %}CME Commitment to Change{% endblock title %}
 
 {% block page_content %}
-<div class="container-fluid px-3 pt-3 text-center background">
-    <div class="container-sm p-1 py-3 foreground round-corners default-form">
-        {% block form_header %}{% endblock form_header %}
-        <form action="{% spaceless %}
-                {% block form_url %}{% endblock form_url %}
-                {% endspaceless %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="d-flex align-items-center justify-content-between">
-                <button onclick="history.back()" class="view-button p-1">Cancel</button>
-                <input type="submit" value="Submit">
-
-            </div>
-        </form>
-        {% block form_footer %}{% endblock form_footer %}
-    </div>
+<div class="text-center container-sm p-1 py-3 foreground round-corners default-form">
+    {% block form_header %}{% endblock form_header %}
+    <form action="{% spaceless %}
+            {% block form_url %}{% endblock form_url %}
+            {% endspaceless %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="d-flex align-items-center justify-content-between">
+            <button onclick="history.back()" class="view-button p-1">Cancel</button>
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+    {% block form_footer %}{% endblock form_footer %}
 </div>
 {% endblock page_content %}

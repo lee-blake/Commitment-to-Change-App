@@ -575,6 +575,30 @@ class TestViewCourseView:
                 assert commitment.title in html
             assert non_associated_commitment.title not in html
 
+        def test_suggested_commitments_stats_show_in_page_for_provider(
+            self, client, saved_provider_profile, enrolled_course,
+            commitment_template_1, make_quick_commitment
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            # We make two commitments with different status, only one of which
+            # is for the template - this way we can distinguish the two stats types.
+            make_quick_commitment(
+                associated_course=enrolled_course,
+                source_template=commitment_template_1,
+                status=CommitmentStatus.COMPLETE
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course,
+                status=CommitmentStatus.DISCONTINUED
+            )
+            client.force_login(saved_provider_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            # Mixed statuses means course stats won't show 100%, so we know this
+            # is for suggested commitments if it is present.
+            assert re.compile(r"100.0\s*\%").search(html)
+
 
     class TestGetStudentView:
         """Tests for ViewCourseView.get viewing from the perspective of a student."""
@@ -696,6 +720,30 @@ class TestViewCourseView:
             for commitment in associated_commitments:
                 assert commitment.title in html
             assert non_associated_commitment.title not in html
+
+        def test_suggested_commitments_stats_show_in_page_for_clinician(
+            self, client, saved_clinician_profile, enrolled_course,
+            commitment_template_1, make_quick_commitment
+        ):
+            enrolled_course.suggested_commitments.add(commitment_template_1)
+            # We make two commitments with different status, only one of which
+            # is for the template - this way we can distinguish the two stats types.
+            make_quick_commitment(
+                associated_course=enrolled_course,
+                source_template=commitment_template_1,
+                status=CommitmentStatus.COMPLETE
+            )
+            make_quick_commitment(
+                associated_course=enrolled_course,
+                status=CommitmentStatus.DISCONTINUED
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(
+                reverse("view Course", kwargs={ "course_id": enrolled_course.id })
+            ).content.decode()
+            # Mixed statuses means course stats won't show 100%, so we know this
+            # is for suggested commitments if it is present.
+            assert re.compile(r"100.0\s*\%").search(html)
 
 
     class TestPost:
@@ -941,7 +989,7 @@ class TestEditCourseView:
         def test_valid_request_does_not_alter_enrolled_students(
             self, client, saved_provider_profile, enrolled_course
         ):
-            students_before = [ student for student in enrolled_course.students.all() ]
+            students_before = list(enrolled_course.students.all())
             assert len(students_before) > 0
             target_url = reverse(
                 "edit Course", 
@@ -1501,7 +1549,7 @@ class TestDownloadCourseCommitmentsCSVView:
             response = client.get(target_url)
             file_content = b"".join(response.streaming_content).decode()
             csv_reader = csv.reader(io.StringIO(file_content))
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             assert len(rows) == 1
             # Check at least one of the column headers to make sure they're getting written.
             # Changing the index/content here is expected if the csv format changes.
@@ -1525,7 +1573,7 @@ class TestDownloadCourseCommitmentsCSVView:
             response = client.get(target_url)
             file_content = b"".join(response.streaming_content).decode()
             csv_reader = csv.DictReader(io.StringIO(file_content))
-            rows = [row for row in csv_reader]
+            rows = list(csv_reader)
             expected_values = {
                 "Commitment Title": "Sample title", 
                 "Commitment Description": "Sample commitment for csv",
