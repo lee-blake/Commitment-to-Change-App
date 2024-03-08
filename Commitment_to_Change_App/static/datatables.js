@@ -3,6 +3,7 @@ $(document).ready(function() {
     createStandardDataTable('#provider-commitment-template-datatable');
     createStudentListDataTable('#clinician-course-student-datatable');
     createStudentListDataTable('#provider-course-student-datatable');
+    createStudentListDataTable('#provider-course-student-datatable-bulk-email');
 
     // Trigger toggleVisibilityBasedOnDivWidth on document ready
     toggleVisibilityBasedOnDivWidth(400, '#course-student-datatable-container');

@@ -78,11 +78,19 @@ form {
  .show-when-smaller {
     display: none;
  }
+
+.allow-text-wrap {
+    overflow-wrap: break-word;
+}
 /* 
 -------------------------------------------------------------------
     --- Containers --- 
 ------------------------------------------------------------------- 
  */
+
+.bulk-email-modal-container {
+    min-width: 90%;
+}
 
 .datatable-container {
     overflow:auto; 
