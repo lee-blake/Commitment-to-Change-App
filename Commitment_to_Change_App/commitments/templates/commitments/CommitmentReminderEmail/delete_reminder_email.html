@@ -1,0 +1,26 @@
+{% extends "commitments/common/base.html" %}
+
+{% block title %} Delete reminder email {% endblock title %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="container-fluid p-1 my-3 commitment-title round-corners primary-accent">
+        <h1>Delete reminder email</h1>
+    </div>
+    <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
+        <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
+            <p>Are you sure you want to delete the reminder email for '{{ commitment.title }}'
+            that is scheduled on {{ reminder_email.date }}?</p>
+        </div>
+        {# Render the error notes for the implicit form so that bad requests made #}
+        {# during development will be easier to debug. Errors cannot occur during #}
+        {# normal use of this form.#}
+        {{ form.non_field_errors }}
+        {{ form.delete.errors }}
+        <a href="{% url "view CommitmentReminderEmails" commitment_id=commitment.id %}">
+            <button>Cancel</button>
+        </a>
+        {% include "commitments/CommitmentReminderEmail/reminder_email_delete_button.html" %}
+    </div>
+</div>
+{% endblock page_content %}
