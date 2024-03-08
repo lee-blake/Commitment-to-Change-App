@@ -25,6 +25,12 @@
   </a>
 {% endblock edit_button %}
 
+{% block bulk_email_button %}
+  <div class="text-center p-3">
+    {% include "commitments/Course/course_bulk_email_modal.html" %}
+  </div>
+{% endblock bulk_email_button %}
+
 {% block student_table %}
 <div class="datatable-container round-corners"
                  id="course-student-datatable-container">
