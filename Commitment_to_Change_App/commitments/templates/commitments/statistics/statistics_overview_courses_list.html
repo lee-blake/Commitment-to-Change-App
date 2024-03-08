@@ -2,12 +2,20 @@
   <div class="secondary-header-container">
     <h2>Detailed statistics by course</h2>
   </div>
+  <div class="text-center py-1">
+    <a href="{% url "download aggregate Course statistics as csv" %}">
+      <button class="btn standard-button m-2">
+        Download aggregate course statistics
+        <i class="bi bi-file-earmark-arrow-down"></i>
+      </button>
+    </a>
+  </div>
   <div class="container-fluid">
     <div class="row foreground p-1 round-corners">
       <div class="col-md-12">
         {% block course_module_content %}
           <div class="table-responsive text-center">
-            <table class="table" id="provider-course-datatable">
+            <table class="table display" id="provider-course-datatable">
               <thead>
                 <tr>
                   <th scope="col">Name</th>
