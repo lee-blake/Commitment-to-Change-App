@@ -165,7 +165,8 @@ form {
  */
 
  .base-popover-button {
-    text-decoration: none;
+    text-decoration-line: underline !important;
+    text-decoration-style: dotted !important; 
 }
 
 .base-popover-button:hover {
