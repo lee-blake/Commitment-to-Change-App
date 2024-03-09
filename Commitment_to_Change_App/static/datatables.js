@@ -3,6 +3,7 @@ $(document).ready(function() {
     createStandardDataTable('#provider-commitment-template-datatable');
     createStudentListDataTable('#clinician-course-student-datatable');
     createStudentListDataTable('#provider-course-student-datatable');
+    createStudentListDataTable('#provider-course-student-datatable-bulk-email');
 });
 
 function createStandardDataTable(table_id){
