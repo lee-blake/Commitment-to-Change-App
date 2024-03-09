@@ -12,7 +12,9 @@ class GeneratedTemporaryFileDownloadView(View, ABC):
 
     def get(self, *args, **kwargs):
         # We use NamedTemporaryFile over TemporaryFile to enable testing that the cleanup
-        # actually occurs.
+        # actually occurs. We also don't use a 'with' statement because it closes the
+        # file handle before FileResponse can finish streaming it.
+        #       pylint: disable=consider-using-with
         temp_file = tempfile.NamedTemporaryFile(mode="w+b", delete=True)
         self._write_content_to_file(temp_file)
         # Reset the head so the written content can be read

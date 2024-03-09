@@ -1,0 +1,53 @@
+<div class="p-2">
+  <div class="secondary-header-container">
+    <h2>Detailed statistics by commitment template</h2>
+  </div>
+  <div class="text-center py-1">
+    <a href="{% url "download aggregate CommitmentTemplate statistics as csv" %}">
+      <button class="btn standard-button m-2">
+        Download aggregate commitment template statistics
+        <i class="bi bi-file-earmark-arrow-down"></i>
+      </button>
+    </a>
+  </div>
+  <div class="container-fluid">
+    <div class="row foreground p-1 round-corners">
+      <div class="col-md-12">
+        {% block commitment_template_module_content %}
+          <div class="table-responsive text-center">
+            <table class="table display" id="provider-commitment-template-datatable">
+              <thead>
+                <tr>
+                  <th scope="col">Title</th>
+                  <th scope="col">% in progress</th>
+                  <th scope="col">% past due</th>
+                  <th scope="col">% complete</th>
+                  <th scope="col">% discontinued</th>
+                  <th scope="col">Total Commitments</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for commitment_template in commitment_templates %}
+                  <tr>
+                    <td>
+                      <a href="{% url "view CommitmentTemplate" commitment_template_id=commitment_template.id %}">
+                        <button type="button"
+                                id="view-commitment_template-button"
+                                class="btn dashboard-button background round-corners p-2">{{ commitment_template.title }}</button>
+                      </a>
+                    </td>
+                    <td>{{ commitment_template.commitment_statistics.percentages.in_progress | floatformat:1 }}</td>
+                    <td>{{ commitment_template.commitment_statistics.percentages.expired | floatformat:1 }}</td>
+                    <td>{{ commitment_template.commitment_statistics.percentages.complete | floatformat:1 }}</td>
+                    <td>{{ commitment_template.commitment_statistics.percentages.discontinued | floatformat:1 }}</td>
+                    <td>{{ commitment_template.commitment_statistics.total }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endblock commitment_template_module_content %}
+      </div>
+    </div>
+  </div>
+</div>

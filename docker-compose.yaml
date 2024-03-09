@@ -2,9 +2,11 @@ version: '3'
 services:
   cme-ctc-web:
     build: Commitment_to_Change_App/
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    command: sh -c "./on_docker_startup.sh && exec python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
+    environment:
+      PYTHONUNBUFFERED: 1
     volumes:
       # General policy: unless the app SHOULD write to a dir, it should be RO.
       # For Django, only migrations dirs should have write permissions.

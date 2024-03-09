@@ -31,10 +31,6 @@
  */
 
  body {background-color: var(--background);}
- 
- h3 {
-    font-weight: 400;
- }
 
  ul.errorlist > li {
     color: red;
@@ -70,14 +66,23 @@ form {
     --- Modifiers --- 
 ------------------------------------------------------------------- 
  */
- .round-corners
- {
+
+ .full-width-textarea textarea {
+    width: 100%;
+}
+
+ .round-corners {
      border-radius: var(--standard-round);
  }
-
- .round-top-corners {
-    border-radius: var(--standard-round) var(--standard-round) 0 0;
+ 
+ .table-caption-center {
+    caption-side: top; 
+    text-align: center;
+    color: var(--primary-text);
+    font-weight: bold;
+    font-size: 22px;
  }
+
 
 /* 
 -------------------------------------------------------------------
@@ -85,6 +90,11 @@ form {
 ------------------------------------------------------------------- 
  */
 
+.datatable-container {
+    overflow:auto; 
+    width:100%;
+    position:relative;
+}
 .small-box-container {
     max-width: 400px;
     padding: 10px;
@@ -92,12 +102,24 @@ form {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
-
-.flex-box {
+.header-with-modal {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
+    justify-content: center;
 }
-
+.primary-header-container, .secondary-header-container {
+    border-radius: var(--standard-round) var(--standard-round) 0 0;
+    padding: 2px 4px;
+    text-align: center !important;
+}
+.primary-header-container {
+    background-color: var(--primary-accent);
+    color: var(--accent-text);
+}
+.secondary-header-container {
+    background-color: var(--secondary-accent);
+    color: var(--accent-text);
+}
 /* 
 -------------------------------------------------------------------
     --- Generic Transitions --- 
@@ -222,18 +244,7 @@ form {
  {
     color: var(--primary-text);
     filter: brightness(90%);
-    
- }
- .commitment_header
- {
-     background-color: var(--primary-accent);
-     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-     color: white;
- }
- .commitment-title
- {
-     color: #FFFFFF;
-     text-align: center;
+
  }
  .div-list{
     display:list-item;
@@ -245,14 +256,18 @@ form {
 }
  .info-button
  {
-    font-size: 32px;
+    font-size: 24px;
+    margin-left: 10px;
  }
 
  .mailto-icon {
     font-size: 20px;
  }
 
- .modal-dialog {
+ .standard-modal-dialog {
+    color: var(--primary-text) !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
     max-width: fit-content;
     margin-left: auto;
     margin-right: auto;
@@ -278,6 +293,10 @@ form {
      background-color: var(--primary-accent);
      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
      color: white;
+ }
+
+ .vertically-center-td td {
+    vertical-align: middle;
  }
  .view-button
  {
@@ -369,7 +388,6 @@ form {
      display: inline-block;
      width: 100%;
  }
-
 
 /* 
 -------------------------------------------------------------------

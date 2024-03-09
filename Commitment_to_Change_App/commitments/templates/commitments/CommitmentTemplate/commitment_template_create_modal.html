@@ -1,0 +1,30 @@
+<button class="view-button p-1 mt-3" role="button" data-bs-toggle="modal" data-bs-target="#create-commitment-template-modal">Create new template
+    <br><i class="bi bi-plus-circle-fill"></i>
+</button>
+
+<div class="modal fade" id="create-commitment-template-modal" tabindex="-1" aria-labelledby="create-commitment-template-modal-Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="create-commitment-template-modal-Label">
+                    Create a Commitment Template
+                </h1>
+                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal" aria-label="Close">X</button>
+            </div>
+            <div class="modal-body text-left">
+                <div class="text-center container-sm p-1 py-3 foreground round-corners default-form">
+                    <form id="create-commitment-template-form" action="{% url 'create CommitmentTemplate' %}" method="post" class="row g-3">
+                        <div class="col-12 full-width-textarea">
+                            {% csrf_token %}
+                            {{ CommitmentTemplateForm.as_p }}
+                            <div class="modal-footer d-flex align-items-center justify-content-between">
+                                <button type="button" class="btn-close close-x-button" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="standard-button" id="submit-create-template">Create</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

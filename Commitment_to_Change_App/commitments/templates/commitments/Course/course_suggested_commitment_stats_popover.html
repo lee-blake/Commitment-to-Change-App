@@ -1,0 +1,38 @@
+{% extends "commitments/common/base_popover.html" %}
+
+{% block popover_click_object %}
+    <em>
+        {{ suggested_commitment.commitment_statistics_within_course.total }} clinicians made this commitment
+    </em>
+{% endblock popover_click_object %}
+
+{% block popover_title %}
+    {{ suggested_commitment.title }}
+{% endblock popover_title %}
+
+{% block popover_content %}
+    <div>
+        This commitment has been made
+        {{ suggested_commitment.commitment_statistics_within_course.total }} times in this course.
+    </div>
+    <div>
+        {{ suggested_commitment.commitment_statistics_within_course.counts.in_progress }} 
+        ({{ suggested_commitment.commitment_statistics_within_course.percentages.in_progress | floatformat:1 }}%)
+        in progress
+    </div>
+    <div>
+        {{ suggested_commitment.commitment_statistics_within_course.counts.expired }} 
+        ({{ suggested_commitment.commitment_statistics_within_course.percentages.expired | floatformat:1 }}%)
+        past due
+    </div>
+    <div>
+        {{ suggested_commitment.commitment_statistics_within_course.counts.complete }} 
+        ({{ suggested_commitment.commitment_statistics_within_course.percentages.complete | floatformat:1 }}%)
+        completed
+    </div>
+    <div>
+        {{ suggested_commitment.commitment_statistics_within_course.counts.discontinued }} 
+        ({{ suggested_commitment.commitment_statistics_within_course.percentages.discontinued | floatformat:1 }}%)
+        discontinued
+    </div>
+{% endblock popover_content %}

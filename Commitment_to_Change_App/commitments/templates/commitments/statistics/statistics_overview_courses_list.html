@@ -1,0 +1,65 @@
+<div class="p-2">
+  <div class="secondary-header-container">
+    <h2>Detailed statistics by course</h2>
+  </div>
+  <div class="text-center py-1">
+    <a href="{% url "download aggregate Course statistics as csv" %}">
+      <button class="btn standard-button m-2">
+        Download aggregate course statistics
+        <i class="bi bi-file-earmark-arrow-down"></i>
+      </button>
+    </a>
+  </div>
+  <div class="container-fluid">
+    <div class="row foreground p-1 round-corners">
+      <div class="col-md-12">
+        {% block course_module_content %}
+          <div class="table-responsive text-center">
+            <table class="table display" id="provider-course-datatable">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">ID</th>
+                  <th scope="col">Start Date</th>
+                  <th scope="col">End Date</th>
+                  <th scope="col">% in progress</th>
+                  <th scope="col">% past due</th>
+                  <th scope="col">% complete</th>
+                  <th scope="col">% discontinued</th>
+                  <th scope="col">Total Commitments</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for course in courses %}
+                  <tr>
+                    <td>
+                      <a href="{% url "view Course" course_id=course.id %}">
+                        <button type="button"
+                                id="view-course-button"
+                                class="btn dashboard-button background round-corners p-2">{{ course.title }}</button>
+                      </a>
+                    </td>
+                    <td>
+                      {% if course.identifier %}{{ course.identifier }}{% endif %}
+                    </td>
+                    <td>
+                      {% if course.start_date %}{{ course.start_date }}{% endif %}
+                    </td>
+                    <td>
+                      {% if course.end_date %}{{ course.end_date }}{% endif %}
+                    </td>
+                    <td>{{ course.commitment_statistics.percentages.in_progress | floatformat:1 }}</td>
+                    <td>{{ course.commitment_statistics.percentages.expired | floatformat:1 }}</td>
+                    <td>{{ course.commitment_statistics.percentages.complete | floatformat:1 }}</td>
+                    <td>{{ course.commitment_statistics.percentages.discontinued | floatformat:1 }}</td>
+                    <td>{{ course.commitment_statistics.total }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endblock course_module_content %}
+      </div>
+    </div>
+  </div>
+</div>

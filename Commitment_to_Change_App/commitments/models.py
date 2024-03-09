@@ -1,5 +1,3 @@
-import datetime
-
 from django.db import models
 
 import cme_accounts.models
@@ -76,6 +74,13 @@ class Course(CourseLogic, models.Model):
         # Django ManyToManyFields are not iterable, we must wrap them with a property.
         return self.associated_commitments.all()
 
+    @property
+    def suggested_commitments_list(self):
+        # Suppressed because this mistakenly triggers an error in the VSCode extension:
+        # https://github.com/pylint-dev/pylint-django/issues/404
+        # pylint does not show such an error from the command line.
+        return self.suggested_commitments.all() #pylint: disable=no-member
+
     def _add_student(self, student):
         # We must override this due to ManyToManyField using different methods than list.
         # Pylint doesn't understand that contains(...) is applied to the field at runtime.
@@ -110,9 +115,3 @@ class Commitment(CommitmentLogic, models.Model):
     def __init__(self, *args, **kwargs):
         CommitmentLogic.__init__(self, data_object=self)
         models.Model.__init__(self, *args, **kwargs)
-
-    def save_expired_if_past_deadline(self):
-        today = datetime.date.today()
-        if self.deadline < today and self.status == CommitmentStatus.IN_PROGRESS:
-            self.status = CommitmentStatus.EXPIRED
-            self.save()
