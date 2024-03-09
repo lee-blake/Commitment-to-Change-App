@@ -15,24 +15,27 @@
         This commitment has been made
         {{ suggested_commitment.commitment_statistics_within_course.total }} times in this course.
     </div>
-    <div>
-        {{ suggested_commitment.commitment_statistics_within_course.counts.in_progress }} 
-        ({{ suggested_commitment.commitment_statistics_within_course.percentages.in_progress | floatformat:1 }}%)
-        in progress
-    </div>
-    <div>
-        {{ suggested_commitment.commitment_statistics_within_course.counts.expired }} 
-        ({{ suggested_commitment.commitment_statistics_within_course.percentages.expired | floatformat:1 }}%)
-        past due
-    </div>
-    <div>
-        {{ suggested_commitment.commitment_statistics_within_course.counts.complete }} 
-        ({{ suggested_commitment.commitment_statistics_within_course.percentages.complete | floatformat:1 }}%)
-        completed
-    </div>
-    <div>
-        {{ suggested_commitment.commitment_statistics_within_course.counts.discontinued }} 
-        ({{ suggested_commitment.commitment_statistics_within_course.percentages.discontinued | floatformat:1 }}%)
-        discontinued
-    </div>
+    <br>
+    <ul>
+        <li>
+            {{ suggested_commitment.commitment_statistics_within_course.counts.in_progress }} 
+            ({{ suggested_commitment.commitment_statistics_within_course.percentages.in_progress | floatformat:1 }}%)
+            in progress
+        </li>
+        <li>
+            {{ suggested_commitment.commitment_statistics_within_course.counts.expired }} 
+            ({{ suggested_commitment.commitment_statistics_within_course.percentages.expired | floatformat:1 }}%)
+            past due
+        </li>
+        <li>
+            {{ suggested_commitment.commitment_statistics_within_course.counts.complete }} 
+            ({{ suggested_commitment.commitment_statistics_within_course.percentages.complete | floatformat:1 }}%)
+            completed
+        </li>
+        <li>
+            {{ suggested_commitment.commitment_statistics_within_course.counts.discontinued }} 
+            ({{ suggested_commitment.commitment_statistics_within_course.percentages.discontinued | floatformat:1 }}%)
+            discontinued
+        </li>
+    </ul>
 {% endblock popover_content %}
