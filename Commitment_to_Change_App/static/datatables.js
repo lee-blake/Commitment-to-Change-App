@@ -29,8 +29,6 @@ function createStudentListDataTable(table_id){
         // Remove pagination information ("Showing 1 to N of N entries")
         "bInfo" : false,
         // Wrap search bar element in "text-center" div
-        "dom": '<"text-center"f>i',
-        // Allows DataTables to hide columns with a higher data-priority tag, based on screensize at generation
-        responsive: true,
+        "dom": '<"text-center"f>i'
     });
 }
