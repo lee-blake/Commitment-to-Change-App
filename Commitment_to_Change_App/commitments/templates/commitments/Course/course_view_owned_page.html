@@ -32,38 +32,29 @@
 {% endblock bulk_email_button %}
 
 {% block student_table %}
-<div class="datatable-container round-corners"
-                 id="course-student-datatable-container">
-  <table id="provider-course-student-datatable" class="display">
-    <thead>
-      <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Email</th>
-      </tr>
-    </thead>
-    <tbody>
-
-      {% for clinician in course.students.all %}
+  <div class="datatable-container round-corners"
+       id="course-student-datatable-container">
+    <table id="provider-course-student-datatable" class="display">
+      <thead>
         <tr>
-          <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
-          <td>
-            <div class="hide-when-smaller">
-              <a href="mailto:{{ clinician.email }}">{{ clinician.email }}</a>
-            </div>
-            <div class="show-when-smaller text-center">
-              <a href="mailto:{{ clinician.email }}">
-                <button class="mailto-icon standard-button align-self-end">
-                  <i class="bi bi-envelope-at-fill"></i>
-                </button>
-              </a>
-            </div>
-          </td>
+          <th scope="col" data-priority="1">Name</th>
+          <th scope="col" data-priority="2">Email</th>
         </tr>
-      {% endfor %}
+      </thead>
+      <tbody>
 
-    </tbody>
-  </table>
-</div>
+        {% for clinician in course.students.all %}
+          <tr>
+            <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
+            <td>
+              <a href="mailto:{{ clinician.email }}">{{ clinician.email }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
 {% endblock student_table %}
 
 {% block select_suggested_commitments_button %}

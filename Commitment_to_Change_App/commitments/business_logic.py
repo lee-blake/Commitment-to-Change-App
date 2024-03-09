@@ -69,6 +69,21 @@ class CommitmentTemplateLogic:
             *self.derived_commitments
         ).as_json()
 
+    def enrich_with_course_specific_statistics(self, course):
+        if self not in course.suggested_commitments_list:
+            raise ValueError(
+                f"Statistics do not make sense: {self} is not a suggested commitment of {course}"
+            )
+        self._data.commitment_statistics_within_course = CommitmentStatusStatistics(
+            *self._get_derived_commitments_within_course(course)
+        ).as_json()
+
+    def _get_derived_commitments_within_course(self, course):
+        return filter(
+            lambda commitment: commitment.associated_course == course,
+            self.derived_commitments
+        )
+
 
 class CourseLogic:
     def __init__(self, data_object):

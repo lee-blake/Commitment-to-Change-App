@@ -74,14 +74,15 @@ form {
  .round-corners {
      border-radius: var(--standard-round);
  }
-
- .show-when-smaller {
-    display: none;
+ 
+ .table-caption-center {
+    caption-side: top; 
+    text-align: center;
+    color: var(--primary-text);
+    font-weight: bold;
+    font-size: 22px;
  }
 
-.allow-text-wrap {
-    overflow-wrap: break-word;
-}
 /* 
 -------------------------------------------------------------------
     --- Containers --- 

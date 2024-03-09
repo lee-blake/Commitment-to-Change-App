@@ -1,9 +1,11 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm, DateInput, ModelChoiceField, CheckboxSelectMultiple, \
     ModelMultipleChoiceField, BooleanField, Form, HiddenInput
 
 from commitments.models import ClinicianProfile, Commitment, Course, CommitmentTemplate, \
-    ProviderProfile
+    ProviderProfile, CommitmentReminderEmail
 
 
 class ClinicianProfileForm(ModelForm):
@@ -196,3 +198,23 @@ class GenericDeletePostKeySetForm(Form):
     be nonempty, which helps ensure that POST requests to delete are intentional."""
 
     delete = BooleanField(initial=True, widget=HiddenInput())
+
+
+class CommitmentReminderEmailForm(ModelForm):
+    class Meta:
+        model = CommitmentReminderEmail
+        fields = [
+            "date"
+        ]
+        widgets = {
+            "date": DateInput(attrs={"type": "date"})
+        }
+
+    def __init__(self, commitment, *args, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+        self.instance.commitment = commitment
+        tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+        self.fields['date'].widget.attrs.update({
+            "min": f"{tomorrow}"
+        })
+    

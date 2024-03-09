@@ -235,6 +235,53 @@ class TestCommitmentTemplateLogic:
             commitment_template.enrich_with_statistics()
             assert commitment_template._data.commitment_statistics["total"] == 1
 
+    class TestEnrichWithCourseSpecificStatistics:
+        """Tests for CommitmentTemplateLogic.enrich_with_course_specific_statistics"""
+
+        def test_method_raises_error_when_template_is_not_a_suggested_commitment(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData()
+            )
+            course = FakeCourseData(
+                sugggested_commitments_list=[]
+            )
+            with pytest.raises(ValueError):
+                commitment_template.enrich_with_course_specific_statistics(course)
+
+        def test_non_course_commitments_are_not_counted(self):
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    derived_commitments=[
+                        FakeCommitmentData(
+                            associated_course=None
+                        )
+                    ]
+                )
+            )
+            course = FakeCourseData(
+                suggested_commitments_list=[commitment_template]
+            )
+            commitment_template.enrich_with_course_specific_statistics(course)
+            stats = commitment_template._data.commitment_statistics_within_course
+            assert stats["total"] == 0
+
+
+        def test_course_commitments_are_counted(self):
+            course = FakeCourseData()
+            commitment_template = CommitmentTemplateLogic(
+                FakeCommitmentTemplateData(
+                    derived_commitments=[
+                        FakeCommitmentData(
+                            associated_course=course
+                        )
+                    ]
+                )
+            )
+            course.suggested_commitments_list=[commitment_template]
+            commitment_template.enrich_with_course_specific_statistics(course)
+            stats = commitment_template._data.commitment_statistics_within_course
+            assert stats["total"] == 1
+
 
 class TestCourseLogic:
     """Tests for CourseLogic"""

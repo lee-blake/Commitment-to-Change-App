@@ -3,22 +3,7 @@ $(document).ready(function() {
     createStandardDataTable('#provider-commitment-template-datatable');
     createStudentListDataTable('#clinician-course-student-datatable');
     createStudentListDataTable('#provider-course-student-datatable');
-    createStudentListDataTable('#provider-course-student-datatable-bulk-email');
-
-    // Trigger toggleVisibilityBasedOnDivWidth on document ready
-    toggleVisibilityBasedOnDivWidth(400, '#course-student-datatable-container');
-    // Trigger toggleVisibilityBasedOnDivWidth on window "resize"
-    $(window).on("resize", function() {
-        toggleVisibilityBasedOnDivWidth(400, '#course-student-datatable-container');
-    });
 });
-
-// Toggle whether button or email link is shown
-function toggleVisibilityBasedOnDivWidth(containerBreakpoint, parentContainerID) {
-    var parentContainerWidth = $(parentContainerID).width();
-    $(".hide-when-smaller").toggle(parentContainerWidth >= containerBreakpoint);
-    $(".show-when-smaller").toggle(parentContainerWidth < containerBreakpoint);
-}
 
 function createStandardDataTable(table_id){
     $(table_id).DataTable({
