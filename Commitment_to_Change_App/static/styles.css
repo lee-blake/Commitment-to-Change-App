@@ -74,6 +74,15 @@ form {
  .round-corners {
      border-radius: var(--standard-round);
  }
+ 
+ .table-caption-center {
+    caption-side: top; 
+    text-align: center;
+    color: var(--primary-text);
+    font-weight: bold;
+    font-size: 22px;
+ }
+
 
  .show-when-smaller {
     display: none;

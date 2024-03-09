@@ -5,7 +5,8 @@ import datetime
 import pytest
 
 from cme_accounts.models import User
-from commitments.models import ClinicianProfile, ProviderProfile, CommitmentTemplate, Course
+from commitments.models import ClinicianProfile, ProviderProfile, CommitmentTemplate, \
+    Course, Commitment
 
 @pytest.fixture(name="saved_clinician_user")
 def fixture_saved_clinician_user():
@@ -102,3 +103,18 @@ def fixture_commitment_template_2(saved_provider_profile):
         title="Second Suggested Title",
         description="Second Suggested Description"
     )
+
+@pytest.fixture(name="make_quick_commitment")
+def fixture_make_quick_commitment(saved_clinician_profile):
+    def make_quick_commitment_factory_method(**kwargs):
+        commitment_creation_data = {
+            "owner": saved_clinician_profile,
+            "title": "Quick Commitment title",
+            "description": "Quick Commitment description",
+            "deadline": datetime.date.today()
+        }
+        commitment_creation_data.update(kwargs)
+        return Commitment.objects.create(
+            **commitment_creation_data
+        )
+    return make_quick_commitment_factory_method
