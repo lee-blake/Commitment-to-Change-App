@@ -131,7 +131,7 @@ class TestCourse:
 
     @pytest.mark.django_db
     class TestAssociatedCommitmentsList:
-        """Tests for Commitment.associated_commitments_list"""
+        """Tests for Course.associated_commitments_list"""
 
         def test_no_associated_commitments_returns_empty_iterable(self, minimal_course):
             assert len(minimal_course.associated_commitments_list) == 0
@@ -144,6 +144,23 @@ class TestCourse:
             minimal_commitment.save()
             assert minimal_commitment in minimal_course.associated_commitments_list
             assert iter(minimal_course.associated_commitments_list)
+
+
+    @pytest.mark.django_db
+    class TestSuggestedCommitmentsList:
+        """Tests for Course.suggested_commitments_list"""
+
+        def test_no_suggested_commitments_returns_empty_iterable(self, minimal_course):
+            assert len(minimal_course.suggested_commitments_list) == 0
+            assert iter(minimal_course.suggested_commitments_list)
+
+        def test_one_suggested_commitment_returns_iterable_containing_it(
+            self, minimal_course, minimal_commitment_template
+        ):
+            minimal_course.suggested_commitments.add(minimal_commitment_template)
+            minimal_course.save()
+            assert minimal_commitment_template in minimal_course.suggested_commitments_list
+            assert iter(minimal_course.suggested_commitments_list)
 
 
     @pytest.mark.django_db
