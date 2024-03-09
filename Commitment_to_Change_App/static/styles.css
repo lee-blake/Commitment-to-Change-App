@@ -89,6 +89,10 @@ form {
 ------------------------------------------------------------------- 
  */
 
+.bulk-email-modal-container {
+    min-width: 90%;
+}
+
 .datatable-container {
     overflow:auto; 
     width:100%;
