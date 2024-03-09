@@ -9,7 +9,7 @@
     Share this link to invite students to the course:
     <div>
       <p id="courseJoinLink">
-        http://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}
+        {{ request.scheme }}://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}
       </p>
       <p>
         <button class="standard-button"
