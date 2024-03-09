@@ -164,6 +164,14 @@ form {
 ------------------------------------------------------------------- 
  */
 
+ .base-popover-button {
+    text-decoration: none;
+}
+
+.base-popover-button:hover {
+    text-decoration: underline !important;
+}
+
  .pie-chart-and-legend-container {
     display:flex;
     justify-content: center;
