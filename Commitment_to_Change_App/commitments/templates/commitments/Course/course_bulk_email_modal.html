@@ -21,22 +21,22 @@
           <table id="provider-course-student-datatable-bulk-email" class="display">
             <thead>
               <tr>
+                <th scope="col">Select</th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
-                <th scope="col">Select</th>
               </tr>
             </thead>
             <tbody>
 
               {% for clinician in course.students.all %}
                 <tr>
-                  <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
-                  <td>{{ clinician.email }}</td>
                   <td class="text-center">
                     <input type="checkbox"
                            class="email-checkbox"
                            data-email="{{ clinician.email }}">
                   </td>
+                  <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
+                  <td>{{ clinician.email }}</td>
                 </tr>
               {% endfor %}
 
