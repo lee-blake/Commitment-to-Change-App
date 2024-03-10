@@ -21,6 +21,7 @@
     --discontinued: #717171;
     --expired: #ffa2a2;
     --standard-round: 15px;
+    --standard-button-round: 10px;
     
 }
 
@@ -81,6 +82,9 @@ form {
     color: var(--primary-text);
     font-weight: bold;
     font-size: 22px;
+ }
+ .table-layout-fixed {
+    table-layout: fixed;
  }
 
 /* 
@@ -289,14 +293,15 @@ form {
  .standard-button
  {
      background-color: var(--primary-accent);
-     border: 2px solid transparent;
-     border-radius: 10px;
+     border: 2px solid var(--primary-border);
+     border-radius: var(--standard-button-round);
      color: var(--accent-text);
      transition: 0.3s ease-in-out;
  }
  .standard-button:hover
  {
-     border: 2px solid var(--primary-border);
+     color: var(--accent-text);
+     border: 2px solid black;
      filter: brightness(130%);
  }
  .title_header
@@ -313,7 +318,7 @@ form {
  {
      background-color: var(--background);
      border: 2px solid grey;
-     border-radius: var(--standard-round);
+     border-radius: var(--standard-button-round);
      transition: 0.3s ease-in-out;
  }
  .view-button:hover
