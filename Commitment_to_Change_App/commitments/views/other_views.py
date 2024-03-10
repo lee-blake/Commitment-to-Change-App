@@ -1,5 +1,3 @@
-import itertools
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.urls import reverse
@@ -84,22 +82,16 @@ class StatisticsOverviewView(ProviderLoginRequiredMixin, TemplateView):
         viewer = ProviderProfile.objects.get(user=self.request.user)
         context = super().get_context_data(**kwargs)
         context["courses"] = Course.objects.filter(owner=viewer)
-        context["overall_course_stats"] = CommitmentStatusStatistics.from_commitment_list(
-            # This is effectively the same as aggregating into one list and unpacking.
-            *itertools.chain.from_iterable(
-                course.associated_commitments_list for course in context["courses"]
-            )
-        )
         for course in context["courses"]:
             course.enrich_with_statistics()
-        context["commitment_templates"] = CommitmentTemplate.objects.filter(owner=viewer)
-        context["overall_commitment_template_stats"] = CommitmentStatusStatistics.from_commitment_list(
-            # This is effectively the same as aggregating into one list and unpacking.
-            *itertools.chain.from_iterable(
-                commitment_template.derived_commitments \
-                    for commitment_template in context["commitment_templates"]
-            )
+        context["overall_course_stats"] = CommitmentStatusStatistics.aggregate(
+            *(course.commitment_statistics for course in context["courses"])
         )
+        context["commitment_templates"] = CommitmentTemplate.objects.filter(owner=viewer)
         for commitment_template in context["commitment_templates"]:
             commitment_template.enrich_with_statistics()
+        context["overall_commitment_template_stats"] = CommitmentStatusStatistics.aggregate(
+            *(commitment_template.commitment_statistics \
+                for commitment_template in context["commitment_templates"])
+        )
         return context
