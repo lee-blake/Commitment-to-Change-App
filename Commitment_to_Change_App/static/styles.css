@@ -83,6 +83,9 @@ form {
     font-weight: bold;
     font-size: 22px;
  }
+ .table-layout-fixed {
+    table-layout: fixed;
+ }
 
 /* 
 -------------------------------------------------------------------
