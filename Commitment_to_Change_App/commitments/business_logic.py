@@ -121,10 +121,10 @@ class CommitmentStatusStatistics:
         self._status_counts = {}
         self._initialize_status_counts()
         self._count_statuses(*commitments)
-        self._as_dict = self._as_json()
+        self._internal_dict_representation = self._as_dict()
 
     def __getitem__(self, key):
-        return self._as_dict[key]
+        return self._internal_dict_representation[key]
 
     def _initialize_status_counts(self):
         for status in CommitmentStatus.values:
@@ -147,7 +147,7 @@ class CommitmentStatusStatistics:
     def percentage_with_status(self, status):
         return 100*self.fraction_with_status(status)
 
-    def _as_json(self):
+    def _as_dict(self):
         return {
             "total": self._total,
             "counts": self._get_counts_json(),
