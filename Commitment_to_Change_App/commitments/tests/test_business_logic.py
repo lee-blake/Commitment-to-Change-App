@@ -557,6 +557,34 @@ class TestCommitmentStatusStatistics:
             }
             assert stats._as_dict() == expected_json
 
+    class TestAggregate:
+        """Tests for CommitmentStatusStatistics.aggregate"""
+
+        def test_aggregation_of_empties_is_empty(self):
+            stats = CommitmentStatusStatistics.aggregate(
+                CommitmentStatusStatistics.from_commitment_list(),
+                CommitmentStatusStatistics.from_commitment_list()
+            )
+            assert stats["total"] == 0
+
+        def test_aggregation_of_differing_statuses_gets_correct_values(self):
+            stats = CommitmentStatusStatistics.aggregate(
+                CommitmentStatusStatistics.from_commitment_list(
+                    FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
+                ),
+                CommitmentStatusStatistics.from_commitment_list(
+                    FakeCommitmentData(status=CommitmentStatus.EXPIRED)
+                ),
+                CommitmentStatusStatistics.from_commitment_list(
+                    FakeCommitmentData(status=CommitmentStatus.COMPLETE)
+                )
+            )
+            assert stats["total"] == 3
+            assert stats["counts"]["in_progress"] == 1
+            assert stats["counts"]["expired"] == 1
+            assert stats["counts"]["complete"] == 1
+            assert stats["counts"]["discontinued"] == 0
+
 
 class TestWriteCourseCommitmentsAsCSV:
     """Tests for write_course_commitments_as_csv"""

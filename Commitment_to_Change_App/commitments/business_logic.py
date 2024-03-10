@@ -116,6 +116,15 @@ class CourseLogic:
 
 
 class CommitmentStatusStatistics:
+    @staticmethod
+    def aggregate(*commitment_status_statistics_objects):
+        status_counts = {}
+        for status in CommitmentStatus.values:
+            status_counts[status] = 0
+        for stats_object in commitment_status_statistics_objects:
+            for status in CommitmentStatus.values:
+                status_counts[status] += stats_object.count_with_status(status)
+        return CommitmentStatusStatistics(status_counts)
 
     @staticmethod
     def from_commitment_list(*commitments):
