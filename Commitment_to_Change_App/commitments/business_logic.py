@@ -67,7 +67,7 @@ class CommitmentTemplateLogic:
     def enrich_with_statistics(self):
         self._data.commitment_statistics = CommitmentStatusStatistics(
             *self.derived_commitments
-        ).as_json()
+        )
 
     def enrich_with_course_specific_statistics(self, course):
         if self not in course.suggested_commitments_list:
@@ -76,7 +76,7 @@ class CommitmentTemplateLogic:
             )
         self._data.commitment_statistics_within_course = CommitmentStatusStatistics(
             *self._get_derived_commitments_within_course(course)
-        ).as_json()
+        )
 
     def _get_derived_commitments_within_course(self, course):
         return filter(
@@ -112,7 +112,7 @@ class CourseLogic:
     def enrich_with_statistics(self):
         self._data.commitment_statistics = CommitmentStatusStatistics(
             *self._data.associated_commitments_list
-        ).as_json()
+        )
 
 
 class CommitmentStatusStatistics:
@@ -223,7 +223,7 @@ def write_aggregate_course_statistics_as_csv(courses, file_object_to_write_to):
     writer = csv.DictWriter(file_object_to_write_to, headers)
     writer.writeheader()
     for course in courses:
-        statistics = CommitmentStatusStatistics(*course.associated_commitments_list).as_json()
+        statistics = CommitmentStatusStatistics(*course.associated_commitments_list)
         writer.writerow({
             "Course Identifier": course.identifier,
             "Course Title": course.title,
@@ -261,7 +261,7 @@ def write_aggregate_commitment_template_statistics_as_csv(
     for commitment_template in commitment_templates:
         statistics = CommitmentStatusStatistics(
             *commitment_template.derived_commitments
-        ).as_json()
+        )
         writer.writerow({
             "Commitment Title": commitment_template.title,
             "Commitment Description": commitment_template.description,
