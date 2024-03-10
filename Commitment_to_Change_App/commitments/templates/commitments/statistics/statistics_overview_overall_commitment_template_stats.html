@@ -3,17 +3,17 @@
     <table class="table">
       <caption class="table-caption-center">Commitment averages for your commitment templates</caption>
       <tr>
-        <th scope="col">% in progress</th>
-        <th scope="col">% past due</th>
-        <th scope="col">% completed</th>
-        <th scope="col">% discontinued</th>
+        <th scope="col">in progress</th>
+        <th scope="col">past due</th>
+        <th scope="col">completed</th>
+        <th scope="col">discontinued</th>
         <th scope="col">Total number</th>
       </tr>
       <tr>
-        <td>{{ overall_commitment_template_stats.percentages.in_progress | floatformat:1 }}</td>
-        <td>{{ overall_commitment_template_stats.percentages.expired | floatformat:1 }}</td>
-        <td>{{ overall_commitment_template_stats.percentages.complete | floatformat:1 }}</td>
-        <td>{{ overall_commitment_template_stats.percentages.discontinued | floatformat:1 }}</td>
+        <td>{{ overall_commitment_template_stats.percentages.in_progress | floatformat:1 }}%</td>
+        <td>{{ overall_commitment_template_stats.percentages.expired | floatformat:1 }}%</td>
+        <td>{{ overall_commitment_template_stats.percentages.complete | floatformat:1 }}%</td>
+        <td>{{ overall_commitment_template_stats.percentages.discontinued | floatformat:1 }}%</td>
         <td>{{ overall_commitment_template_stats.total }}</td>
       </tr>
     </table>

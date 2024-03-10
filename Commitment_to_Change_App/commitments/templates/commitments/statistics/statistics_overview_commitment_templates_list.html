@@ -19,10 +19,10 @@
               <thead>
                 <tr>
                   <th scope="col">Title</th>
-                  <th scope="col">% in progress</th>
-                  <th scope="col">% past due</th>
-                  <th scope="col">% complete</th>
-                  <th scope="col">% discontinued</th>
+                  <th scope="col">in progress</th>
+                  <th scope="col">past due</th>
+                  <th scope="col">complete</th>
+                  <th scope="col">discontinued</th>
                   <th scope="col">Total Commitments</th>
                 </tr>
               </thead>
@@ -36,10 +36,10 @@
                                 class="btn dashboard-button background round-corners p-2">{{ commitment_template.title }}</button>
                       </a>
                     </td>
-                    <td>{{ commitment_template.commitment_statistics.percentages.in_progress | floatformat:1 }}</td>
-                    <td>{{ commitment_template.commitment_statistics.percentages.expired | floatformat:1 }}</td>
-                    <td>{{ commitment_template.commitment_statistics.percentages.complete | floatformat:1 }}</td>
-                    <td>{{ commitment_template.commitment_statistics.percentages.discontinued | floatformat:1 }}</td>
+                    <td>{{ commitment_template.commitment_statistics.percentages.in_progress | floatformat:1 }}%</td>
+                    <td>{{ commitment_template.commitment_statistics.percentages.expired | floatformat:1 }}%</td>
+                    <td>{{ commitment_template.commitment_statistics.percentages.complete | floatformat:1 }}%</td>
+                    <td>{{ commitment_template.commitment_statistics.percentages.discontinued | floatformat:1 }}%</td>
                     <td>{{ commitment_template.commitment_statistics.total }}</td>
                   </tr>
                 {% endfor %}
