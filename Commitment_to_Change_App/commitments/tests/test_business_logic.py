@@ -515,7 +515,7 @@ class TestCommitmentStatusStatistics:
 
 
     class TestDataAsJSON:
-        """Tests for CommitmentStatusStatistics.as_json"""
+        """Tests for CommitmentStatusStatistics._as_json"""
 
         def test_empty_returns_correctly(self):
             stats = CommitmentStatusStatistics()
@@ -534,7 +534,7 @@ class TestCommitmentStatusStatistics:
                     "expired": "N/A"
                 }
             }
-            assert stats.as_json() == expected_json
+            assert stats._as_json() == expected_json
 
         def test_one_of_each_returns_correctly(self):
             stats = CommitmentStatusStatistics(
@@ -555,7 +555,7 @@ class TestCommitmentStatusStatistics:
                     "expired": 25
                 }
             }
-            assert stats.as_json() == expected_json
+            assert stats._as_json() == expected_json
 
 
 class TestWriteCourseCommitmentsAsCSV:
