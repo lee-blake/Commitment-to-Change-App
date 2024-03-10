@@ -43,7 +43,9 @@ function createBulkEmailDataTable (table_id){
         // Remove pagination information ("Showing 1 to N of N entries")
         "bInfo" : false,
         // Set default column to sort by
-        "order": [["datatable-sort-by", 'asc']],
+        "order": [[1, "asc"]],
+        // Wrap search bar element in "text-center" div
+        "dom": '<"text-center"f>i',
         // Set width and disable sorting of 'select' checkbox column
         "columnDefs": [
             { width: '16px', targets: "datatable-select-column" },
