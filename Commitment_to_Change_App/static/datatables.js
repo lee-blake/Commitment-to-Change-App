@@ -44,10 +44,6 @@ function createBulkEmailDataTable (table_id){
         "bInfo" : false,
         // Set default column to sort by
         "order": [["datatable-sort-by", 'asc']],
-        // Wrap search bar with classes "sticky-top-wrapper text-center" to center and sticky to top
-        // dom: 'B<"sticky-top-wrapper text-center"f>rtip',
-        dom: '<"dom_wrapper fh-fixedHeader"Bf>tip',
-        fixedHeader: true,
         // Set width and disable sorting of 'select' checkbox column
         "columnDefs": [
             { width: '16px', targets: "datatable-select-column" },
