@@ -13,6 +13,7 @@
   <div class="container-fluid">
     <div class="row foreground p-1 round-corners">
       <div class="col-md-12">
+
         {% block course_module_content %}
           <div class="table-responsive text-center">
             <table class="table display" id="provider-course-datatable">
@@ -30,6 +31,7 @@
                 </tr>
               </thead>
               <tbody>
+
                 {% for course in courses %}
                   <tr>
                     <td>
@@ -55,10 +57,12 @@
                     <td>{{ course.commitment_statistics.total }}</td>
                   </tr>
                 {% endfor %}
+
               </tbody>
             </table>
           </div>
         {% endblock course_module_content %}
+
       </div>
     </div>
   </div>
