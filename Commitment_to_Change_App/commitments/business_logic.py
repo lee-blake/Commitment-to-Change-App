@@ -65,18 +65,19 @@ class CommitmentTemplateLogic:
         return self._data.derived_commitments
 
     def enrich_with_statistics(self):
-        self._data.commitment_statistics = CommitmentStatusStatistics(
+        self._data.commitment_statistics = CommitmentStatusStatistics.from_commitment_list(
             *self.derived_commitments
-        ).as_json()
+        )
 
     def enrich_with_course_specific_statistics(self, course):
         if self not in course.suggested_commitments_list:
             raise ValueError(
                 f"Statistics do not make sense: {self} is not a suggested commitment of {course}"
             )
-        self._data.commitment_statistics_within_course = CommitmentStatusStatistics(
+        self._data.commitment_statistics_within_course = \
+            CommitmentStatusStatistics.from_commitment_list(
             *self._get_derived_commitments_within_course(course)
-        ).as_json()
+        )
 
     def _get_derived_commitments_within_course(self, course):
         return filter(
@@ -110,26 +111,50 @@ class CourseLogic:
             self._data.students.append(student)
 
     def enrich_with_statistics(self):
-        self._data.commitment_statistics = CommitmentStatusStatistics(
+        self._data.commitment_statistics = CommitmentStatusStatistics.from_commitment_list(
             *self._data.associated_commitments_list
-        ).as_json()
+        )
 
 
 class CommitmentStatusStatistics:
-    def __init__(self, *commitments):
-        self._total = 0
-        self._status_counts = {}
-        self._initialize_status_counts()
-        self._count_statuses(*commitments)
-
-    def _initialize_status_counts(self):
+    @staticmethod
+    def aggregate(*commitment_status_statistics_objects):
+        status_counts = {}
         for status in CommitmentStatus.values:
-            self._status_counts[status] = 0
+            status_counts[status] = 0
+        for stats_object in commitment_status_statistics_objects:
+            for status in CommitmentStatus.values:
+                status_counts[status] += stats_object.count_with_status(status)
+        return CommitmentStatusStatistics(status_counts)
 
-    def _count_statuses(self, *commitments):
+    @staticmethod
+    def from_commitment_list(*commitments):
+        return CommitmentStatusStatistics(
+            CommitmentStatusStatistics._count_statuses(*commitments)
+        )
+
+    @staticmethod
+    def _count_statuses(*commitments):
+        status_counts = {}
+        for status in CommitmentStatus.values:
+            status_counts[status] = 0
         for commitment in commitments:
-            self._total += 1
-            self._status_counts[commitment.status] += 1
+            status_counts[commitment.status] += 1
+        return status_counts
+
+    def __init__(self, status_counts):
+        self._status_counts = status_counts
+        self._total = self._get_total()
+        self._internal_dict_representation = self._as_dict()
+
+    def __getitem__(self, key):
+        return self._internal_dict_representation[key]
+
+    def _get_total(self):
+        total = 0
+        for status in CommitmentStatus.values:
+            total += self._status_counts[status]
+        return total
 
     def total(self):
         return self._total
@@ -143,7 +168,7 @@ class CommitmentStatusStatistics:
     def percentage_with_status(self, status):
         return 100*self.fraction_with_status(status)
 
-    def as_json(self):
+    def _as_dict(self):
         return {
             "total": self._total,
             "counts": self._get_counts_json(),
@@ -219,7 +244,9 @@ def write_aggregate_course_statistics_as_csv(courses, file_object_to_write_to):
     writer = csv.DictWriter(file_object_to_write_to, headers)
     writer.writeheader()
     for course in courses:
-        statistics = CommitmentStatusStatistics(*course.associated_commitments_list).as_json()
+        statistics = CommitmentStatusStatistics.from_commitment_list(
+            *course.associated_commitments_list
+        )
         writer.writerow({
             "Course Identifier": course.identifier,
             "Course Title": course.title,
@@ -255,9 +282,9 @@ def write_aggregate_commitment_template_statistics_as_csv(
     writer = csv.DictWriter(file_object_to_write_to, headers)
     writer.writeheader()
     for commitment_template in commitment_templates:
-        statistics = CommitmentStatusStatistics(
+        statistics = CommitmentStatusStatistics.from_commitment_list(
             *commitment_template.derived_commitments
-        ).as_json()
+        )
         writer.writerow({
             "Commitment Title": commitment_template.title,
             "Commitment Description": commitment_template.description,
