@@ -1,27 +1,27 @@
 <button class="standard-button"
         role="button"
         data-bs-toggle="modal"
-        data-bs-target="#send-bulk-email-modal">Send bulk email</button>
+        data-bs-target="#send-bulk-email-modal"><i class="bi bi-envelope-at-fill"></i> Send bulk email</button>
 <div class="modal fade"
      id="send-bulk-email-modal"
      tabindex="-1"
      aria-labelledby="send-bulk-email-modal-Label"
      aria-hidden="true">
-  <div class="modal-dialog modal-xl bulk-email-modal-container">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="send-bulk-email-modal-Label">Select students to email</h1>
+        <h1 class="modal-title w-100 text-center" id="send-bulk-email-modal-Label">Select students to email</h1>
         <button type="button"
                 class="btn-close close-x-button"
                 data-bs-dismiss="modal"
                 aria-label="Close">X</button>
       </div>
       <div class="modal-body text-left">
-        <div class="table-responsive">
+        <div class="table-responsive bulk-email-table-container">
           <table id="provider-course-student-datatable-bulk-email" class="display">
             <thead>
               <tr>
-                <th scope="col">Select</th>
+                <th class="datatable-select-column" scope="col"></th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
               </tr>
