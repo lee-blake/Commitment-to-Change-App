@@ -92,10 +92,9 @@ form {
     --- Containers --- 
 ------------------------------------------------------------------- 
  */
-
-.bulk-email-modal-container {
-    min-width: 90%;
-}
+ .bulk-email-table-container {
+    height:60vh;
+ }
 
 .datatable-container {
     overflow:auto; 
