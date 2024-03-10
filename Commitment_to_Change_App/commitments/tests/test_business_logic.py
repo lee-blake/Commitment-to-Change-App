@@ -403,11 +403,11 @@ class TestCommitmentStatusStatistics:
         """Tests for CommitmentStatusStatistics.total"""
 
         def test_returns_zero_when_empty(self):
-            stats = CommitmentStatusStatistics()
+            stats = CommitmentStatusStatistics.from_commitment_list()
             assert stats.total() == 0
 
         def test_returns_one_with_single_commitment(self):
-            stats = CommitmentStatusStatistics(FakeCommitmentData())
+            stats = CommitmentStatusStatistics.from_commitment_list(FakeCommitmentData())
             assert stats.total() == 1
 
 
@@ -415,17 +415,17 @@ class TestCommitmentStatusStatistics:
         """Tests for CommitmentStatusStatistics.count_with_status"""
 
         def test_returns_zero_when_empty(self):
-            stats = CommitmentStatusStatistics()
+            stats = CommitmentStatusStatistics.from_commitment_list()
             for status in CommitmentStatus.values:
                 assert stats.count_with_status(status) == 0
 
         @pytest.mark.parametrize("status", CommitmentStatus.values)
         def test_returns_one_with_commitment_of_that_status(self, status):
-            stats = CommitmentStatusStatistics(FakeCommitmentData(status=status))
+            stats = CommitmentStatusStatistics.from_commitment_list(FakeCommitmentData(status=status))
             assert stats.count_with_status(status) == 1
 
         def test_returns_zero_if_none_of_that_type(self):
-            stats = CommitmentStatusStatistics(
+            stats = CommitmentStatusStatistics.from_commitment_list(
                 FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
             )
             for status in CommitmentStatus.values:
@@ -438,24 +438,24 @@ class TestCommitmentStatusStatistics:
         """Tests for CommitmentStatusStatistics.fraction_with_status"""
 
         def test_raises_error_when_empty(self):
-            stats = CommitmentStatusStatistics()
+            stats = CommitmentStatusStatistics.from_commitment_list()
             with pytest.raises(ArithmeticError):
                 stats.fraction_with_status(CommitmentStatus.IN_PROGRESS)
 
         def test_returns_one_for_only_status_present(self):
-            stats = CommitmentStatusStatistics(
+            stats = CommitmentStatusStatistics.from_commitment_list(
                 FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
             )
             assert stats.fraction_with_status(CommitmentStatus.IN_PROGRESS) == 1
 
         def test_returns_zero_for_not_present(self):
-            stats = CommitmentStatusStatistics(
+            stats = CommitmentStatusStatistics.from_commitment_list(
                 FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
             )
             assert stats.fraction_with_status(CommitmentStatus.COMPLETE) == 0
 
         def test_returns_half_when_one_of_two(self):
-            stats = CommitmentStatusStatistics(
+            stats = CommitmentStatusStatistics.from_commitment_list(
                 FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
                 FakeCommitmentData(status=CommitmentStatus.COMPLETE)
             )
@@ -467,24 +467,24 @@ class TestCommitmentStatusStatistics:
         """Tests for CommitmentStatusStatistics.percentage_with_status"""
 
         def test_raises_error_when_empty(self):
-            stats = CommitmentStatusStatistics()
+            stats = CommitmentStatusStatistics.from_commitment_list()
             with pytest.raises(ArithmeticError):
                 stats.percentage_with_status(CommitmentStatus.IN_PROGRESS)
 
         def test_returns_one_hundred_for_only_status_present(self):
-            stats = CommitmentStatusStatistics(
+            stats = CommitmentStatusStatistics.from_commitment_list(
                 FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
             )
             assert stats.percentage_with_status(CommitmentStatus.IN_PROGRESS) == 100
 
         def test_returns_zero_for_not_present(self):
-            stats = CommitmentStatusStatistics(
+            stats = CommitmentStatusStatistics.from_commitment_list(
                 FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS)
             )
             assert stats.percentage_with_status(CommitmentStatus.COMPLETE) == 0
 
         def test_returns_fifty_when_one_of_two(self):
-            stats = CommitmentStatusStatistics(
+            stats = CommitmentStatusStatistics.from_commitment_list(
                 FakeCommitmentData(status=CommitmentStatus.IN_PROGRESS),
                 FakeCommitmentData(status=CommitmentStatus.COMPLETE)
             )
@@ -498,14 +498,14 @@ class TestCommitmentStatusStatistics:
         status_keys = ["in_progress", "complete", "discontinued", "expired"]
 
         def test_empty_returns_correctly(self):
-            stats = CommitmentStatusStatistics()
+            stats = CommitmentStatusStatistics.from_commitment_list()
             assert stats["total"] == 0
             for status_key in self.status_keys:
                 assert stats["counts"][status_key] == 0
                 assert stats["percentages"][status_key] == "N/A"
 
         def test_one_of_each_returns_correctly(self):
-            stats = CommitmentStatusStatistics(
+            stats = CommitmentStatusStatistics.from_commitment_list(
                 *[FakeCommitmentData(status=status) for status in CommitmentStatus.values]
             )
             assert stats["total"] == 4
@@ -518,7 +518,7 @@ class TestCommitmentStatusStatistics:
         """Tests for CommitmentStatusStatistics._as_dict"""
 
         def test_empty_returns_correctly(self):
-            stats = CommitmentStatusStatistics()
+            stats = CommitmentStatusStatistics.from_commitment_list()
             expected_json = {
                 "total": 0,
                 "counts": {
@@ -537,7 +537,7 @@ class TestCommitmentStatusStatistics:
             assert stats._as_dict() == expected_json
 
         def test_one_of_each_returns_correctly(self):
-            stats = CommitmentStatusStatistics(
+            stats = CommitmentStatusStatistics.from_commitment_list(
                 *[FakeCommitmentData(status=status) for status in CommitmentStatus.values]
             )
             expected_json = {

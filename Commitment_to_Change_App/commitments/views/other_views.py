@@ -84,7 +84,7 @@ class StatisticsOverviewView(ProviderLoginRequiredMixin, TemplateView):
         viewer = ProviderProfile.objects.get(user=self.request.user)
         context = super().get_context_data(**kwargs)
         context["courses"] = Course.objects.filter(owner=viewer)
-        context["overall_course_stats"] = CommitmentStatusStatistics(
+        context["overall_course_stats"] = CommitmentStatusStatistics.from_commitment_list(
             # This is effectively the same as aggregating into one list and unpacking.
             *itertools.chain.from_iterable(
                 course.associated_commitments_list for course in context["courses"]
@@ -93,7 +93,7 @@ class StatisticsOverviewView(ProviderLoginRequiredMixin, TemplateView):
         for course in context["courses"]:
             course.enrich_with_statistics()
         context["commitment_templates"] = CommitmentTemplate.objects.filter(owner=viewer)
-        context["overall_commitment_template_stats"] = CommitmentStatusStatistics(
+        context["overall_commitment_template_stats"] = CommitmentStatusStatistics.from_commitment_list(
             # This is effectively the same as aggregating into one list and unpacking.
             *itertools.chain.from_iterable(
                 commitment_template.derived_commitments \
