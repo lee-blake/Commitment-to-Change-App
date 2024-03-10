@@ -74,7 +74,8 @@ class CommitmentTemplateLogic:
             raise ValueError(
                 f"Statistics do not make sense: {self} is not a suggested commitment of {course}"
             )
-        self._data.commitment_statistics_within_course = CommitmentStatusStatistics.from_commitment_list(
+        self._data.commitment_statistics_within_course = \
+            CommitmentStatusStatistics.from_commitment_list(
             *self._get_derived_commitments_within_course(course)
         )
 
@@ -243,7 +244,9 @@ def write_aggregate_course_statistics_as_csv(courses, file_object_to_write_to):
     writer = csv.DictWriter(file_object_to_write_to, headers)
     writer.writeheader()
     for course in courses:
-        statistics = CommitmentStatusStatistics.from_commitment_list(*course.associated_commitments_list)
+        statistics = CommitmentStatusStatistics.from_commitment_list(
+            *course.associated_commitments_list
+        )
         writer.writerow({
             "Course Identifier": course.identifier,
             "Course Title": course.title,

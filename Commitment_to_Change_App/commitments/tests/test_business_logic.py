@@ -421,7 +421,9 @@ class TestCommitmentStatusStatistics:
 
         @pytest.mark.parametrize("status", CommitmentStatus.values)
         def test_returns_one_with_commitment_of_that_status(self, status):
-            stats = CommitmentStatusStatistics.from_commitment_list(FakeCommitmentData(status=status))
+            stats = CommitmentStatusStatistics.from_commitment_list(
+                FakeCommitmentData(status=status)
+            )
             assert stats.count_with_status(status) == 1
 
         def test_returns_zero_if_none_of_that_type(self):
