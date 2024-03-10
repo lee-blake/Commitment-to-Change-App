@@ -8,8 +8,10 @@
   <div class="text-center foreground round-corners mt-3 mx-3 py-2">
     Share this link to invite students to the course:
     <div>
-      <p id="courseJoinLink">
-        http://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}
+      <p>
+        <a href="{{ request.scheme }}://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}">
+          <span id="courseJoinLink">{{ request.scheme }}://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}</span>
+        </a>
       </p>
       <p>
         <button class="standard-button"
