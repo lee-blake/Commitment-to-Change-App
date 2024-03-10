@@ -121,6 +121,10 @@ class CommitmentStatusStatistics:
         self._status_counts = {}
         self._initialize_status_counts()
         self._count_statuses(*commitments)
+        self._as_dict = self.as_json()
+
+    def __getitem__(self, key):
+        return self._as_dict[key]
 
     def _initialize_status_counts(self):
         for status in CommitmentStatus.values:

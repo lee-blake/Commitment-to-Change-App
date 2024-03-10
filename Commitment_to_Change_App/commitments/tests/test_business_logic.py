@@ -492,6 +492,28 @@ class TestCommitmentStatusStatistics:
             assert stats.percentage_with_status(CommitmentStatus.COMPLETE) == pytest.approx(50)
 
 
+    class TestGetItem:
+        """Tests for CommitmentStatusStatistics.__getitem__"""
+
+        status_keys = ["in_progress", "complete", "discontinued", "expired"]
+
+        def test_empty_returns_correctly(self):
+            stats = CommitmentStatusStatistics()
+            assert stats["total"] == 0
+            for status_key in self.status_keys:
+                assert stats["counts"][status_key] == 0
+                assert stats["percentages"][status_key] == "N/A"
+
+        def test_one_of_each_returns_correctly(self):
+            stats = CommitmentStatusStatistics(
+                *[FakeCommitmentData(status=status) for status in CommitmentStatus.values]
+            )
+            assert stats["total"] == 4
+            for status_key in self.status_keys:
+                assert stats["counts"][status_key] == 1
+                assert stats["percentages"][status_key] == 25
+
+
     class TestDataAsJSON:
         """Tests for CommitmentStatusStatistics.as_json"""
 
