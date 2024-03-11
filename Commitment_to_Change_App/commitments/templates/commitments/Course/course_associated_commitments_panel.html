@@ -1,5 +1,11 @@
-<h3 class="px-3">
-  <a href="{% url "view Commitment" commitment_id=commitment.id %}">
-    {{ commitment.title }}
-  </a>
-</h3>
+<ul>
+
+  {% for commitment in course.associated_commitments_list %}
+    <li>
+      <h3 class="px-3">
+        <a href="{% url "view Commitment" commitment_id=commitment.id %}">{{ commitment.title }}</a>
+      </h3>
+    </li>
+  {% endfor %}
+
+</ul>
