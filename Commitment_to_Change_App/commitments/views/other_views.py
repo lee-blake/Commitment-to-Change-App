@@ -4,12 +4,13 @@ from django.urls import reverse
 from django.views.generic.base import RedirectView, TemplateView
 
 from commitments.business_logic import write_aggregate_course_statistics_as_csv, \
-    write_aggregate_commitment_template_statistics_as_csv, CommitmentStatusStatistics
+    write_aggregate_commitment_template_statistics_as_csv
 from commitments.enums import CommitmentStatus
 from commitments.generic_views import GeneratedTemporaryTextFileDownloadView
 from commitments.mixins import ClinicianLoginRequiredMixin, ProviderLoginRequiredMixin
 from commitments.models import Commitment, ClinicianProfile, ProviderProfile, Course, \
     CommitmentTemplate
+from commitments.statistics import CommitmentStatusStatistics
 
 
 class DashboardRedirectingView(LoginRequiredMixin, RedirectView):
