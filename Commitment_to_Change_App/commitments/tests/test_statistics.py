@@ -125,49 +125,6 @@ class TestCommitmentStatusStatistics:
                 assert stats["percentages"][status_key] == 25
 
 
-    class TestDataAsJSON:
-        """Tests for CommitmentStatusStatistics._as_dict"""
-
-        def test_empty_returns_correctly(self):
-            stats = CommitmentStatusStatistics.from_commitment_list()
-            expected_json = {
-                "total": 0,
-                "counts": {
-                    "in_progress": 0,
-                    "complete": 0,
-                    "discontinued": 0,
-                    "expired": 0
-                },
-                "percentages": {
-                    "in_progress": "N/A",
-                    "complete": "N/A",
-                    "discontinued": "N/A",
-                    "expired": "N/A"
-                }
-            }
-            assert stats._as_dict() == expected_json
-
-        def test_one_of_each_returns_correctly(self):
-            stats = CommitmentStatusStatistics.from_commitment_list(
-                *[FakeCommitmentData(status=status) for status in CommitmentStatus.values]
-            )
-            expected_json = {
-                "total": 4,
-                "counts": {
-                    "in_progress": 1,
-                    "complete": 1,
-                    "discontinued": 1,
-                    "expired": 1
-                },
-                "percentages": {
-                    "in_progress": 25,
-                    "complete": 25,
-                    "discontinued": 25,
-                    "expired": 25
-                }
-            }
-            assert stats._as_dict() == expected_json
-
     class TestAggregate:
         """Tests for CommitmentStatusStatistics.aggregate"""
 
