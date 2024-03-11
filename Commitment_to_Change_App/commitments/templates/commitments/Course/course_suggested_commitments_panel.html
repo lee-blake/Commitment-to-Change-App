@@ -1,4 +1,7 @@
-
+<table class="table vertically-center-td">
+    <tbody>
+        {% for suggested_commitment in suggested_commitments %}
+        <tr>
         {% if request.user.is_provider %}
         <td>
             <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
@@ -20,3 +23,7 @@
             </a>
         </td>
         {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

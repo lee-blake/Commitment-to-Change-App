@@ -80,16 +80,8 @@
             <div class="secondary-header-container">
               <h4>Suggested Commitments</h4>
             </div>
-            <table class="table vertically-center-td">
-              <tbody>
-
-                {% for suggested_commitment in suggested_commitments %}
-                  <tr>{% include "commitments/Course/course_suggested_commitments_panel.html" %}</tr>
-                {% endfor %}
-
-              </tbody>
-            </table>
-
+            {% include "commitments/Course/course_suggested_commitments_panel.html" %}
+            
             {% block select_suggested_commitments_button %}
             {% endblock select_suggested_commitments_button %}
 
