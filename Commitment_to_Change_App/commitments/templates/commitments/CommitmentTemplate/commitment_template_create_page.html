@@ -1,13 +1,16 @@
 {% extends "commitments/common/base_form.html" %}
 
-{% block title %} 
-Create a Commitment Template <span>{% include "commitments/CommitmentTemplate/commitment_template_create_page_help_modal.html" %}</span> 
+{% block title %}
+  Create a Commitment Template
 {% endblock title %}
 
 {% block form_header %}
-<h1>Create a Commitment Template</h1>
+  <span class="header-with-modal">
+    <h1>Create a Commitment Template</h1>
+    {% include "commitments/CommitmentTemplate/commitment_template_create_page_help_modal.html" %}
+  </span>
 {% endblock form_header %}
 
 {% block form_url %}
-{% url 'create CommitmentTemplate' %}
+  {% url 'create CommitmentTemplate' %}
 {% endblock form_url %}
