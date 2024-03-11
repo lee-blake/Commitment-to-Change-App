@@ -13,6 +13,7 @@
   <div class="container-fluid">
     <div class="row foreground p-1 round-corners">
       <div class="col-md-12">
+
         {% block course_module_content %}
           <div class="table-responsive text-center">
             <table class="table display" id="provider-course-datatable">
@@ -22,14 +23,15 @@
                   <th scope="col">ID</th>
                   <th scope="col">Start Date</th>
                   <th scope="col">End Date</th>
-                  <th scope="col">% in progress</th>
-                  <th scope="col">% past due</th>
-                  <th scope="col">% complete</th>
-                  <th scope="col">% discontinued</th>
-                  <th scope="col">Total Commitments</th>
+                  <th scope="col">In progress</th>
+                  <th scope="col">Past due</th>
+                  <th scope="col">Complete</th>
+                  <th scope="col">Discontinued</th>
+                  <th scope="col">Total</th>
                 </tr>
               </thead>
               <tbody>
+
                 {% for course in courses %}
                   <tr>
                     <td>
@@ -48,17 +50,19 @@
                     <td>
                       {% if course.end_date %}{{ course.end_date }}{% endif %}
                     </td>
-                    <td>{{ course.commitment_statistics.percentages.in_progress | floatformat:1 }}</td>
-                    <td>{{ course.commitment_statistics.percentages.expired | floatformat:1 }}</td>
-                    <td>{{ course.commitment_statistics.percentages.complete | floatformat:1 }}</td>
-                    <td>{{ course.commitment_statistics.percentages.discontinued | floatformat:1 }}</td>
+                    <td>{{ course.commitment_statistics.percentages.in_progress | floatformat:1 }}%</td>
+                    <td>{{ course.commitment_statistics.percentages.expired | floatformat:1 }}%</td>
+                    <td>{{ course.commitment_statistics.percentages.complete | floatformat:1 }}%</td>
+                    <td>{{ course.commitment_statistics.percentages.discontinued | floatformat:1 }}%</td>
                     <td>{{ course.commitment_statistics.total }}</td>
                   </tr>
                 {% endfor %}
+
               </tbody>
             </table>
           </div>
         {% endblock course_module_content %}
+
       </div>
     </div>
   </div>

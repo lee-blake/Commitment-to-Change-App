@@ -229,10 +229,10 @@ class TestStatisticsOverviewView:
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             in_progress_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*100.0\s*</td>"
+                r"\<td[^\>]*\>\s*100.0\s*\%\s*</td>"
             ).findall(html)
             non_in_progress_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*0.0\s*</td>"
+                r"\<td[^\>]*\>\s*0.0\s*\%\s*</td>"
             ).findall(html)
             total_commitment_count_matches = re.compile(
                 r"\<td[^\>]*\>\s*1\s*</td>"
@@ -263,7 +263,7 @@ class TestStatisticsOverviewView:
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             overall_status_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*25.0\s*</td>"
+                r"\<td[^\>]*\>\s*25.0\s*\%\s*</td>"
             ).findall(html)
             assert len(overall_status_td_matches) == 4
             total_commitment_count_matches = re.compile(
@@ -291,15 +291,15 @@ class TestStatisticsOverviewView:
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             enrolled_course_nonzero_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*33.3\s*</td>"
+                r"\<td[^\>]*\>\s*33.3\s*\%\s*</td>"
             ).findall(html)
             assert len(enrolled_course_nonzero_td_matches) == 3
             non_enrolled_course_nonzero_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*100.0\s*</td>"
+                r"\<td[^\>]*\>\s*100.0\s*\%\s*</td>"
             ).findall(html)
             assert len(non_enrolled_course_nonzero_td_matches) == 1
             zero_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*0.0\s*</td>"
+                r"\<td[^\>]*\>\s*0.0\s*\%\s*</td>"
             ).findall(html)
             assert len(zero_td_matches) == 4
             total_for_non_enrolled_course_matches = re.compile(
@@ -326,10 +326,10 @@ class TestStatisticsOverviewView:
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             in_progress_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*100.0\s*</td>"
+                r"\<td[^\>]*\>\s*100.0\s*\%\s*</td>"
             ).findall(html)
             non_in_progress_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*0.0\s*</td>"
+                r"\<td[^\>]*\>\s*0.0\s*\%\s*</td>"
             ).findall(html)
             total_commitment_count_matches = re.compile(
                 r"\<td[^\>]*\>\s*1\s*</td>"
@@ -360,7 +360,7 @@ class TestStatisticsOverviewView:
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             overall_status_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*25.0\s*</td>"
+                r"\<td[^\>]*\>\s*25.0\s*\%\s*</td>"
             ).findall(html)
             assert len(overall_status_td_matches) == 4
             total_commitment_count_matches = re.compile(
@@ -388,15 +388,15 @@ class TestStatisticsOverviewView:
             client.force_login(saved_provider_profile.user)
             html = client.get(target_url).content.decode()
             enrolled_course_nonzero_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*33.3\s*</td>"
+                r"\<td[^\>]*\>\s*33.3\s*\%\s*</td>"
             ).findall(html)
             assert len(enrolled_course_nonzero_td_matches) == 3
             non_enrolled_course_nonzero_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*100.0\s*</td>"
+                r"\<td[^\>]*\>\s*100.0\s*\%\s*</td>"
             ).findall(html)
             assert len(non_enrolled_course_nonzero_td_matches) == 1
             zero_td_matches = re.compile(
-                r"\<td[^\>]*\>\s*0.0\s*</td>"
+                r"\<td[^\>]*\>\s*0.0\s*\%\s*</td>"
             ).findall(html)
             assert len(zero_td_matches) == 4
             total_for_non_enrolled_course_matches = re.compile(
