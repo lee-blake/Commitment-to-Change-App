@@ -1,9 +1,9 @@
 $(document).ready(function() {
-  $('#select-all-emails-checkbox').click(selectAllCheckboxes);
+  $('#select-all-emails-checkbox').click(selectOrUnselectAllCheckboxes);
   $('#modal-bulk-email-submit-button').click(generateMailtoLink);
 });
 
-function selectAllCheckboxes() {
+function selectOrUnselectAllCheckboxes() {
   $('.select-email-checkbox').prop('checked', this.checked);
 } 
 
