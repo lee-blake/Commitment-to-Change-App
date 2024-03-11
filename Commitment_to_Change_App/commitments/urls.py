@@ -1,6 +1,6 @@
 from django.urls import path
 
-from commitments import views
+from commitments.views import views
 
 urlpatterns = [
      path(

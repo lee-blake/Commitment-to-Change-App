@@ -69,6 +69,19 @@ class EditCourseView(ProviderLoginRequiredMixin, UpdateView):
             kwargs={"course_id": self.object.id}
         )
 
+class DeleteCourseView(ProviderLoginRequiredMixin, DeleteView):
+    model = Course
+    form_class = GenericDeletePostKeySetForm
+    template_name = "commitments/Course/course_delete_page.html"
+    pk_url_kwarg = "course_id"
+    context_object_name = "course"
+    success_url = reverse_lazy("provider dashboard")
+
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return Course.objects.filter(
+            owner=viewer
+        )
 
 class JoinCourseView(LoginRequiredMixin, UpdateView):
     template_name = "commitments/Course/course_student_join_page.html"
