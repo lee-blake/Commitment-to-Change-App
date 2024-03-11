@@ -1,6 +1,8 @@
 import datetime
 
+from django.core.mail import send_mail
 from django.db import models
+from django.template.loader import render_to_string
 
 import cme_accounts.models
 from commitments.business_logic import CommitmentLogic, CommitmentTemplateLogic, CourseLogic
@@ -76,6 +78,13 @@ class Course(CourseLogic, models.Model):
         # Django ManyToManyFields are not iterable, we must wrap them with a property.
         return self.associated_commitments.all()
 
+    @property
+    def suggested_commitments_list(self):
+        # Suppressed because this mistakenly triggers an error in the VSCode extension:
+        # https://github.com/pylint-dev/pylint-django/issues/404
+        # pylint does not show such an error from the command line.
+        return self.suggested_commitments.all() #pylint: disable=no-member
+
     def _add_student(self, student):
         # We must override this due to ManyToManyField using different methods than list.
         # Pylint doesn't understand that contains(...) is applied to the field at runtime.
@@ -111,8 +120,51 @@ class Commitment(CommitmentLogic, models.Model):
         CommitmentLogic.__init__(self, data_object=self)
         models.Model.__init__(self, *args, **kwargs)
 
-    def save_expired_if_past_deadline(self):
-        today = datetime.date.today()
-        if self.deadline < today and self.status == CommitmentStatus.IN_PROGRESS:
-            self.status = CommitmentStatus.EXPIRED
-            self.save()
+
+class CommitmentReminderEmail(models.Model):
+    created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
+    last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    commitment = models.ForeignKey(
+        Commitment, on_delete=models.CASCADE, related_name="reminder_emails"
+    )
+    date = models.DateField(
+        "Date of email",
+        validators=[
+            validators.date_is_in_future
+        ]
+    )
+
+    email_subject_template = "commitments/CommitmentReminderEmail/reminder_email_subject.txt"
+    email_body_template = "commitments/CommitmentReminderEmail/reminder_email_body.txt"
+
+    def send(self):
+        context = self._generate_context()
+        send_mail(
+            subject=self._get_mail_subject(context),
+            message=self._get_mail_body(context),
+            from_email=None, # This uses the default email for the site
+            recipient_list=[self.commitment.owner.email]
+        )
+        # If successful, the email should *not* be sent again. Delete it.
+        self.delete()
+
+    def _generate_context(self):
+        days_remaining = (self.commitment.deadline - datetime.date.today()).days
+        return {
+            "date": self.date,
+            "commitment": self.commitment,
+            "owner": self.commitment.owner,
+            "days_remaining": days_remaining
+        }
+
+    def _get_mail_subject(self, context):
+        return render_to_string(
+            self.email_subject_template,
+            context=context
+        )
+
+    def _get_mail_body(self, context):
+        return render_to_string(
+            self.email_body_template,
+            context=context
+        )

@@ -1,0 +1,13 @@
+Hi {% spaceless%}
+  {% if owner.first_name %}
+    {{ owner.first_name }}
+  {% else %}
+    {{ owner.username }}
+  {% endif %}
+{% endspaceless %},
+
+Just a reminder - your commitment '{{ commitment.title }}' expires on {{ commitment.deadline }}.
+
+If you have already completed this commitment, please consider marking it complete when it is next convenient. Doing so helps providers improve the implementation of their courses with better data.
+
+- The CME Commitment to Change for Medical Professionals team

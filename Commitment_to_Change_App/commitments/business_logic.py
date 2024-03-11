@@ -4,6 +4,7 @@ import random
 import string
 
 from commitments.enums import CommitmentStatus
+from commitments.statistics import CommitmentStatusStatistics
 
 
 class ClinicianLogic:
@@ -65,9 +66,25 @@ class CommitmentTemplateLogic:
         return self._data.derived_commitments
 
     def enrich_with_statistics(self):
-        self._data.commitment_statistics = CommitmentStatusStatistics(
+        self._data.commitment_statistics = CommitmentStatusStatistics.from_commitment_list(
             *self.derived_commitments
-        ).as_json()
+        )
+
+    def enrich_with_course_specific_statistics(self, course):
+        if self not in course.suggested_commitments_list:
+            raise ValueError(
+                f"Statistics do not make sense: {self} is not a suggested commitment of {course}"
+            )
+        self._data.commitment_statistics_within_course = \
+            CommitmentStatusStatistics.from_commitment_list(
+            *self._get_derived_commitments_within_course(course)
+        )
+
+    def _get_derived_commitments_within_course(self, course):
+        return filter(
+            lambda commitment: commitment.associated_course == course,
+            self.derived_commitments
+        )
 
 
 class CourseLogic:
@@ -95,68 +112,9 @@ class CourseLogic:
             self._data.students.append(student)
 
     def enrich_with_statistics(self):
-        self._data.commitment_statistics = CommitmentStatusStatistics(
+        self._data.commitment_statistics = CommitmentStatusStatistics.from_commitment_list(
             *self._data.associated_commitments_list
-        ).as_json()
-
-
-class CommitmentStatusStatistics:
-    def __init__(self, *commitments):
-        self._total = 0
-        self._status_counts = {}
-        self._initialize_status_counts()
-        self._count_statuses(*commitments)
-
-    def _initialize_status_counts(self):
-        for status in CommitmentStatus.values:
-            self._status_counts[status] = 0
-
-    def _count_statuses(self, *commitments):
-        for commitment in commitments:
-            self._total += 1
-            self._status_counts[commitment.status] += 1
-
-    def total(self):
-        return self._total
-
-    def count_with_status(self, status):
-        return self._status_counts[status]
-
-    def fraction_with_status(self, status):
-        return self._status_counts[status]/self._total
-
-    def percentage_with_status(self, status):
-        return 100*self.fraction_with_status(status)
-
-    def as_json(self):
-        return {
-            "total": self._total,
-            "counts": self._get_counts_json(),
-            "percentages": self._get_percentages_json()
-        }
-
-    def _get_counts_json(self):
-        return {
-            "in_progress": self.count_with_status(CommitmentStatus.IN_PROGRESS),
-            "complete": self.count_with_status(CommitmentStatus.COMPLETE),
-            "discontinued": self.count_with_status(CommitmentStatus.DISCONTINUED),
-            "expired": self.count_with_status(CommitmentStatus.EXPIRED),
-        }
-
-    def _get_percentages_json(self):
-        if self._total == 0:
-            return {
-                "in_progress": "N/A",
-                "complete": "N/A",
-                "discontinued": "N/A",
-                "expired": "N/A"
-            }
-        return {
-            "in_progress": self.percentage_with_status(CommitmentStatus.IN_PROGRESS),
-            "complete": self.percentage_with_status(CommitmentStatus.COMPLETE),
-            "discontinued": self.percentage_with_status(CommitmentStatus.DISCONTINUED),
-            "expired": self.percentage_with_status(CommitmentStatus.EXPIRED),
-        }
+        )
 
 
 def write_course_commitments_as_csv(course, file_object_to_write_to):
@@ -196,11 +154,17 @@ def write_aggregate_course_statistics_as_csv(courses, file_object_to_write_to):
         "Num. Past Due",
         "Num. Completed",
         "Num. Discontinued",
+        "Perc. In Progress",
+        "Perc. Past Due",
+        "Perc. Completed",
+        "Perc. Discontinued",
         ]
     writer = csv.DictWriter(file_object_to_write_to, headers)
     writer.writeheader()
     for course in courses:
-        statistics = CommitmentStatusStatistics(*course.associated_commitments_list).as_json()
+        statistics = CommitmentStatusStatistics.from_commitment_list(
+            *course.associated_commitments_list
+        )
         writer.writerow({
             "Course Identifier": course.identifier,
             "Course Title": course.title,
@@ -211,4 +175,44 @@ def write_aggregate_course_statistics_as_csv(courses, file_object_to_write_to):
             "Num. Past Due": statistics["counts"]["expired"],
             "Num. Completed": statistics["counts"]["complete"],
             "Num. Discontinued": statistics["counts"]["discontinued"],
+            "Perc. In Progress": statistics["percentages"]["in_progress"],
+            "Perc. Past Due": statistics["percentages"]["expired"],
+            "Perc. Completed": statistics["percentages"]["complete"],
+            "Perc. Discontinued": statistics["percentages"]["discontinued"],
+        })
+
+def write_aggregate_commitment_template_statistics_as_csv(
+    commitment_templates, file_object_to_write_to
+):
+    headers = [
+        "Commitment Title",
+        "Commitment Description",
+        "Total Commitments",
+        "Num. In Progress",
+        "Num. Past Due",
+        "Num. Completed",
+        "Num. Discontinued",
+        "Perc. In Progress",
+        "Perc. Past Due",
+        "Perc. Completed",
+        "Perc. Discontinued",
+        ]
+    writer = csv.DictWriter(file_object_to_write_to, headers)
+    writer.writeheader()
+    for commitment_template in commitment_templates:
+        statistics = CommitmentStatusStatistics.from_commitment_list(
+            *commitment_template.derived_commitments
+        )
+        writer.writerow({
+            "Commitment Title": commitment_template.title,
+            "Commitment Description": commitment_template.description,
+            "Total Commitments": statistics["total"],
+            "Num. In Progress": statistics["counts"]["in_progress"],
+            "Num. Past Due": statistics["counts"]["expired"],
+            "Num. Completed": statistics["counts"]["complete"],
+            "Num. Discontinued": statistics["counts"]["discontinued"],
+            "Perc. In Progress": statistics["percentages"]["in_progress"],
+            "Perc. Past Due": statistics["percentages"]["expired"],
+            "Perc. Completed": statistics["percentages"]["complete"],
+            "Perc. Discontinued": statistics["percentages"]["discontinued"],
         })

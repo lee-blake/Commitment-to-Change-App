@@ -1,48 +1,79 @@
 {% extends "commitments/Course/course_view_unowned_page.html" %}
 
 {% block course_help_modal %}
-{% include "commitments/Course/course_view_owned_page_help_modal.html" %}
+  {% include "commitments/Course/course_view_owned_page_help_modal.html" %}
 {% endblock course_help_modal %}
 
 {% block join_link %}
-<div class="text-center foreground round-corners mt-3 mx-3 py-2">
+  <div class="text-center foreground round-corners mt-3 mx-3 py-2">
     Share this link to invite students to the course:
     <div>
-        <p id="courseJoinLink">http://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}</p>
-        <p><a href="#" class="standard-button" onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</a></p>
+      <p>
+        <a href="{{ request.scheme }}://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}">
+          <span id="courseJoinLink">{{ request.scheme }}://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}</span>
+        </a>
+      </p>
+      <p>
+        <button class="standard-button"
+                onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</button>
+      </p>
     </div>
-</div>
+  </div>
 {% endblock join_link %}
 
 {% block edit_button %}
-<a href="{% url "edit Course" course_id=course.id %}">
-    <button class="standard-button primary-accent" type="submit">
-        Edit Course
-    </button>
-</a>
+  <a href="{% url "edit Course" course_id=course.id %}">
+    <button class="standard-button primary-accent" type="submit">Edit Course</button>
+  </a>
 {% endblock edit_button %}
 
-{% block clinician_email_button %}
-        <a href="mailto:{{ clinician.email }}">
-            <button class="mailto-icon standard-button align-self-end">
-                <i class="bi bi-envelope-at-fill"></i>
-            </button>
-        </a>
-{% endblock clinician_email_button %}
+{% block bulk_email_button %}
+  <div class="text-center pt-2 pb-4">
+    {% include "commitments/Course/course_bulk_email_modal.html" %}
+  </div>
+{% endblock bulk_email_button %}
+
+{% block student_table %}
+  <div class="datatable-container round-corners"
+       id="course-student-datatable-container">
+    <table id="provider-course-student-datatable" class="display">
+      <thead>
+        <tr>
+          <th scope="col" data-priority="1">Name</th>
+          <th scope="col" data-priority="2">Email</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        {% for clinician in course.students.all %}
+          <tr>
+            <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
+            <td>
+              <a href="mailto:{{ clinician.email }}">{{ clinician.email }}</a>
+            </td>
+          </tr>
+        {% endfor %}
+
+      </tbody>
+    </table>
+  </div>
+{% endblock student_table %}
 
 {% block select_suggested_commitments_button %}
-<a href="{% url 'change Course suggested commitments' course_id=course.id %}">
-    <button class="standard-button">Select Templates</button>
-</a>
+  <div class="text-center pb-3">
+    <a href="{% url 'change Course suggested commitments' course_id=course.id %}">
+      <button class="standard-button">Select Templates</button>
+    </a>
+  </div>
 {% endblock select_suggested_commitments_button %}
 
 {% block course_commitment_csv_download_link %}
-<div class="text-center">
+  <div class="text-center py-3">
     <a href="{% url "download Course Commitments as csv" course_id=course.id %}">
-        <button class="standard-button">
-            Download commitments list
-            <i class="bi bi-file-earmark-arrow-down"></i>
-        </button>
+      <button class="standard-button">
+        Download commitments list
+        <i class="bi bi-file-earmark-arrow-down"></i>
+      </button>
     </a>
-</div>
+  </div>
 {% endblock course_commitment_csv_download_link %}

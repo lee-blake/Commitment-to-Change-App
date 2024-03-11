@@ -418,6 +418,65 @@ class TestViewCommitmentView:
             )
             assert not edit_button_regex.search(html)
 
+        def test_link_to_reminder_email_view_shows_for_owner(
+            self, client, saved_clinician_profile, viewable_commitment_1
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            link_url = reverse(
+                "view CommitmentReminderEmails",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            assert link_url in html
+
+        def test_link_to_reminder_email_view_does_not_shows_for_providers(
+            self, client, saved_provider_profile, viewable_commitment_1
+        ):
+            client.force_login(saved_provider_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            link_url = reverse(
+                "view CommitmentReminderEmails",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            assert link_url not in html
+
+        def test_link_to_reminder_email_view_does_not_shows_for_other_clinicians(
+            self, client, other_clinician_profile, viewable_commitment_1
+        ):
+            client.force_login(other_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            link_url = reverse(
+                "view CommitmentReminderEmails",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            assert link_url not in html
+
+        def test_link_to_reminder_email_view_does_not_shows_for_anonymous_users(
+            self, client, viewable_commitment_1
+        ):
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            link_url = reverse(
+                "view CommitmentReminderEmails",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            assert link_url not in html
+
 
     class TestPost:
         """Tests for ViewCommitmentView.post"""
@@ -644,7 +703,7 @@ class TestEditCommitmentView:
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
-            new_deadline = date.today().replace(year=date.today().year+1)
+            new_deadline = date.today().replace(year=date.today().year+1, day=1)
             client.post(
                 target_url,
                 {
@@ -666,7 +725,7 @@ class TestEditCommitmentView:
                 kwargs={"commitment_id": existing_commitment.id}
             )
             client.force_login(saved_clinician_profile.user)
-            new_deadline = date.today().replace(year=date.today().year+1)
+            new_deadline = date.today().replace(year=date.today().year+1, day=1)
             response = client.post(
                 target_url,
                 {

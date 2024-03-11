@@ -1,18 +1,33 @@
+<table class="table table-striped vertically-center-td">
+  <tbody>
 
+    {% for suggested_commitment in suggested_commitments %}
+    
+      <tr>
         {% if request.user.is_provider %}
-        <span>
+          <td class="text-center">
             <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
-                {{ suggested_commitment }}
-            </a>
-        </span>
-        
+              {{ suggested_commitment }}
+              <i class="bi bi-caret-right-fill"></i>
+            </a> 
+            <br>
+            {% include "commitments/Course/course_suggested_commitment_stats_popover.html" %}
+          </td>
+
         {% elif request.user.is_clinician %}
-        <span>
+          <td>
             {{ suggested_commitment }}
-        </span>
-        <span>
+            <br>
+            {% include "commitments/Course/course_suggested_commitment_stats_popover.html" %}
+          </td>
+          <td align="right">
             <a href="{% url 'create Commitment from suggested commitment' course_id=course.id commitment_template_id=suggested_commitment.id %}">
-                <button class="standard-button">Make This Commitment</button>
+              <button class="standard-button">Make This Commitment</button>
             </a>
-        </span>
+          </td>
         {% endif %}
+      </tr>
+    {% endfor %}
+
+  </tbody>
+</table>

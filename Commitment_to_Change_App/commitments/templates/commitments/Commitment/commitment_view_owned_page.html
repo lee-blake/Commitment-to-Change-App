@@ -14,3 +14,11 @@
 {% include "commitments/Commitment/commitment_delete_modal.html" %}
   
 {% endblock delete_button %}
+
+{% block reminder_emails_button %}
+  <a href="{% url 'view CommitmentReminderEmails' commitment_id=commitment.id %}">
+    <button class="standard-button primary-accent" type="submit">
+      Manage reminder emails
+    </button>
+  </a>
+{% endblock reminder_emails_button %}

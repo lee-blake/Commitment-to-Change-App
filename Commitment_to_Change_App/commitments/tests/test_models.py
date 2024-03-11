@@ -1,10 +1,11 @@
 from datetime import date
+from smtplib import SMTPException
 
 import pytest
 
 from cme_accounts.models import User
-from commitments.enums import CommitmentStatus
-from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course
+from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course, \
+    CommitmentReminderEmail
 
 
 class TestClinicianProfile:
@@ -65,66 +66,6 @@ class TestCommitment:
         return ClinicianProfile.objects.create(
             user=user
         )
-
-
-    @pytest.mark.django_db
-    class TestSaveExpiredIfPastDeadline:
-        """Tests for Commitment.save_expired_if_past_deadline"""
-
-        def test_saves_expired_if_past_deadline_and_in_progress(self, saved_commitment_owner):
-            today = date.today()
-            past_deadline = today.replace(year=today.year - 1)
-            commitment = Commitment.objects.create(
-                owner=saved_commitment_owner,
-                title="Test title",
-                description="Test description",
-                deadline=past_deadline,
-                status=CommitmentStatus.IN_PROGRESS
-            )
-            commitment.save_expired_if_past_deadline()
-            reloaded_commitment = Commitment.objects.get(id=commitment.id)
-            assert reloaded_commitment.status == CommitmentStatus.EXPIRED
-
-        def test_no_status_change_if_future_deadline_and_in_progress(self, saved_commitment_owner):
-            commitment = Commitment.objects.create(
-                owner=saved_commitment_owner,
-                title="Test title",
-                description="Test description",
-                deadline=date.today(),
-                status=CommitmentStatus.IN_PROGRESS
-            )
-            commitment.save_expired_if_past_deadline()
-            reloaded_commitment = Commitment.objects.get(id=commitment.id)
-            assert reloaded_commitment.status == CommitmentStatus.IN_PROGRESS
-
-        def test_no_status_change_if_not_in_progress(self, saved_commitment_owner):
-            today = date.today()
-            past_deadline = today.replace(year=today.year - 1)
-            commitment = Commitment.objects.create(
-                owner=saved_commitment_owner,
-                title="Test title",
-                description="Test description",
-                deadline=past_deadline,
-                status=CommitmentStatus.COMPLETE
-            )
-            commitment.save_expired_if_past_deadline()
-            reloaded_commitment = Commitment.objects.get(id=commitment.id)
-            assert reloaded_commitment.status == CommitmentStatus.COMPLETE
-
-        def test_no_database_touch_if_not_changed(self, saved_commitment_owner):
-            today = date.today()
-            past_deadline = today.replace(year=today.year - 1)
-            commitment = Commitment.objects.create(
-                owner=saved_commitment_owner,
-                title="Test title",
-                description="Test description",
-                deadline=past_deadline,
-                status=CommitmentStatus.COMPLETE
-            )
-            last_modification_before_method_call = commitment.last_updated
-            commitment.save_expired_if_past_deadline()
-            reloaded_commitment = Commitment.objects.get(id=commitment.id)
-            assert reloaded_commitment.last_updated == last_modification_before_method_call
 
 
 class TestCommitmentTemplate:
@@ -190,7 +131,7 @@ class TestCourse:
 
     @pytest.mark.django_db
     class TestAssociatedCommitmentsList:
-        """Tests for Commitment.associated_commitments_list"""
+        """Tests for Course.associated_commitments_list"""
 
         def test_no_associated_commitments_returns_empty_iterable(self, minimal_course):
             assert len(minimal_course.associated_commitments_list) == 0
@@ -203,6 +144,23 @@ class TestCourse:
             minimal_commitment.save()
             assert minimal_commitment in minimal_course.associated_commitments_list
             assert iter(minimal_course.associated_commitments_list)
+
+
+    @pytest.mark.django_db
+    class TestSuggestedCommitmentsList:
+        """Tests for Course.suggested_commitments_list"""
+
+        def test_no_suggested_commitments_returns_empty_iterable(self, minimal_course):
+            assert len(minimal_course.suggested_commitments_list) == 0
+            assert iter(minimal_course.suggested_commitments_list)
+
+        def test_one_suggested_commitment_returns_iterable_containing_it(
+            self, minimal_course, minimal_commitment_template
+        ):
+            minimal_course.suggested_commitments.add(minimal_commitment_template)
+            minimal_course.save()
+            assert minimal_commitment_template in minimal_course.suggested_commitments_list
+            assert iter(minimal_course.suggested_commitments_list)
 
 
     @pytest.mark.django_db
@@ -222,3 +180,61 @@ class TestCourse:
             minimal_course.students.add(minimal_clinician)
             minimal_course.enroll_student_with_join_code(minimal_clinician, "JOINCODE")
             assert minimal_course.students.filter(id=minimal_clinician.id).count() == 1
+
+
+@pytest.mark.django_db
+class TestCommitmentReminderEmail:
+    """Tests for CommitmentReminderEmail"""
+
+    class TestSend:
+        """Tests for CommitmentReminderEmail.send"""
+
+        def test_sends_email_to_correct_address(self, minimal_commitment, captured_email):
+            reminder_email = CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=date.today()
+            )
+            reminder_email.send()
+            assert len(captured_email) == 1
+            assert captured_email[0].to == [minimal_commitment.owner.user.email]
+
+        def test_deletes_self_after_sending(self, minimal_commitment):
+            reminder_email = CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=date.today()
+            )
+            reminder_email.send()
+            assert CommitmentReminderEmail.objects.filter(id=reminder_email.id).count() == 0
+
+        def test_does_not_delete_if_sending_fails(self, settings, minimal_commitment):
+            settings.EMAIL_BACKEND = "commitments.tests.helpers.FailBackend"
+            reminder_email = CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=date.today()
+            )
+            with pytest.raises(SMTPException):
+                reminder_email.send()
+            assert CommitmentReminderEmail.objects.filter(id=reminder_email.id).count() == 1
+
+        def test_subject_contains_indication_of_purpose(self, captured_email, minimal_commitment):
+            reminder_email = CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=date.today()
+            )
+            reminder_email.send()
+            assert len(captured_email) == 1
+            assert "commitment" in captured_email[0].subject.lower()
+
+        @pytest.mark.parametrize("title", ["Title 1", "Title 2"])
+        def test_body_references_specific_commitment(
+            self, captured_email, minimal_commitment, title
+        ):
+            minimal_commitment.title = title
+            minimal_commitment.save()
+            reminder_email = CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=date.today()
+            )
+            reminder_email.send()
+            assert len(captured_email) == 1
+            assert title in captured_email[0].body
