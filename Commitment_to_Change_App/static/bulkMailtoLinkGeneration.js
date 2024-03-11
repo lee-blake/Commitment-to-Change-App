@@ -1,10 +1,10 @@
 $(document).ready(function() {
-  $('#select-all-checkbox').click(selectAllCheckboxes);
+  $('#select-all-emails-checkbox').click(selectAllCheckboxes);
   $('#modal-bulk-email-submit-button').click(generateMailtoLink);
 });
 
 function selectAllCheckboxes() {
-  $('.email-checkbox').prop('checked', this.checked);
+  $('.select-email-checkbox').prop('checked', this.checked);
 } 
 
 function generateMailtoLink() {
@@ -15,7 +15,7 @@ function generateMailtoLink() {
 
 function getSelectedEmails() {
   const selectedEmails = [];
-  $('.email-checkbox:checked').each(function() {
+  $('.select-email-checkbox:checked').each(function() {
     selectedEmails.push($(this).data('email'));
   });
   return selectedEmails;
