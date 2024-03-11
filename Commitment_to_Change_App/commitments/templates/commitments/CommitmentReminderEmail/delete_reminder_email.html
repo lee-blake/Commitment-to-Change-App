@@ -1,26 +1,32 @@
 {% extends "commitments/common/base.html" %}
-
-{% block title %} Delete reminder email {% endblock title %}
-
+{% block title %}
+  Delete reminder email
+{% endblock title %}
 {% block page_content %}
-<div class="container-fluid">
-    <div class="container-fluid p-1 my-3 commitment-title round-corners primary-accent">
-        <h1>Delete reminder email</h1>
+  <div class="container-xl px-0 round-corners foreground">
+    <div class="primary-header-container">
+      <h1>Delete reminder email</h1>
     </div>
-    <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
-        <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
-            <p>Are you sure you want to delete the reminder email for '{{ commitment.title }}'
-            that is scheduled on {{ reminder_email.date }}?</p>
+    <div class="container-fluid px-3 py-3">
+      <div class="p-1 round-corners background text-center">
+        <p>
+          Are you sure you want to delete the reminder email for '{{ commitment.title }}'
+          that is scheduled on {{ reminder_email.date }}?
+        </p>
+      </div>
+      {# Render the error notes for the implicit form so that bad requests made #}
+      {# during development will be easier to debug. Errors cannot occur during #}
+      {# normal use of this form.#}
+      {{ form.non_field_errors }}
+      {{ form.delete.errors }}
+      <div class="d-flex justify-content-center p-2">
+        <div class="px-2 pt-3">
+          <a href="{% url "view CommitmentReminderEmails" commitment_id=commitment.id %}">
+            <button class="view-button">Cancel</button>
+          </a>
         </div>
-        {# Render the error notes for the implicit form so that bad requests made #}
-        {# during development will be easier to debug. Errors cannot occur during #}
-        {# normal use of this form.#}
-        {{ form.non_field_errors }}
-        {{ form.delete.errors }}
-        <a href="{% url "view CommitmentReminderEmails" commitment_id=commitment.id %}">
-            <button>Cancel</button>
-        </a>
-        {% include "commitments/CommitmentReminderEmail/reminder_email_delete_button.html" %}
+        <div class="px-2 pt-3">{% include "commitments/CommitmentReminderEmail/reminder_email_delete_button.html" %}</div>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock page_content %}

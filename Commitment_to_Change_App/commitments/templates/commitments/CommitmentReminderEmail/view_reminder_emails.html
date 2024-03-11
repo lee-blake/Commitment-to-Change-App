@@ -24,7 +24,7 @@
               <td>{{ reminder_email.date }}</td>
               <td>
                 <a href="{% url "delete CommitmentReminderEmail" commitment_id=commitment.id reminder_email_id=reminder_email.id %}">
-                  <button class="standard-button">Delete</button>
+                  <button class="standard-button"><i class="bi bi-trash"></i> Delete</button>
                 </a>
               </td>
             </tr>
