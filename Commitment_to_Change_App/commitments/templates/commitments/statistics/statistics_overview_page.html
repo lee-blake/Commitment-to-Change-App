@@ -1,7 +1,9 @@
 {% extends "commitments/common/base.html" %}
+
 {% block title %}
   Statistics Overview
 {% endblock title %}
+
 {% block page_content %}
   <div class="container-xl px-0 mb-3 foreground round-corners">
     <div class="primary-header-container">
@@ -9,6 +11,8 @@
     </div>
     {% include "commitments/statistics/statistics_overview_overall_course_stats.html" %}
     {% include "commitments/statistics/statistics_overview_courses_list.html" %}
+  </div>
+  <div class="container-xl px-0 mb-3 foreground round-corners">
     <div class="primary-header-container">
       <h1>Commitment Template Statistics</h1>
     </div>
