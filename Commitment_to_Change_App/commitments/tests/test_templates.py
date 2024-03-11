@@ -47,7 +47,7 @@ class TestCommitmentViewPageStatistics:
 
 
 class TestCommitmentTemplateChartLegend:
-    """Tests for 'commitments/CommitmentTemplate/commitment_template_chart_legend.html'"""
+    """Tests for 'commitments/common/commitment_status_pie_chart_legend.html'"""
 
     def test_only_non_zeroes_show_in_legend(self):
         commitment_template_data = {
@@ -67,7 +67,7 @@ class TestCommitmentTemplateChartLegend:
             },
         }
         template = loader.get_template(
-            "commitments/CommitmentTemplate/commitment_template_chart_legend.html"
+            "commitments/common/commitment_status_pie_chart_legend.html"
         )
         rendered_content = template.render({"commitment_data_object" : commitment_template_data})
         assert "In-progress: 1" in rendered_content
@@ -93,7 +93,7 @@ class TestCommitmentTemplateChartLegend:
             },
         }
         template = loader.get_template(
-            "commitments/CommitmentTemplate/commitment_template_chart_legend.html"
+            "commitments/common/commitment_status_pie_chart_legend.html"
         )
         rendered_content = template.render({"commitment_data_object" : commitment_template_data})
         assert "In-progress" not in rendered_content
