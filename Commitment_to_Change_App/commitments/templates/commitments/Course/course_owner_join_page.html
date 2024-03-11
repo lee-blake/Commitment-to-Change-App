@@ -3,9 +3,12 @@
 {% block title %} Course join page {% endblock title %}
 
 {% block page_content %}
-<div class="container px-5 pt-5 text-center background">
-    <div class="p-3 round-corners pb-3 text-center default-form foreground">
+  <div class="container-xl px-0 round-corners foreground">
+    <div class="primary-header-container">
         <h1>Join page for {{ course.title }}</h1>
+    </div>
+    <div class="container-fluid px-3 py-3">
+      <div class="p-3 round-corners background text-center">
         <p>
             This page will allow clinicians to confirm that they want to join
             your course <strong><em>{{ course.title }}</em></strong>. This confirmation
@@ -13,6 +16,7 @@
             enroll in the course as a student. You can distribute the link to this page and
             clinicians will be able to use it to enroll as students.
         </p>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock page_content %}
