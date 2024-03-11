@@ -21,7 +21,7 @@
           <table id="provider-course-student-datatable-bulk-email" class="display">
             <thead>
               <tr>
-                <th class="datatable-select-column" scope="col"></th>
+                <th class="datatable-select-column" scope="col"><input type="checkbox" id="select-all-emails-checkbox"></th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
               </tr>
@@ -32,7 +32,7 @@
                 <tr>
                   <td class="text-center">
                     <input type="checkbox"
-                           class="email-checkbox"
+                           class="select-email-checkbox"
                            data-email="{{ clinician.email }}">
                   </td>
                   <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
