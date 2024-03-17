@@ -1,11 +1,13 @@
 {% extends "commitments/common/base_form.html" %}
 
-{% block title %} Edit Commitment Template {% endblock title %}
+{% block title %}
+  Edit Commitment Template
+{% endblock title %}
 
 {% block form_header %}
-<h1>Edit Commitment Template</h1>
+  <h1>Edit Commitment Template</h1>
 {% endblock form_header %}
 
 {% block form_url %}
-{% url 'edit CommitmentTemplate' commitment_template_id=commitment_template.id %}
+  {% url 'edit CommitmentTemplate' commitment_template_id=commitment_template.id %}
 {% endblock form_url %}
