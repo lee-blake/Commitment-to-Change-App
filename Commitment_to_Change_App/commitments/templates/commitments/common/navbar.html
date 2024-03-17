@@ -1,57 +1,56 @@
 <nav class="navbar navbar-light navbar-expand-lg foreground">
   <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'dashboard' %}">CME Commitment To Change</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-light navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                  <a aria-current="page" class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-              </li>
-              {% if request.user.is_authenticated %}
-              {% if request.user.is_clinician %}
-              <li class="nav-item">
-                  <a class="nav-link" href="{% url "create Commitment" %}">Make a commitment</a>
-              </li>
-              {% endif %}
+    <a class="navbar-brand" href="{% url 'dashboard' %}">CME Commitment To Change</a>
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-light navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a aria-current="page" class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+        </li>
+        
+        {% if request.user.is_authenticated %}
+          {% if request.user.is_clinician %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url "create Commitment" %}">Make a commitment</a>
+            </li>
+          {% endif %}
 
-              {% if request.user.is_provider %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url "statistics overview" %}">
-                  Statistics
-                </a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="{% url "create Course" %}">Create a course</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'create CommitmentTemplate' %}">
-                  Create a Commitment Template
-                </a>
-              </li>
-              {% endif %}
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-              <li class="nav-item">
-                  <a class="nav-link" href="#">
-                      Logged in as {{ request.user.username }} 
-                  </a>
-              </li>
-              <li class="nav-item">
-                <li class="nav-link">
-                  {% include "commitments/common/logout_button.html" %}
-                </li>
-              </li>
+          {% if request.user.is_provider %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url "statistics overview" %}">Statistics</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url "create Course" %}">Create a course</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'create CommitmentTemplate' %}">Create a Commitment Template</a>
+            </li>
+          {% endif %}
 
-              {% else %}
-              <li class="nav-item">
-                <li class="nav-link">
-                  {% include "commitments/common/login_button.html" %}
-                </li>
-              </li>
-              {% endif %}
-          </ul>
-      </div>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Logged in as {{ request.user.username }}</a>
+          </li>
+          <li class="nav-item">
+            <li class="nav-link">{% include "commitments/common/logout_button.html" %}</li>
+          </li>
+
+        {% else %}
+          <li class="nav-item">
+            <li class="nav-link">{% include "commitments/common/login_button.html" %}</li>
+          </li>
+        {% endif %}
+
+      </ul>
+    </div>
   </div>
 </nav>
