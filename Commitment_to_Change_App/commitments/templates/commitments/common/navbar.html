@@ -15,7 +15,7 @@
         <li class="nav-item">
           <a aria-current="page" class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
         </li>
-        
+
         {% if request.user.is_authenticated %}
           {% if request.user.is_clinician %}
             <li class="nav-item">
