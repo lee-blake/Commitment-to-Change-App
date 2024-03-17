@@ -1,24 +1,22 @@
 {% extends "commitments/common/base_help_modal.html" %}
 
-{% block modal_title %} 
-Welcome to the "{{ course.title }}" dashboard
+{% block modal_title %}
+  Welcome to the "{{ course.title }}" dashboard
 {% endblock modal_title %}
 
-{% block icon_color %}white{% endblock icon_color %}
+{% block icon_color %}
+  white
+{% endblock icon_color %}
 
 {% block modal_body_text %}
-Here you can:
-<ul>
+  Here you can:
+  <ul>
     <li>
-        Make a suggested commitment for this course by clicking the "Select Templates" button in the "Suggested Commitments" section.
+      Make a suggested commitment for this course by clicking the "Select Templates" button in the "Suggested Commitments" section.
     </li>
-    <li>
-        View a list of students in the course. Click on a student's name for more information.
-    </li>
-    <li>
-        View the commitments that have been made in this course and their statuses.
-    </li>
-</ul>
+    <li>View a list of students in the course. Click on a student's name for more information.</li>
+    <li>View the commitments that have been made in this course and their statuses.</li>
+  </ul>
 
 {% endblock modal_body_text %}
 
@@ -30,7 +28,5 @@ Here you can:
 {% endcomment %}
 
 {% block modal_everything %}
-        {% with modal_id="course_view_help_modal" %}
-            {{ block.super }}
-        {% endwith %}
+  {% with modal_id="course_view_help_modal" %}{{ block.super }}{% endwith %}
 {% endblock modal_everything %}
