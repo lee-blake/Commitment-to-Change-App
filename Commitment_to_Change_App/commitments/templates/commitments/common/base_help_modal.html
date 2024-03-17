@@ -9,50 +9,48 @@
 {% endcomment %}
 
 {% block modal_everything %}
-  <!-- Button -->
   {% with commitment_id=commitment.id %}
-    <a class="info-button p-1"
-       style="color:{% block icon_color %}{% endblock icon_color %}"
-       role="button"
-       data-bs-toggle="modal"
-       data-bs-target="#{{ modal_id }}"><i class="bi bi-info-circle-fill"></i></a>
+  <a class="info-button p-1"
+     style="color:{% block icon_color %}{% endblock icon_color %}"
+     role="button"
+     data-bs-toggle="modal"
+     data-bs-target="#{{ modal_id }}"><i class="bi bi-info-circle-fill"></i>
+</a>
+<div class="modal fade"
+     id="{{ modal_id }}"
+     tabindex="-1"
+     aria-labelledby="{{ modal_id }}Label"
+     aria-hidden="true">
+  <div class="modal-dialog standard-modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="{{ modal_id }}Label">
 
-    <!-- Modal -->
-    <div class="modal fade"
-         id="{{ modal_id }}"
-         tabindex="-1"
-         aria-labelledby="{{ modal_id }}Label"
-         aria-hidden="true">
-      <div class="modal-dialog standard-modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="{{ modal_id }}Label">
+          {% block modal_title %}
+          {% endblock modal_title %}
 
-              {% block modal_title %}
-              {% endblock modal_title %}
+        </h1>
+        <button type="button"
+                class="btn-close close-x-button"
+                data-bs-dismiss="modal"
+                aria-label="Close">X</button>
+      </div>
+      <div class="modal-body text-left">
+        <p>
 
-            </h1>
-            <button type="button"
-                    class="btn-close close-x-button"
-                    data-bs-dismiss="modal"
-                    aria-label="Close">X</button>
-          </div>
-          <div class="modal-body text-left">
-            <p>
+          {% block modal_body_text %}
+          {% endblock modal_body_text %}
 
-              {% block modal_body_text %}
-              {% endblock modal_body_text %}
-
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button type="button"
-                    class="btn-close close-x-button"
-                    data-bs-dismiss="modal">Close</button>
-          </div>
-        </div>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button"
+                class="btn-close close-x-button"
+                data-bs-dismiss="modal">Close</button>
       </div>
     </div>
-  {% endwith %}
+  </div>
+</div>
+{% endwith %}
 
 {% endblock modal_everything %}

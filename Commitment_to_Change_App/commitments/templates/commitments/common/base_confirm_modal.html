@@ -9,7 +9,7 @@
 {% endcomment %}
 
 {% block modal_everything %}
-  <!-- Button -->
+
   {% with commitment_id=commitment.id %}
     <button type="button"
             class="standard-button primary-accent"
@@ -20,8 +20,6 @@
       {% endblock modal_open_button_text %}
 
     </button>
-
-    <!-- Modal -->
     <div class="modal fade"
          id="{{ modal_id }}"
          tabindex="-1"
