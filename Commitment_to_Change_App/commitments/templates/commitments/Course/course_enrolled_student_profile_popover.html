@@ -1,22 +1,27 @@
 {% extends "commitments/common/base_popover.html" %}
 
 {% block popover_click_object %}
+
   {% if clinician.first_name or clinician.last_name %}
     {{ clinician.first_name }} {{ clinician.last_name }}
   {% else %}
     {{ clinician.username }}
   {% endif %}
+
 {% endblock popover_click_object %}
 
 {% block popover_title %}
+
   {% if clinician.first_name or clinician.last_name %}
     {{ clinician.first_name }} {{ clinician.last_name }}
   {% else %}
     <em>No name provided</em>
   {% endif %}
+
 {% endblock popover_title %}
 
 {% block popover_content %}
+
   <div>
     {% if clinician.institution %}
       {{ clinician.institution }}
@@ -24,5 +29,7 @@
       <em>No institution provided</em>
     {% endif %}
   </div>
+
   <div>{{ clinician.username }}</div>
+  
 {% endblock popover_content %}
