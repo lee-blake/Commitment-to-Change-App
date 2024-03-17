@@ -1,23 +1,25 @@
 {% extends "commitments/common/base_help_modal.html" %}
 
 {% block modal_title %}
-Commitment Templates
+  Commitment Templates
 {% endblock modal_title %}
 
-{% block icon_color %}white{% endblock icon_color %}
+{% block icon_color %}
+  white
+{% endblock icon_color %}
 
 {% block modal_body_text %}
-Commitment Templates allow students in your courses to commit to a common, course-related goal. You can create as many templates as you like, and use the same commitment across multiple courses if desired.
-<br>
-<ul>
+  Commitment Templates allow students in your courses to commit to a common, course-related goal. You can create as many templates as you like, and use the same commitment across multiple courses if desired.
+  <br>
+  <ul>
     <li>
-        <strong>Creating a Commitment Template:</strong> Click on the "Create a Commitment Template" button in the navbar at the top of your screen, and fill out the Title and Description
+      <strong>Creating a Commitment Template:</strong> Click on the "Create a Commitment Template" button in the navbar at the top of your screen, and fill out the Title and Description
     </li>
     <li>
-        <strong>Associating a Commitment Template with your course:</strong> Once you have created a Commitment Template, you can "suggest" the commitment to students enrolled in your course by navigating to that course's page from the "Courses" section above,
-        and clicking the "Select Templates" button. Enrolled students can then click on "Make This Commitment" button in the course page to "join" that commitment.
+      <strong>Associating a Commitment Template with your course:</strong> Once you have created a Commitment Template, you can "suggest" the commitment to students enrolled in your course by navigating to that course's page from the "Courses" section above,
+      and clicking the "Select Templates" button. Enrolled students can then click on "Make This Commitment" button in the course page to "join" that commitment.
     </li>
-</ul>
+  </ul>
 
 {% endblock modal_body_text %}
 
@@ -29,7 +31,5 @@ commitment_id, and then prepend our action string to create a unique modal_id fo
 {% endcomment %}
 
 {% block modal_everything %}
-{% with modal_id="dashboard_provider_commitment_templates_help_modal" %}
-{{ block.super }}
-{% endwith %}
+  {% with modal_id="dashboard_provider_commitment_templates_help_modal" %}{{ block.super }}{% endwith %}
 {% endblock modal_everything %}
