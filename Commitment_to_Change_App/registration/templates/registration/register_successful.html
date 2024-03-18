@@ -1,17 +1,21 @@
 {% extends "commitments/common/base.html" %}
 
-{% block title %} Account Registration Successful Page {% endblock title %}
+{% block title %}
+  Account Registration Successful Page
+{% endblock title %}
 
 {% block page_content %}
-<div class="container">
+  <div class="container">
     <div class="container py-2 text-center">
-        <h2>Your account has been successfully created</h2>
+      <h2>Your account has been successfully created</h2>
     </div>
     <div class="container">
-        <div class="small-box-container secondary-accent text-center">
-            <h3>Log In With New Account</h3>
-            <a href="{% url 'login' %}"><button type="submit" class="standard-button primary-accent">Log In</button></a>
-        </div>
+      <div class="small-box-container secondary-accent text-center">
+        <h3>Log In With New Account</h3>
+        <a href="{% url 'login' %}">
+          <button type="submit" class="standard-button primary-accent">Log In</button>
+        </a>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock page_content %}
