@@ -1,18 +1,19 @@
 {% extends "commitments/common/base_confirm_modal.html" %}
+
 {% block modal_open_button_text %}
-    Discontinue
+  Discontinue
 {% endblock modal_open_button_text %}
 
 {% block modal_title_text %}
-    Confirm discontuation
+  Confirm discontuation
 {% endblock modal_title_text %}
 
 {% block modal_body_text %}
-    Are you sure you wish to mark "{{ commitment.title }}"" as discontinued?
+  Are you sure you wish to mark "{{ commitment.title }}"" as discontinued?
 {% endblock modal_body_text %}
 
 {% block confirm_action %}
-    {% include "commitments/Commitment/commitment_discontinue_button.html" %}
+  {% include "commitments/Commitment/commitment_discontinue_button.html" %}
 {% endblock confirm_action %}
 
 {% comment %} 
@@ -23,7 +24,7 @@
 {% endcomment %}
 
 {% block modal_everything %}
-    {% with commitment_id=commitment.id|stringformat:"d" %}
-        {% with modal_id="modal_action_discontinue_"|add:commitment_id %}{{ block.super }}{% endwith %}
-    {% endwith %}
+  {% with commitment_id=commitment.id|stringformat:"d" %}
+    {% with modal_id="modal_action_discontinue_"|add:commitment_id %}{{ block.super }}{% endwith %}
+  {% endwith %}
 {% endblock modal_everything %}

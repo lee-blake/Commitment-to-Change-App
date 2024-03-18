@@ -1,11 +1,14 @@
 {% extends "commitments/common/base_form.html" %}
-{% block title %} Edit Commitment {% endblock title %}
-{% block form_header %}
-<h1>Edit Commitment</h1>
-{% include "commitments/Commitment/commitment_edit_preface_modals.html" %}
 
+{% block title %}
+  Edit Commitment
+{% endblock title %}
+
+{% block form_header %}
+  <h1>Edit Commitment</h1>
+  {% include "commitments/Commitment/commitment_edit_preface_modals.html" %}
 {% endblock form_header %}
 
 {% block form_url %}
-{% url "edit Commitment" commitment_id=commitment.id %}
+  {% url "edit Commitment" commitment_id=commitment.id %}
 {% endblock form_url %}

@@ -1,8 +1,6 @@
-<form
-  action="{% url "complete Commitment" commitment_id=commitment.id %}"
-  id="complete-commitment-form"
-  method="post"
->
+<form action="{% url "complete Commitment" commitment_id=commitment.id %}"
+      id="complete-commitment-form"
+      method="post">
   {% csrf_token %}
   <input name="complete" type="hidden" value="true" />
   <button type="submit" class="standard-button">Complete</button>
