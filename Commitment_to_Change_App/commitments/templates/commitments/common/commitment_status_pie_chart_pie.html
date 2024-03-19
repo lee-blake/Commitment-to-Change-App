@@ -1,8 +1,8 @@
 <div class="col-xs-6 pie-chart">
-    <div id="status-breakdown-chart-canvas"></div>
-    {{ commitment_data_object.counts | json_script }}
-    <script>
+  <div id="status-breakdown-chart-canvas"></div>
+  {{ commitment_data_object.counts | json_script }}
+  <script>
         const statusData = JSON.parse(document.currentScript.previousElementSibling.textContent);
         document.addEventListener("DOMContentLoaded", () => generateCommitmentStatusPieChart(statusData, "#status-breakdown-chart-canvas"));
-    </script>
+  </script>
 </div>
