@@ -1,7 +1,10 @@
 {% extends "commitments/common/base.html" %}
-{% block title %} Log out to continue {% endblock title %}
+
+{% block title %}
+  Log out to continue
+{% endblock title %}
 
 {% block page_content %}
-You must log out to do that.
-{% include "commitments/common/logout_button.html" %}
+  You must log out to do that.
+  {% include "commitments/common/logout_button.html" %}
 {% endblock page_content %}

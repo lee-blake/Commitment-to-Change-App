@@ -1,8 +1,6 @@
-<form
-  action="{% url "reopen Commitment" commitment_id=commitment.id %}"
-  id="reopen-commitment-form"
-  method="post"
->
+<form action="{% url "reopen Commitment" commitment_id=commitment.id %}"
+      id="reopen-commitment-form"
+      method="post">
   {% csrf_token %}
   <input name="reopen" type="hidden" value="true" />
   <button type="submit" class="standard-button">Reopen</button>
