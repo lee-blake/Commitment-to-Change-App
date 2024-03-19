@@ -1,23 +1,25 @@
 {% extends "commitments/common/base_help_modal.html" %}
 
 {% block modal_title %}
-My Courses
+  My Courses
 {% endblock modal_title %}
 
-{% block icon_color %}white{% endblock icon_color %}
+{% block icon_color %}
+  white
+{% endblock icon_color %}
 
 {% block modal_body_text %}
-Courses allow you to join a course-related commitment with other students. When you join a course, it will show up here.
-<br>
-<ul>
+  Courses allow you to join a course-related commitment with other students. When you join a course, it will show up here.
+  <br>
+  <ul>
     <li>
-        <strong>Joining a Course:</strong> Paste a course join link into your browser and click "Join". 
-        That Course will now appear below in the "My Courses" panel.
+      <strong>Joining a Course:</strong> Paste a course join link into your browser and click "Join".
+      That Course will now appear below in the "My Courses" panel.
     </li>
     <li>
-        <strong>Viewing a Course</strong> Click on the button with the name of the course you wish to view.
+      <strong>Viewing a Course</strong> Click on the button with the name of the course you wish to view.
     </li>
-</ul>
+  </ul>
 {% endblock modal_body_text %}
 
 {% comment %}
@@ -28,7 +30,5 @@ commitment_id, and then prepend our action string to create a unique modal_id fo
 {% endcomment %}
 
 {% block modal_everything %}
-{% with modal_id="dashboard_clinician_courses_help_modal" %}
-{{ block.super }}
-{% endwith %}
+  {% with modal_id="dashboard_clinician_courses_help_modal" %}{{ block.super }}{% endwith %}
 {% endblock modal_everything %}

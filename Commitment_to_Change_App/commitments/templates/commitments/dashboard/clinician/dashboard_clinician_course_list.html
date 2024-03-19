@@ -1,19 +1,19 @@
 {% extends "commitments/dashboard/dashboard_courses_list.html" %}
 
 {% block course_module_content %}
-<div class="text-center">
-      <h3>
-          <a href="{% url "view Course" course_id=course.id %}"><button type="button" id="view-course-button" class="btn dashboard-button background round-corners p-2">{{ course.title }}</button></a>
-      </h3>
+  <div class="text-center">
+    <h3>
+      <a href="{% url "view Course" course_id=course.id %}">
+        <button type="button"
+                id="view-course-button"
+                class="btn dashboard-button background round-corners p-2">{{ course.title }}</button>
+      </a>
+    </h3>
     <div>
-        {% if course.start_date %}
-        Start Date: {{ course.start_date }}
-        {% endif %}
+      {% if course.start_date %}Start Date: {{ course.start_date }}{% endif %}
     </div>
     <div>
-        {% if course.end_date %}
-        End Date: {{ course.end_date }}
-        {% endif %}
+      {% if course.end_date %}End Date: {{ course.end_date }}{% endif %}
     </div>
   </div>
 {% endblock course_module_content %}
