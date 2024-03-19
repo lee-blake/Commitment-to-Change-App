@@ -1,10 +1,13 @@
-<a tabindex="0" 
-class="p-1 base-popover-button" 
-role="button" 
-data-bs-toggle="popover" 
-data-bs-trigger="focus" 
-data-bs-html="true"
-data-bs-title="{% block popover_title %}{% endblock popover_title %}" 
-data-bs-content="{% block popover_content %}{% endblock popover_content %}">
-    {% block popover_click_object %}{% endblock popover_click_object %}
+<a tabindex="0"
+   class="p-1 base-popover-button"
+   role="button"
+   data-bs-toggle="popover"
+   data-bs-trigger="focus"
+   data-bs-html="true"
+   data-bs-title="{% block popover_title %}{% endblock popover_title %}"
+   data-bs-content="{% block popover_content %}{% endblock popover_content %}">
+
+  {% block popover_click_object %}
+  {% endblock popover_click_object %}
+
 </a>
