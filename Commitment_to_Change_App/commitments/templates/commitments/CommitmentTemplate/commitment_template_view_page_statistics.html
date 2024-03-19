@@ -1,11 +1,14 @@
 <div class="container-fluid text-center">
-    {% if commitment_template.commitment_statistics.total == 0 %}
-        No commitments have been made from this template.
-    {% else %}
-        <h2>Statistics for 
-            {{ commitment_template.commitment_statistics.total }}
-             derived commitments
-        </h2>
-        {% include "commitments/common/commitment_status_pie_chart.html" with commitment_data_object=commitment_template.commitment_statistics %}
-    {% endif %}
+
+  {% if commitment_template.commitment_statistics.total == 0 %}
+    No commitments have been made from this template.
+  {% else %}
+    <h2>
+      Statistics for
+      {{ commitment_template.commitment_statistics.total }}
+      derived commitments
+    </h2>
+    {% include "commitments/common/commitment_status_pie_chart.html" with commitment_data_object=commitment_template.commitment_statistics %}
+  {% endif %}
+
 </div>
