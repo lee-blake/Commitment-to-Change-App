@@ -7,8 +7,9 @@ from cme_accounts.models import User
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm,\
     DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm, \
-    JoinCourseForm
-from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course
+    JoinCourseForm, ClearCommitmentReminderEmailsForm
+from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course, \
+    CommitmentReminderEmail
 
 
 @pytest.fixture(name="unsaved_in_progress_commitment")
@@ -440,3 +441,64 @@ class TestJoinCourseForm:
             )
             form.save()
             assert minimal_course.students.contains(minimal_clinician)
+
+
+@pytest.mark.django_db
+class TestClearCommitmentReminderEmailsForm:
+    """Tests for ClearCommitmentReminderEmailsForm"""
+
+    class TestFields:
+        """Tests for the fields of ClearCommitmentReminderEmailsForm"""
+
+        def test_missing_clear_field_is_invalid(self, minimal_commitment):
+            form = ClearCommitmentReminderEmailsForm(
+                minimal_commitment,
+                {"clear": False}
+            )
+            assert not form.is_valid()
+
+
+    class TestSave:
+        """Tests for ClearCommitmentReminderEmailsForm.save"""
+
+        def test_save_deletes_all_reminder_emails_for_commitment(self, minimal_commitment):
+            CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=datetime.date.today() + datetime.timedelta(days=1)
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=datetime.date.today() + datetime.timedelta(days=2)
+            )
+            ClearCommitmentReminderEmailsForm(
+                minimal_commitment,
+                {"clear": True}
+            ).save()
+            assert CommitmentReminderEmail.objects.filter(
+                commitment=minimal_commitment
+            ).count() == 0
+
+        def test_save_does_not_delete_emails_for_other_commitments(
+            self, minimal_commitment, minimal_clinician
+        ):
+            form_commitment = Commitment.objects.create(
+                title="Commitment whose emails will be deleted by form",
+                description="It does not have any emails to delete",
+                owner=minimal_clinician,
+                deadline=datetime.date.today()
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=datetime.date.today() + datetime.timedelta(days=1)
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=datetime.date.today() + datetime.timedelta(days=2)
+            )
+            ClearCommitmentReminderEmailsForm(
+                form_commitment,
+                {"clear": True}
+            ).save()
+            assert CommitmentReminderEmail.objects.filter(
+                commitment=minimal_commitment
+            ).count() == 2
