@@ -143,4 +143,9 @@ urlpatterns = [
           views.DeleteCommitmentReminderEmailView.as_view(),
           name="delete CommitmentReminderEmail"
      ),
+     path(
+          "commitment/<int:commitment_id>/reminders/clear/",
+          views.ClearCommitmentReminderEmailsView.as_view(),
+          name="clear CommitmentReminderEmails"
+     ),
 ]

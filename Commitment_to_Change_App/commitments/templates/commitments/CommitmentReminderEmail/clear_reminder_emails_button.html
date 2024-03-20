@@ -1,0 +1,7 @@
+<form action="{% url "clear CommitmentReminderEmails" commitment_id=commitment.id %}"
+      id="clear-reminder-emails-form"
+      method="post">
+  {% csrf_token %}
+  <input name="clear" type="hidden" value="true">
+  <button type="submit" class="standard-button">Clear all</button>
+</form>
