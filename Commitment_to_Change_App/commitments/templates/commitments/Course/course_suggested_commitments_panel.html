@@ -2,14 +2,14 @@
   <tbody>
 
     {% for suggested_commitment in suggested_commitments %}
-    
       <tr>
+
         {% if request.user.is_provider %}
           <td class="text-center">
             <a href="{% url "view CommitmentTemplate" commitment_template_id=suggested_commitment.id %}">
               {{ suggested_commitment }}
               <i class="bi bi-caret-right-fill"></i>
-            </a> 
+            </a>
             <br>
             {% include "commitments/Course/course_suggested_commitment_stats_popover.html" %}
           </td>
@@ -26,6 +26,7 @@
             </a>
           </td>
         {% endif %}
+
       </tr>
     {% endfor %}
 

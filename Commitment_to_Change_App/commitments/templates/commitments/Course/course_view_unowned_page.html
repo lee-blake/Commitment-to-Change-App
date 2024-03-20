@@ -15,12 +15,10 @@
         {% endblock course_help_modal %}
 
       </span>
-
     </div>
     <div class="py-1 secondary-accent text-center">
       <h2>{{ course.owner.institution }}</h2>
     </div>
-
     <div class="row py-3 px-2 g-5">
       <div class="col-md-6 p-3">
         <div class="background round-corners pb-3">
@@ -43,11 +41,11 @@
             <div class="secondary-header-container mb-3">
               <h4>List of Students Enrolled:</h4>
             </div>
-            
+
             {% block bulk_email_button %}
             {% endblock bulk_email_button %}
 
-              {% block student_table %}
+            {% block student_table %}
               <div class="datatable-container round-corners">
                 <table id="clinician-course-student-datatable" class="display">
                   <thead>
@@ -65,8 +63,8 @@
 
                   </tbody>
                 </table>
-            </div>
-              {% endblock student_table %}
+              </div>
+            {% endblock student_table %}
 
           </div>
         </div>
@@ -81,7 +79,7 @@
               <h4>Suggested Commitments</h4>
             </div>
             {% include "commitments/Course/course_suggested_commitments_panel.html" %}
-            
+
             {% block select_suggested_commitments_button %}
             {% endblock select_suggested_commitments_button %}
 
