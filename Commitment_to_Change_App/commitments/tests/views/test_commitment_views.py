@@ -9,7 +9,7 @@ import pytest
 from django.urls import reverse
 
 from commitments.enums import CommitmentStatus
-from commitments.models import Commitment
+from commitments.models import Commitment, CommitmentReminderEmail
 from commitments.tests.helpers import convert_date_to_general_regex
 
 
@@ -1388,6 +1388,32 @@ class TestCompleteCommitmentView:
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
             assert reloaded_commitment.status == CommitmentStatus.COMPLETE
 
+        def test_good_request_clears_reminder_emails(
+            self, client, saved_completable_commitment, saved_clinician_profile
+        ):
+            CommitmentReminderEmail.objects.create(
+                commitment=saved_completable_commitment,
+                date=date.today() + timedelta(days=1)
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=saved_completable_commitment,
+                date=date.today() + timedelta(days=2)
+            )
+            target_url = reverse(
+                "complete Commitment", 
+                kwargs={
+                    "commitment_id": saved_completable_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"complete": "true"}
+            )
+            assert not CommitmentReminderEmail.objects.filter(
+                commitment=saved_completable_commitment
+            ).exists()
+
         def test_rejects_non_owner_with_no_changes(
             self, client,saved_completable_commitment, other_clinician_profile
         ):
@@ -1501,6 +1527,32 @@ class TestDiscontinueCommitmentView:
             )
             reloaded_commitment = Commitment.objects.get(id=saved_discontinueable_commitment.id)
             assert reloaded_commitment.status == CommitmentStatus.DISCONTINUED
+
+        def test_good_request_clears_reminder_emails(
+            self, client, saved_discontinueable_commitment, saved_clinician_profile
+        ):
+            CommitmentReminderEmail.objects.create(
+                commitment=saved_discontinueable_commitment,
+                date=date.today() + timedelta(days=1)
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=saved_discontinueable_commitment,
+                date=date.today() + timedelta(days=2)
+            )
+            target_url = reverse(
+                "discontinue Commitment", 
+                kwargs={
+                    "commitment_id": saved_discontinueable_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"discontinue": "true"}
+            )
+            assert not CommitmentReminderEmail.objects.filter(
+                commitment=saved_discontinueable_commitment
+            ).exists()
 
         def test_rejects_non_owner_with_no_changes(
             self, client,saved_discontinueable_commitment, other_clinician_profile

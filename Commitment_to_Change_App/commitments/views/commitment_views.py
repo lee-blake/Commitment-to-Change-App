@@ -6,7 +6,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from commitments.forms import CommitmentForm, GenericDeletePostKeySetForm, \
     CompleteCommitmentForm, DiscontinueCommitmentForm, ReopenCommitmentForm, \
-    CreateCommitmentFromSuggestedCommitmentForm
+    CreateCommitmentFromSuggestedCommitmentForm, ClearCommitmentReminderEmailsForm
 from commitments.mixins import ClinicianLoginRequiredMixin
 from commitments.models import Commitment, ClinicianProfile, Course
 
@@ -116,6 +116,11 @@ class CompleteCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
             owner=viewer
         )
 
+    def form_valid(self, form):
+        # We also must clear the reminder emails when the status is changed to something inactive.
+        ClearCommitmentReminderEmailsForm(self.object).save()
+        return super().form_valid(form)
+
     def form_invalid(self, form):
         return HttpResponseBadRequest(
             "'complete' key must be nonempty to complete a commitment"
@@ -135,6 +140,11 @@ class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
         return Commitment.objects.filter(
             owner=viewer
         )
+
+    def form_valid(self, form):
+        # We also must clear the reminder emails when the status is changed to something inactive.
+        ClearCommitmentReminderEmailsForm(self.object).save()
+        return super().form_valid(form)
 
     def form_invalid(self, form):
         return HttpResponseBadRequest(
