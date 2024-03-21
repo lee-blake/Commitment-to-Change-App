@@ -245,6 +245,21 @@ class TestViewCommitmentReminderEmailView:
         )
         assert link_url in html
 
+    def test_links_to_delete_all_page(
+        self, client, saved_clinician_profile, existing_commitment
+    ):
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        link_url = reverse(
+            "clear CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        assert link_url in html
+
 
 @pytest.mark.django_db
 class TestDeleteCommitmentReminderEmailView:
