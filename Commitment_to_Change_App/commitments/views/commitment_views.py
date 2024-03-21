@@ -1,7 +1,6 @@
-from django.http import HttpResponseRedirect, HttpResponseBadRequest
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
-from django.views.generic.base import View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
@@ -105,44 +104,63 @@ class CreateFromSuggestedCommitmentView(ClinicianLoginRequiredMixin, CreateView)
         )
 
 
-class CompleteCommitmentView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def post(request, commitment_id):
-        viewer = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=viewer)
-        form = CompleteCommitmentForm(request.POST, instance=commitment)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("clinician dashboard"))
+class CompleteCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
+    http_method_names = ["post"]
+    form_class = CompleteCommitmentForm
+    template_name = "commitments/Commitment/commitment_edit_page.html"
+    pk_url_kwarg = "commitment_id"
+
+    def get_queryset(self):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        return Commitment.objects.filter(
+            owner=viewer
+        )
+
+    def form_invalid(self, form):
         return HttpResponseBadRequest(
             "'complete' key must be nonempty to complete a commitment"
         )
 
+    def get_success_url(self):
+        return reverse("clinician dashboard")
 
-class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def post(request, commitment_id):
-        viewer = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=viewer)
-        form = DiscontinueCommitmentForm(request.POST, instance=commitment)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("clinician dashboard"))
+
+class DiscontinueCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
+    http_method_names = ["post"]
+    form_class = DiscontinueCommitmentForm
+    pk_url_kwarg = "commitment_id"
+
+    def get_queryset(self):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        return Commitment.objects.filter(
+            owner=viewer
+        )
+
+    def form_invalid(self, form):
         return HttpResponseBadRequest(
             "'discontinue' key must be nonempty to discontinue a commitment"
         )
 
+    def get_success_url(self):
+        return reverse("clinician dashboard")
 
-class ReopenCommitmentView(ClinicianLoginRequiredMixin, View):
-    @staticmethod
-    def post(request, commitment_id):
-        viewer = ClinicianProfile.objects.get(user=request.user)
-        commitment = get_object_or_404(Commitment, id=commitment_id, owner=viewer)
-        form = ReopenCommitmentForm(request.POST, instance=commitment)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("clinician dashboard"))
+
+class ReopenCommitmentView(ClinicianLoginRequiredMixin, UpdateView):
+    http_method_names = ["post"]
+    form_class = ReopenCommitmentForm
+    pk_url_kwarg = "commitment_id"
+
+    def get_queryset(self):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        return Commitment.objects.filter(
+            owner=viewer
+        )
+
+    def form_invalid(self, form):
         return HttpResponseBadRequest(
             "'reopen' key must be nonempty to reopen a commitment"
         )
-            
+
+    def get_success_url(self):
+        return reverse("clinician dashboard")
+    
