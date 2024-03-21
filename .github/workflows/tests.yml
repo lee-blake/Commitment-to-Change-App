@@ -87,6 +87,11 @@ jobs:
         working-directory: ./Commitment_to_Change_App
         run: djlint --profile=django .
 
+      - name: Run djlint for formatting
+        working-directory: ./Commitment_to_Change_App
+        if: success() || steps.custom_settings.conclusion == 'success'
+        run: djlint --profile=django --check .
+
       - name: Run pylint
         working-directory: ./Commitment_to_Change_App
         if: success() || steps.custom_settings.conclusion == 'success'
