@@ -150,14 +150,6 @@ class TestCreateCommitmentReminderEmailView:
 class TestViewCommitmentReminderEmailView:
     """Tests for ViewCommitmentReminderEmailView"""
 
-    @pytest.fixture(name="saved_commitment_template")
-    def fixture_saved_commitment_template(self, saved_provider_profile):
-        return CommitmentReminderEmail.objects.create(
-            owner=saved_provider_profile,
-            title="Should not occur randomly in HTML 123481234",
-            description="Also should not occur randomly 12498123hfdwjas"
-        )
-
     def test_rejects_provider_accounts_with_403(
         self, client, saved_provider_user, existing_commitment
     ):
@@ -393,7 +385,7 @@ class TestDeleteCommitmentReminderEmailView:
             )
             assert error_notes_regex.search(html)
 
-        def test_valid_request_deletes_commitment_template(
+        def test_valid_request_deletes_reminder_email(
             self, client, saved_clinician_profile, existing_reminder_email
         ):
             target_url = reverse(
