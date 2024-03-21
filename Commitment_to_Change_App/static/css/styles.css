@@ -22,7 +22,6 @@
     --expired: #ffa2a2;
     --standard-round: 15px;
     --standard-button-round: 10px;
-
 }
 
 /* 
@@ -56,11 +55,6 @@ form {
 .primary-accent {
     background-color: var(--primary-accent);
     color: var(--accent-text);
-}
-
-/* TODO: Remove the text color and switch everything back to primary-accent */
-.primary-accent-only {
-    background-color: var(--primary-accent)
 }
 
 .primary-select {
@@ -307,11 +301,6 @@ form {
     color: var(--primary-text);
     filter: brightness(90%);
 
-}
-
-.div-list {
-    display: list-item;
-    list-style-position: inside;
 }
 
 .show-password-button {
