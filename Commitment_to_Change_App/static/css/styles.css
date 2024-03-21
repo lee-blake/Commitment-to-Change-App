@@ -340,12 +340,6 @@ form {
 ------------------------------------------------------------------- 
  */
 
-div.change-suggested-form input[type=submit] {
-    background-color: var(--primary-accent);
-    border-radius: 15px;
-    color: var(--accent-text);
-}
-
 div.default-form input[type=submit] {
     background-color: var(--primary-accent);
     border-radius: 15px;
@@ -359,26 +353,6 @@ div.default-form label {
 
 div.default-form select,
 div.default-form input {
-    border: 1px solid grey;
-    border-radius: 4px;
-    box-sizing: border-box;
-    display: inline-block;
-    width: 100%;
-}
-
-div.edit-form input[type=submit] {
-    background-color: var(--primary-accent);
-    border-radius: 15px;
-    color: var(--accent-text);
-    width: 50%;
-}
-
-div.edit-form label {
-    display: block;
-}
-
-div.edit-form select,
-div.edit-form input {
     border: 1px solid grey;
     border-radius: 4px;
     box-sizing: border-box;
