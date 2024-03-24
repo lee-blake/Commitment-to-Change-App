@@ -54,6 +54,7 @@ Otherwise note the general changes that still need to be written. -->
 # Checklist 
 - [ ] This PR is to `develop` and not `master`
 - [ ] I ran the automated tests on my development environment before opening this PR.
+- [ ] I have linted my code with `pylint`, `djlint`, and `djlint --check` before opening this PR.
 - [ ] I manually tested that any features I implemented on this PR work.
 <!-- You don't need to check all of these, just check with at least one & mark any here -->
 - [ ] I tested that any frontend changes or features render reasonably well on mobile
