@@ -41,14 +41,22 @@
       </table>
       <div class="container pb-3">
         <div class="row">
-          <div class="col-md-6 order-md-2">
+          <div class="col-md-4 order-md-3">
             <a href="{% url 'view Commitment' commitment_id=commitment.id %}">
               <button class="btn view-button m-2" type="submit">Back to commitment</button>
             </a>
           </div>
 
+          <div class="col-md-4 order-md-2">
+            <a href="{% url 'clear CommitmentReminderEmails' commitment_id=commitment.id %}">
+              <button class="btn standard-button m-2" type="submit">
+                <i class="bi bi-trash"></i> Delete all reminder emails
+              </button>
+            </a>
+          </div>
+
           {% block create_button %}
-            <div class="col-md-6 order-md-1">
+            <div class="col-md-4 order-md-1">
               <a href="{% url 'create CommitmentReminderEmail' commitment_id=commitment.id %}">
                 <button class="btn standard-button m-2" type="submit">Schedule a reminder email</button>
               </a>

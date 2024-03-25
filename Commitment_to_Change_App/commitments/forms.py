@@ -217,4 +217,18 @@ class CommitmentReminderEmailForm(ModelForm):
         self.fields['date'].widget.attrs.update({
             "min": f"{tomorrow}"
         })
-    
+
+
+class ClearCommitmentReminderEmailsForm(Form):
+    class Meta:
+        model = Commitment
+        fields = []
+
+    clear = BooleanField(initial=True, widget=HiddenInput())
+
+    def __init__(self, commitment, *args, **kwargs):
+        self._commitment = commitment
+        super().__init__(*args, **kwargs)
+
+    def save(self):
+        CommitmentReminderEmail.objects.filter(commitment=self._commitment).delete()
