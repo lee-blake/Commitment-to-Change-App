@@ -22,7 +22,6 @@
     --expired: #ffa2a2;
     --standard-round: 15px;
     --standard-button-round: 10px;
-    
 }
 
 /* 
@@ -31,9 +30,11 @@
 ------------------------------------------------------------------- 
  */
 
- body {background-color: var(--background);}
+body {
+    background-color: var(--background);
+}
 
- ul.errorlist > li {
+ul.errorlist > li {
     color: red;
     font-weight: bold;
 }
@@ -51,16 +52,39 @@ form {
 ------------------------------------------------------------------- 
  */
 
-.primary-accent {background-color: var(--primary-accent); color: var(--accent-text);}
-/* TODO: Remove the text color and switch everything back to primary-accent */
-.primary-accent-only {background-color: var(--primary-accent)}
-.primary-select {background-color: var(--primary-select);}
-.primary-border {background-color: var(--primary-border);}
-.secondary-accent {background-color: var(--secondary-accent); color: var(--accent-text);}
-.background {background-color: var(--background);}
-.foreground {background-color: var(--foreground);}
-.accent-text {color: var(--accent-text);}
-.primary-text {color: var(--primary-text);}
+.primary-accent {
+    background-color: var(--primary-accent);
+    color: var(--accent-text);
+}
+
+.primary-select {
+    background-color: var(--primary-select);
+}
+
+.primary-border {
+    background-color: var(--primary-border);
+}
+
+.secondary-accent {
+    background-color: var(--secondary-accent);
+    color: var(--accent-text);
+}
+
+.background {
+    background-color: var(--background);
+}
+
+.foreground {
+    background-color: var(--foreground);
+}
+
+.accent-text {
+    color: var(--accent-text);
+}
+
+.primary-text {
+    color: var(--primary-text);
+}
 
 /* 
 -------------------------------------------------------------------
@@ -68,98 +92,71 @@ form {
 ------------------------------------------------------------------- 
  */
 
- .full-width-textarea textarea {
+.full-width-textarea textarea {
     width: 100%;
 }
 
- .round-corners {
-     border-radius: var(--standard-round);
- }
- 
- .table-caption-center {
-    caption-side: top; 
+.round-corners {
+    border-radius: var(--standard-round);
+}
+
+.table-caption-center {
+    caption-side: top;
     text-align: center;
     color: var(--primary-text);
     font-weight: bold;
     font-size: 22px;
- }
- .table-layout-fixed {
+}
+
+.table-layout-fixed {
     table-layout: fixed;
- }
+}
 
 /* 
 -------------------------------------------------------------------
     --- Containers --- 
 ------------------------------------------------------------------- 
  */
- .bulk-email-table-container {
-    height:60vh;
- }
+.bulk-email-table-container {
+    height: 60vh;
+}
 
 .datatable-container {
-    overflow:auto; 
-    width:100%;
-    position:relative;
+    overflow: auto;
+    width: 100%;
+    position: relative;
 }
+
 .small-box-container {
     max-width: 400px;
     padding: 10px;
     margin: auto;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 .header-with-modal {
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.primary-header-container, .secondary-header-container {
+
+.primary-header-container,
+.secondary-header-container {
     border-radius: var(--standard-round) var(--standard-round) 0 0;
     padding: 2px 4px;
     text-align: center !important;
 }
+
 .primary-header-container {
     background-color: var(--primary-accent);
     color: var(--accent-text);
 }
+
 .secondary-header-container {
     background-color: var(--secondary-accent);
     color: var(--accent-text);
 }
-/* 
--------------------------------------------------------------------
-    --- Generic Transitions --- 
-------------------------------------------------------------------- 
- */
-
- .border-on-hover
- {
-     border: 1px solid transparent;
-     transition: 0.3s ease-in-out;
- }
- .border-on-hover:hover
- {
-     border: 1px solid grey;
- }
- .brighten-on-hover
- {
-     filter: brightness(96%);
-     transition: 0.3s;
- }
- .brighten-on-hover:hover
- {
-     filter: brightness(100%);
- }
- .enlarge-on-hover
- {
-     transform: translateZ(0);
-     transition: 0.1s ease-in-out;
-     webkit-transform: translateZ(0);
- }
- .enlarge-on-hover:hover
- {
-     transform: scale(1.03);
- }
 
 /* 
 -------------------------------------------------------------------
@@ -167,119 +164,126 @@ form {
 ------------------------------------------------------------------- 
  */
 
- .base-popover-button {
+.base-popover-button {
     text-decoration-line: underline !important;
-    text-decoration-style: dotted !important; 
+    text-decoration-style: dotted !important;
 }
 
 .base-popover-button:hover {
     text-decoration: underline !important;
 }
 
- .pie-chart-and-legend-container {
-    display:flex;
+.pie-chart-and-legend-container {
+    display: flex;
     justify-content: center;
- }
- .chart-legend-container {
+}
+
+.chart-legend-container {
     padding: 15px;
     margin-top: auto;
     margin-bottom: auto;
 
-  }
-  .chart-legend-item-container {
+}
+
+.chart-legend-item-container {
     font-size: 18px;
     display: flex;
     align-items: center;
     margin-bottom: 8px;
-  }
-  .chart-legend-color {
+}
+
+.chart-legend-color {
     width: 20px;
     height: 20px;
     margin-right: 8px;
     border-radius: 4px;
-  }
-  .legend-color-in-progress {
+}
+
+.legend-color-in-progress {
     background-color: var(--in-progress);
     fill: var(--in-progress);
-  }
-  .legend-color-complete {
+}
+
+.legend-color-complete {
     background-color: var(--complete);
-    fill: var(--complete); 
-  }
-  .legend-color-discontinued {
+    fill: var(--complete);
+}
+
+.legend-color-discontinued {
     background-color: var(--discontinued);
     fill: var(--discontinued);
-  }
-  .legend-color-expired {
+}
+
+.legend-color-expired {
     background-color: var(--expired);
     fill: var(--expired);
-  }
- .svg-container {
+}
+
+.svg-container {
     display: inline-block;
     position: relative;
     width: 100%;
-    padding-bottom: 100%; 
+    padding-bottom: 100%;
     vertical-align: top;
     overflow: hidden;
- }
- .svg-content-responsive {
+}
+
+.svg-content-responsive {
     display: inline-block;
     position: absolute;
     top: 0;
     left: 0;
- }
- .pie-chart {
+}
+
+.pie-chart {
     padding: 15px;
     width: min(50%, 400px, 1000px);
- }
- .button
- {
-     background-color: var(--primary-accent);
-     border: none;
-     color: var(--accent-text);
-     cursor: pointer;
-     float: right;
-     font-size: 16px;
-     margin: 4px 2px;
-     padding: 15px 32px;
-     text-align: center;
-     text-decoration: none;
- }
- .close-x-button
- {
+}
+
+.button {
+    background-color: var(--primary-accent);
+    border: none;
+    color: var(--accent-text);
+    cursor: pointer;
+    float: right;
+    font-size: 16px;
+    margin: 4px 2px;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.close-x-button {
     font-size: 18px;
     border: 0px solid transparent;
     color: var(--light-text);
-    background-color:var(--foreground);
+    background-color: var(--foreground);
     border-radius: var(--standard-round);
     transition: 0.3s ease-in-out;
 
- }
- .close-x-button:hover
- {
+}
+
+.close-x-button:hover {
     color: var(--primary-text);
     filter: brightness(90%);
 
- }
- .div-list{
-    display:list-item;
-    list-style-position: inside;
- }
- .show-password-button {
+}
+
+.show-password-button {
     margin-left: -30px;
     cursor: pointer;
 }
- .info-button
- {
+
+.info-button {
     font-size: 24px;
     margin-left: 10px;
- }
+}
 
- .mailto-icon {
+.mailto-icon {
     font-size: 20px;
- }
+}
 
- .standard-modal-dialog {
+.standard-modal-dialog {
     color: var(--primary-text) !important;
     font-size: 16px !important;
     font-weight: 400 !important;
@@ -290,120 +294,91 @@ form {
     padding-right: clamp(15px, 10%, 300px);
 }
 
- .standard-button
- {
-     background-color: var(--primary-accent);
-     border: 2px solid var(--primary-border);
-     border-radius: var(--standard-button-round);
-     color: var(--accent-text);
-     transition: 0.3s ease-in-out;
- }
- .standard-button:hover
- {
-     color: var(--accent-text);
-     border: 2px solid black;
-     filter: brightness(130%);
- }
- .title_header
- {
-     background-color: var(--primary-accent);
-     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-     color: white;
- }
+.standard-button {
+    background-color: var(--primary-accent);
+    border: 2px solid var(--primary-border);
+    border-radius: var(--standard-button-round);
+    color: var(--accent-text);
+    transition: 0.3s ease-in-out;
+}
 
- .vertically-center-td td {
+.standard-button:hover {
+    color: var(--accent-text);
+    border: 2px solid black;
+    filter: brightness(130%);
+}
+
+.title_header {
+    background-color: var(--primary-accent);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    color: white;
+}
+
+.vertically-center-td td {
     vertical-align: middle;
- }
- .view-button
- {
-     background-color: var(--background);
-     border: 2px solid grey;
-     border-radius: var(--standard-button-round);
-     transition: 0.3s ease-in-out;
- }
- .view-button:hover
- {
-     border: 2px solid black;
- }
+}
 
- .dashboard-button {
+.view-button {
+    background-color: var(--background);
+    border: 2px solid grey;
+    border-radius: var(--standard-button-round);
+    transition: 0.3s ease-in-out;
+}
+
+.view-button:hover {
+    border: 2px solid black;
+}
+
+.dashboard-button {
     border: 2px solid black;
     overflow-wrap: break-word;
- }
+}
+
 /* 
 -------------------------------------------------------------------
     --- Form Styling ---
 ------------------------------------------------------------------- 
  */
 
- div.change-suggested-form input[type=submit]
- {
-     background-color: var(--primary-accent);
-     border-radius: 15px;
-     color: var(--accent-text);
- }
+div.default-form input[type=submit] {
+    background-color: var(--primary-accent);
+    border-radius: 15px;
+    color: var(--accent-text);
+    max-width: 50%;
+}
 
- div.default-form input[type=submit]
- {
-     background-color: var(--primary-accent);
-     border-radius: 15px;
-     color: var(--accent-text);
-     max-width: 50%;
- }
- 
- div.default-form label
- {
-     display: block;
- } 
- div.default-form select, div.default-form input
- {
-     border: 1px solid grey;
-     border-radius: 4px;
-     box-sizing: border-box;
-     display: inline-block;
-     width: 100%;
- }
+div.default-form label {
+    display: block;
+}
 
- div.edit-form input[type=submit]
- {
-     background-color: var(--primary-accent);
-     border-radius: 15px;
-     color: var(--accent-text);
-     width: 50%;
- }
- div.edit-form label
- {
-     display: block;
- }
- div.edit-form select, div.edit-form input
- {
-     border: 1px solid grey;
-     border-radius: 4px;
-     box-sizing: border-box;
-     display: inline-block;
-     width: 100%;
- }
+div.default-form select,
+div.default-form input {
+    border: 1px solid grey;
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: inline-block;
+    width: 100%;
+}
 
- div.register-form input[type=submit]
- {
-     background-color: var(--primary-accent);
-     border-radius: 15px;
-     color: var(--accent-text);
-     max-width: 100%;
- }
- 
- div.register-form label
- {
-     display: block;
- } 
- div.register-form select, div.register-form input
- {
-     border: 1px solid grey;
-     border-radius: 4px;
-     box-sizing: border-box;
-     display: inline-block;
-     width: 100%;
- }
+div.register-form input[type=submit] {
+    background-color: var(--primary-accent);
+    border-radius: 15px;
+    color: var(--accent-text);
+    max-width: 100%;
+}
+
+div.register-form label {
+    display: block;
+}
+
+div.register-form select,
+div.register-form input {
+    border: 1px solid grey;
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: inline-block;
+    width: 100%;
+}
 
 /* 
 -------------------------------------------------------------------
@@ -411,8 +386,7 @@ form {
 ------------------------------------------------------------------- 
  */
 
-#courseJoinLink
-{
+#courseJoinLink {
     font-weight: bold;
     font-size: larger;
     overflow-wrap: break-word;
