@@ -41,6 +41,7 @@ class ViewCourseView(LoginRequiredMixin, DetailView):
         context["suggested_commitments"] = course.suggested_commitments_list
         for suggested_commitment in context["suggested_commitments"]:
             suggested_commitment.enrich_with_course_specific_statistics(course)
+        context["students"] = course.students.all()
         return context
 
     def get_template_names(self):
