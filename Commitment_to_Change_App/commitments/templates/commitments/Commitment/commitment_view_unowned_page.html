@@ -2,8 +2,8 @@
 
 {% block open_graph_metadata %}
   <meta name="twitter:card" content="summary_large_image"></meta>
-  <meta property="og:title" content="Commitment to change">
-  <meta property="og:type" content="CME Commitment to Change">
+  <meta property="og:title" content="{{ commitment.title }}">
+  <meta property="og:type" content="website">
   <meta property="og:image" content="https://picsum.photos/1024/512">
   <meta property="og:url" content="{{ request.build_absolute_uri }}">
 {% endblock open_graph_metadata %}
@@ -18,10 +18,12 @@
       <h1>{{ commitment.title }}</h1>
     </div>
     <div class="container-fluid px-3 pt-3">
+      <div class="container d-flex justify-content-around pb-3">
 
-      {% block twitter_share_button %}
-      {% endblock twitter_share_button %}
-      
+          {% block twitter_share_button %}
+          {% endblock twitter_share_button %}
+
+      </div>
       <div class="my-1 p-3 round-corners background text-center">
         <p>Started: {{ commitment.created.date }}</p>
         <p>Due: {{ commitment.deadline }}</p>

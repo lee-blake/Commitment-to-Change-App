@@ -308,7 +308,7 @@ form {
     background-color: black;
     color: white;
     border-radius: var(--standard-button-round);
-    padding: 4px 6px;
+    padding: 6px 8px;
     transition: 0.3s;
 }
 
