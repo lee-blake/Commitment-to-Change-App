@@ -10,6 +10,10 @@
       <h1>{{ commitment.title }}</h1>
     </div>
     <div class="container-fluid px-3 pt-3">
+
+      {% block twitter_share_button %}
+      {% endblock twitter_share_button %}
+      
       <div class="my-1 p-3 round-corners background text-center">
         <p>Started: {{ commitment.created.date }}</p>
         <p>Due: {{ commitment.deadline }}</p>

@@ -1,5 +1,13 @@
 {% extends "commitments/Commitment/commitment_view_unowned_page.html" %}
 
+{% block twitter_share_button %}
+  <a class="twitter-share-button"
+     href="https://twitter.com/intent/tweet?text=I've%20made%20a%20commitment:%20{{ request.build_absolute_uri }}"
+     data-size="large">
+    Tweet <i class="bi bi-twitter-x"></i>
+  </a>
+{% endblock twitter_share_button %}
+
 {% block edit_button %}
   <form action="{% url "edit Commitment" commitment_id=commitment.id %}">
     <button class="standard-button primary-accent" type="submit">Edit Commitment</button>
