@@ -153,5 +153,10 @@ urlpatterns = [
           "commitment/<int:commitment_id>/reminders/create/recurring/",
           views.CreateRecurringReminderEmailView.as_view(),
           name="create RecurringReminderEmail"
-     )
+     ),
+     path(
+          "commitment/<int:commitment_id>/reminders/recurring/delete/",
+          views.DeleteRecurringReminderEmailView.as_view(),
+          name="delete RecurringReminderEmail"
+     ),
 ]
