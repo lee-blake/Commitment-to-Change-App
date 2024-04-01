@@ -6,7 +6,7 @@ from django.core.management.base import BaseCommand
 from commitments.models import CommitmentReminderEmail
 
 
-def send_reminder_emails_for_commitments():
+def send_one_time_reminder_emails_for_commitments():
     emails_scheduled_for_today_or_earlier = CommitmentReminderEmail.objects.filter(
         # Include prior days in case email failed to send previously.
         date__lte=datetime.date.today(),
@@ -22,4 +22,4 @@ class Command(BaseCommand):
     help = "Sends reminder emails scheduled for today or earlier."
 
     def handle(self, *args, **kwargs):
-        send_reminder_emails_for_commitments()
+        send_one_time_reminder_emails_for_commitments()

@@ -7,7 +7,7 @@ from commitments.enums import CommitmentStatus
 from commitments.management.commands.expire_commitments import \
     expire_in_progress_commitments_past_deadline
 from commitments.management.commands.send_reminder_emails import \
-    send_reminder_emails_for_commitments
+    send_one_time_reminder_emails_for_commitments
 from commitments.models import Commitment, CommitmentReminderEmail
 
 
@@ -61,7 +61,7 @@ class TestExpireCommitmentCommand:
 
 @pytest.mark.django_db
 class TestSendReminderEmailsForCommitments:
-    """Tests for send_reminder_emails_for_commitments"""
+    """Tests for send_one_time_reminder_emails_for_commitments"""
 
     def test_reminder_emails_are_sent_for_all_non_future_dates(
         self, minimal_commitment, captured_email
@@ -78,7 +78,7 @@ class TestSendReminderEmailsForCommitments:
             commitment=minimal_commitment,
             date=datetime.date.today() + datetime.timedelta(days=1)
         )
-        send_reminder_emails_for_commitments()
+        send_one_time_reminder_emails_for_commitments()
         assert len(captured_email) == 2
 
     def test_correct_reminder_email_objects_are_deleted(
@@ -96,7 +96,7 @@ class TestSendReminderEmailsForCommitments:
             commitment=minimal_commitment,
             date=datetime.date.today() + datetime.timedelta(days=1)
         )
-        send_reminder_emails_for_commitments()
+        send_one_time_reminder_emails_for_commitments()
         assert CommitmentReminderEmail.objects.filter(id=yesterday.id).count() == 0
         assert CommitmentReminderEmail.objects.filter(id=today.id).count() == 0
         assert CommitmentReminderEmail.objects.filter(id=tomorrow.id).count() == 1
