@@ -1,0 +1,13 @@
+{% extends "commitments/common/base_form.html" %}
+
+{% block title %}
+  Schedule a Recurring Reminder Email
+{% endblock title %}
+
+{% block form_header %}
+  <h1>Schedule a Recurring Reminder Email</h1>
+{% endblock form_header %}
+
+{% block form_url %}
+  {% url 'create RecurringReminderEmail' commitment_id=commitment.id %}
+{% endblock form_url %}
