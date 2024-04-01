@@ -83,7 +83,7 @@ class TestCreateCommitmentReminderEmailView:
 
 
     class TestPost:
-        """Tests for CreateCommitmentView.post"""
+        """Tests for CreateCommitmentReminderEmailView.post"""
 
         def test_invalid_request_returns_the_get_page_with_error_notes(
             self, client, saved_clinician_user, existing_commitment
@@ -147,8 +147,8 @@ class TestCreateCommitmentReminderEmailView:
 
 
 @pytest.mark.django_db
-class TestViewCommitmentReminderEmailView:
-    """Tests for ViewCommitmentReminderEmailView"""
+class TestViewCommitmentReminderEmailsView:
+    """Tests for ViewCommitmentReminderEmailsView"""
 
     def test_rejects_provider_accounts_with_403(
         self, client, saved_provider_user, existing_commitment
@@ -230,7 +230,7 @@ class TestViewCommitmentReminderEmailView:
         )
         assert reminder_email_url_2 in html
 
-    def test_links_to_create_page(
+    def test_links_to_create_one_time_email_page(
         self, client, saved_clinician_profile, existing_commitment
     ):
         target_url = reverse(
@@ -256,6 +256,61 @@ class TestViewCommitmentReminderEmailView:
         html = client.get(target_url).content.decode()
         link_url = reverse(
             "clear CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        assert link_url in html
+
+    @pytest.mark.parametrize("interval", [29, 31])
+    def test_existing_recurring_email_displays_its_info(
+        self, client, saved_clinician_profile, existing_commitment, interval
+    ):
+        RecurringReminderEmail.objects.create(
+            commitment=existing_commitment,
+            interval=interval,
+            next_email_date=datetime.date.today()
+        )
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        interval_phrase_regex = re.compile(
+                f"{interval}" + r"\s*day"
+        )
+        assert interval_phrase_regex.search(html)
+
+    def test_existing_recurring_email_does_not_display_create_link(
+        self, client, saved_clinician_profile, existing_commitment
+    ):
+        RecurringReminderEmail.objects.create(
+            commitment=existing_commitment,
+            interval=30,
+            next_email_date=datetime.date.today()
+        )
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        link_url = reverse(
+            "create RecurringReminderEmail", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        assert link_url not in html
+
+    def test_non_existing_recurring_email_does_display_create_link(
+        self, client, saved_clinician_profile, existing_commitment
+    ):
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        link_url = reverse(
+            "create RecurringReminderEmail", 
             kwargs={ "commitment_id": existing_commitment.id }
         )
         assert link_url in html
