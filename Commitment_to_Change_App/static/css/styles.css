@@ -92,10 +92,6 @@ form {
 ------------------------------------------------------------------- 
  */
 
-.full-width-textarea textarea {
-    width: 100%;
-}
-
 .round-corners {
     border-radius: var(--standard-round);
 }
@@ -349,6 +345,9 @@ div.default-form input[type=submit] {
 
 div.default-form label {
     display: block;
+}
+div.default-form textarea {
+    width: 100%;
 }
 
 div.default-form select,

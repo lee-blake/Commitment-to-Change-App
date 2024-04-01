@@ -27,7 +27,7 @@
                 action="{% url 'create CommitmentTemplate' %}"
                 method="post"
                 class="row g-3">
-            <div class="col-12 full-width-textarea">
+            <div class="col-12">
               {% csrf_token %}
               {{ CommitmentTemplateForm.as_p }}
               <div class="modal-footer d-flex align-items-center justify-content-between">
