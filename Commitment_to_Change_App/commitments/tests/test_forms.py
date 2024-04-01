@@ -1,4 +1,5 @@
 import datetime
+import re
 
 import pytest
 
@@ -7,7 +8,7 @@ from cme_accounts.models import User
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm,\
     DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm, \
-    JoinCourseForm, ClearCommitmentReminderEmailsForm
+    JoinCourseForm, ClearCommitmentReminderEmailsForm, RecurringReminderEmailForm
 from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course, \
     CommitmentReminderEmail
 
@@ -502,3 +503,26 @@ class TestClearCommitmentReminderEmailsForm:
             assert CommitmentReminderEmail.objects.filter(
                 commitment=minimal_commitment
             ).count() == 2
+
+
+class TestRecurringReminderEmailForm:
+    """Tests for RecurringReminderEmailForm"""
+
+    class TestInit:
+        """Tests for RecurringReminderEmailForm.__init__"""
+
+        def test_commitment_is_set_even_with_no_instance(self):
+            commitment = Commitment()
+            form = RecurringReminderEmailForm(commitment)
+            assert form.instance.commitment == commitment
+
+        def test_interval_input_tag_attributes_set_correctly(self):
+            form = RecurringReminderEmailForm(Commitment())
+            interval_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"interval\"[^\>]*\>"
+            )
+            interval_input_tag_match = interval_input_tag_regex.search(str(form))
+            assert interval_input_tag_match
+            interval_input_tag = interval_input_tag_match[0]
+            assert "30" in interval_input_tag
+            assert "min=\"1\"" in interval_input_tag or "min='1'" in interval_input_tag
