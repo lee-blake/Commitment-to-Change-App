@@ -1,11 +1,11 @@
-from datetime import date
+from datetime import date, timedelta
 from smtplib import SMTPException
 
 import pytest
 
 from cme_accounts.models import User
 from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course, \
-    CommitmentReminderEmail
+    CommitmentReminderEmail, RecurringReminderEmail
 
 
 class TestClinicianProfile:
@@ -238,3 +238,58 @@ class TestCommitmentReminderEmail:
             reminder_email.send()
             assert len(captured_email) == 1
             assert title in captured_email[0].body
+
+
+@pytest.mark.django_db
+class TestRecurringReminderEmail:
+    """Tests for RecurringReminderEmail"""
+
+    class TestSend:
+        """Tests for RecurringReminderEmail.send"""
+
+        def test_sends_email_to_correct_address(self, minimal_commitment, captured_email):
+            recurring_email = RecurringReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                next_email_date=date.today(),
+                interval=30
+            )
+            recurring_email.send()
+            assert len(captured_email) == 1
+            assert captured_email[0].to == [minimal_commitment.owner.user.email]
+
+        def test_subject_contains_indication_of_purpose(self, captured_email, minimal_commitment):
+            recurring_email = RecurringReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                next_email_date=date.today(),
+                interval=30
+            )
+            recurring_email.send()
+            assert len(captured_email) == 1
+            assert "commitment" in captured_email[0].subject.lower()
+
+        @pytest.mark.parametrize("title", ["Title 1", "Title 2"])
+        def test_body_references_specific_commitment(
+            self, captured_email, minimal_commitment, title
+        ):
+            minimal_commitment.title = title
+            minimal_commitment.save()
+            recurring_email = RecurringReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                next_email_date=date.today(),
+                interval=30
+            )
+            recurring_email.send()
+            assert len(captured_email) == 1
+            assert title in captured_email[0].body
+
+        def test_next_email_sent_updates_relative_to_today(
+            self, minimal_commitment
+        ):
+            recurring_email = RecurringReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                next_email_date=date(2000, 1, 1),
+                interval=1
+            )
+            recurring_email.send()
+            reloaded_recurring_email = RecurringReminderEmail.objects.get(id=recurring_email.id)
+            assert reloaded_recurring_email.next_email_date == date.today() + timedelta(days=1)

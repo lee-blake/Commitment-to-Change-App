@@ -184,3 +184,12 @@ class RecurringReminderEmail(models.Model):
         ]
     )
     next_email_date = models.DateField()
+
+    def send(self):
+        email = CommitmentReminderEmail.objects.create(
+            commitment=self.commitment,
+            date=datetime.date.today()
+        )
+        email.send()
+        self.next_email_date = datetime.date.today() + datetime.timedelta(days=self.interval)
+        self.save()
