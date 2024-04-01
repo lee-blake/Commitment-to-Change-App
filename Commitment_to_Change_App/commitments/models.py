@@ -1,6 +1,7 @@
 import datetime
 
 from django.core.mail import send_mail
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.template.loader import render_to_string
 
@@ -168,3 +169,18 @@ class CommitmentReminderEmail(models.Model):
             self.email_body_template,
             context=context
         )
+
+
+class RecurringReminderEmail(models.Model):
+    created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
+    last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    commitment = models.OneToOneField(
+        Commitment, on_delete=models.CASCADE, related_name="recurring_email"
+    )
+    interval = models.PositiveSmallIntegerField(
+        "Interval between emails, in days",
+        validators=[
+            MinValueValidator(limit_value=1)
+        ]
+    )
+    next_email_date = models.DateField()
