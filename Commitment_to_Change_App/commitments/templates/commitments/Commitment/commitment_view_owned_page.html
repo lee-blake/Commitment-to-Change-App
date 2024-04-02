@@ -2,7 +2,7 @@
 
 {% block twitter_share_button %}
   <a class="twitter-share-button"
-     href="https://twitter.com/intent/tweet?text=I've%20made%20a%20commitment:%20{{ request.build_absolute_uri }}"
+     href="https://twitter.com/intent/tweet?text={{ 'I have made the following commitment to change @StanfordCME: '|iriencode }}{{ request.build_absolute_uri }}"
      data-size="large">
     Share on Twitter <i class="bi bi-twitter-x"></i>
   </a>
