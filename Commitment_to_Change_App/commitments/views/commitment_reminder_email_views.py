@@ -83,16 +83,8 @@ class DeleteCommitmentReminderEmailView(ClinicianLoginRequiredMixin, DeleteView)
         )
 
 
-class ClearCommitmentReminderEmailsView(
-        ClinicianLoginRequiredMixin, FormView
-    ):
-    model = Commitment
-    form_class = ClearCommitmentReminderEmailsForm
+class ClearCommitmentReminderEmailsView(ClinicianLoginRequiredMixin, FormView):
     template_name = "commitments/CommitmentReminderEmail/clear_reminder_emails.html"
-
-    def get_queryset(self):
-        viewer = ClinicianProfile.objects.get(user=self.request.user)
-        return Commitment.objects.filter(owner=viewer)
 
     def get_object(self):
         viewer = ClinicianProfile.objects.get(user=self.request.user)
