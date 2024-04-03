@@ -5,25 +5,25 @@
 {% endblock course_help_modal %}
 
 {% block join_link %}
-<div class="background round-corners mt-3 pb-3">
-  <div class="primary-header-container">
-    <h3>Invite Link</h3>
-  </div>
-  <div class="text-center foreground round-corners mt-3 mx-3 py-2">
-    Share this link to invite students to the course:
-    <div>
-      <p>
-        <a href="{{ request.scheme }}://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}">
-          <span id="courseJoinLink">{{ request.scheme }}://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}</span>
-        </a>
-      </p>
-      <p>
-        <button class="standard-button"
-                onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</button>
-      </p>
+  <div class="background round-corners mt-3 pb-3">
+    <div class="primary-header-container">
+      <h3>Invite Link</h3>
+    </div>
+    <div class="text-center foreground round-corners mt-3 mx-3 py-2">
+      Share this link to invite students to the course:
+      <div>
+        <p>
+          <a href="{{ request.scheme }}://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}">
+            <span id="courseJoinLink">{{ request.scheme }}://{{ request.get_host }}{% url "join Course" course_id=course.id join_code=course.join_code %}</span>
+          </a>
+        </p>
+        <p>
+          <button class="standard-button"
+                  onclick="copyToClipboard('courseJoinLink');return false;">Copy to Clipboard</button>
+        </p>
+      </div>
     </div>
   </div>
-</div>
 {% endblock join_link %}
 
 {% block select_suggested_commitments_button %}
@@ -39,12 +39,12 @@
 {% endblock bulk_email_button %}
 
 {% block course_commitment_csv_download_link %}
-    <a href="{% url "download Course Commitments as csv" course_id=course.id %}">
-      <button class="standard-button">
-        Download commitments list
-        <i class="bi bi-file-earmark-arrow-down"></i>
-      </button>
-    </a>
+  <a href="{% url "download Course Commitments as csv" course_id=course.id %}">
+    <button class="standard-button">
+      Download commitments list
+      <i class="bi bi-file-earmark-arrow-down"></i>
+    </button>
+  </a>
 {% endblock course_commitment_csv_download_link %}
 
 {% block student_table %}
