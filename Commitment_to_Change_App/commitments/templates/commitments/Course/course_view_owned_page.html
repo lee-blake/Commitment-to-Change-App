@@ -29,20 +29,18 @@
   </div>
 {% endblock select_suggested_commitments_button %}
 
+{% block bulk_email_button %}
+  {% include "commitments/Course/course_bulk_email_modal.html" %}
+{% endblock bulk_email_button %}
+
 {% block course_commitment_csv_download_link %}
-  <div class="text-center py-3">
     <a href="{% url "download Course Commitments as csv" course_id=course.id %}">
       <button class="standard-button">
         Download commitments list
         <i class="bi bi-file-earmark-arrow-down"></i>
       </button>
     </a>
-  </div>
 {% endblock course_commitment_csv_download_link %}
-
-{% block bulk_email_button %}
-  <div class="text-center pt-2 pb-4">{% include "commitments/Course/course_bulk_email_modal.html" %}</div>
-{% endblock bulk_email_button %}
 
 {% block student_table %}
   <div class="datatable-container round-corners"
