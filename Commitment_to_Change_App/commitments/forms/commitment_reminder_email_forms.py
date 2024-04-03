@@ -52,3 +52,4 @@ class ClearCommitmentReminderEmailsForm(Form):
 
     def save(self):
         CommitmentReminderEmail.objects.filter(commitment=self._commitment).delete()
+        RecurringReminderEmail.objects.filter(commitment=self._commitment).delete()

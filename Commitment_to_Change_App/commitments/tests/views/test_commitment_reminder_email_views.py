@@ -689,7 +689,7 @@ class TestClearCommitmentReminderEmailsView:
                 commitment=existing_reminder_emails[0].commitment
             ).count() == 2
 
-        def test_valid_request_deletes_all_reminder_emails_for_commitment(
+        def test_valid_request_deletes_all_one_time_reminder_emails_for_commitment(
             self, client, saved_clinician_profile, existing_reminder_emails
         ):
             target_url = reverse(
@@ -706,6 +706,31 @@ class TestClearCommitmentReminderEmailsView:
             assert not CommitmentReminderEmail.objects.filter(
                 commitment=existing_reminder_emails[0].commitment
             ).exists()
+
+        def test_valid_request_deletes_recurring_email_for_commitment(
+            self, client, saved_clinician_profile, make_quick_commitment
+        ):
+            commitment = make_quick_commitment()
+            RecurringReminderEmail.objects.create(
+                commitment=commitment,
+                next_email_date=datetime.date.today(),
+                interval=7
+            )
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"clear": "true"}
+            )
+            assert not RecurringReminderEmail.objects.filter(
+                commitment=commitment
+            ).exists()
+
 
         def test_valid_request_redirects_correctly(
             self, client, saved_clinician_profile, existing_reminder_emails
