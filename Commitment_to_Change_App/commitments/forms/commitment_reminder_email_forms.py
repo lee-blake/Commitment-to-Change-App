@@ -2,7 +2,7 @@ import datetime
 
 from django.forms import ModelForm, DateInput, HiddenInput, BooleanField, Form
 
-from commitments.models import Commitment, CommitmentReminderEmail
+from commitments.models import CommitmentReminderEmail
 
 
 class CommitmentReminderEmailForm(ModelForm):
@@ -25,10 +25,6 @@ class CommitmentReminderEmailForm(ModelForm):
 
 
 class ClearCommitmentReminderEmailsForm(Form):
-    class Meta:
-        model = Commitment
-        fields = []
-
     clear = BooleanField(initial=True, widget=HiddenInput())
 
     def __init__(self, commitment, *args, **kwargs):
