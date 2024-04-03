@@ -85,19 +85,28 @@
               <thead>
                 <tr>
                   <th scope="col" class="text-center">Student Name</th>
+                  <th scope="col" class="text-center">Commitments Made</th>
                 </tr>
               </thead>
               <tbody>
-              {% for clinician in students %}
-                <tr>
-                  <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
+                {% for clinician in students %}
+                  <tr>
+                    <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
+                    <td>
+                      {% for commitment in clinician.course_commitments %}
+                        <a href="{% url "view Commitment" commitment_id=commitment.id %}">
+                          <button class="btn view-button mt-2">{{ commitment.title }}</button>
+                        </a>
+                      </br>
+                    {% endfor %}
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
       {% endblock student_table %}
-      
+
     </div>
   </div>
   <div class="container-fluid py-3 text-center">

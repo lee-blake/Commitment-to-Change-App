@@ -52,6 +52,7 @@
         <tr>
           <th scope="col" data-priority="1" class="text-center">Name</th>
           <th scope="col" data-priority="2" class="text-center">Email</th>
+          <th scope="col" data-priority="3" class="text-center">Commitments Made</th>
         </tr>
       </thead>
       <tbody>
@@ -61,11 +62,19 @@
             <td>
               <a href="mailto:{{ clinician.email }}">{{ clinician.email }}</a>
             </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+            <td>
+              {% for commitment in clinician.course_commitments %}
+                <a href="{% url "view Commitment" commitment_id=commitment.id %}">
+                  <button class="btn view-button mt-2">{{ commitment.title }}</button>
+                </a>
+              </br>
+            {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock student_table %}
 
 {% block edit_button %}
