@@ -37,36 +37,6 @@
           {% block join_link %}
           {% endblock join_link %}
 
-          <div class="foreground round-corners mt-3 mx-3">
-            <div class="secondary-header-container mb-3">
-              <h4>List of Students Enrolled:</h4>
-            </div>
-
-            {% block bulk_email_button %}
-            {% endblock bulk_email_button %}
-
-            {% block student_table %}
-              <div class="datatable-container round-corners">
-                <table id="clinician-course-student-datatable" class="display">
-                  <thead>
-                    <tr>
-                      <th scope="col">Student Name</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-
-                    {% for clinician in students %}
-                      <tr>
-                        <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
-                      </tr>
-                    {% endfor %}
-
-                  </tbody>
-                </table>
-              </div>
-            {% endblock student_table %}
-
-          </div>
         </div>
       </div>
       <div class="col-md-6 p-3">
@@ -100,14 +70,44 @@
         </div>
       </div>
     </div>
-    <div class="container-fluid py-3 text-center">
+    <div class="background round-corners mt-3 mx-3">
+      <div class="secondary-header-container mb-3">
+        <h4>List of Students Enrolled:</h4>
+      </div>
+      <div class="text-center foreground p-1 round-corners mt-3 mx-3">
 
-      {% block edit_button %}
-      {% endblock edit_button %}
+        {% block bulk_email_button %}
+        {% endblock bulk_email_button %}
 
-      {% block delete_button %}
-      {% endblock delete_button %}
-
+        {% block student_table %}
+          <div class="datatable-container round-corners">
+            <table id="clinician-course-student-datatable" class="display">
+              <thead>
+                <tr>
+                  <th scope="col" class="text-center">Student Name</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for clinician in students %}
+                <tr>
+                  <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endblock student_table %}
+      
     </div>
   </div>
+  <div class="container-fluid py-3 text-center">
+
+    {% block edit_button %}
+    {% endblock edit_button %}
+
+    {% block delete_button %}
+    {% endblock delete_button %}
+
+  </div>
+</div>
 {% endblock page_content %}

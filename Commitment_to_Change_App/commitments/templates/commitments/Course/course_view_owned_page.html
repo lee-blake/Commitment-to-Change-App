@@ -37,12 +37,11 @@
     <table id="provider-course-student-datatable" class="display">
       <thead>
         <tr>
-          <th scope="col" data-priority="1">Name</th>
-          <th scope="col" data-priority="2">Email</th>
+          <th scope="col" data-priority="1" class="text-center">Name</th>
+          <th scope="col" data-priority="2" class="text-center">Email</th>
         </tr>
       </thead>
       <tbody>
-
         {% for clinician in students %}
           <tr>
             <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
@@ -51,7 +50,6 @@
             </td>
           </tr>
         {% endfor %}
-
       </tbody>
     </table>
   </div>
