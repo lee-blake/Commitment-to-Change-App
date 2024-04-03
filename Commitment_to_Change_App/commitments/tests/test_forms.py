@@ -10,7 +10,7 @@ from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm
     DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm, \
     JoinCourseForm, ClearCommitmentReminderEmailsForm, RecurringReminderEmailForm
 from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course, \
-    CommitmentReminderEmail
+    CommitmentReminderEmail, RecurringReminderEmail
 
 
 @pytest.fixture(name="unsaved_in_progress_commitment")
@@ -503,6 +503,22 @@ class TestClearCommitmentReminderEmailsForm:
             assert CommitmentReminderEmail.objects.filter(
                 commitment=minimal_commitment
             ).count() == 2
+
+        def test_save_deletes_recurring_email_if_present(
+            self, minimal_commitment
+        ):
+            RecurringReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                next_email_date=datetime.date.today(),
+                interval=30
+            )
+            ClearCommitmentReminderEmailsForm(
+                minimal_commitment,
+                {"clear": True}
+            ).save()
+            assert RecurringReminderEmail.objects.filter(
+                commitment=minimal_commitment
+            ).count() == 0
 
 
 class TestRecurringReminderEmailForm:
