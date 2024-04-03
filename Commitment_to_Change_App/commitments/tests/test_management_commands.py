@@ -7,8 +7,9 @@ from commitments.enums import CommitmentStatus
 from commitments.management.commands.expire_commitments import \
     expire_in_progress_commitments_past_deadline
 from commitments.management.commands.send_reminder_emails import \
-    send_one_time_reminder_emails_for_commitments
-from commitments.models import Commitment, CommitmentReminderEmail
+    send_one_time_reminder_emails_for_commitments, \
+    send_recurring_reminder_emails_for_commitments
+from commitments.models import Commitment, CommitmentReminderEmail, RecurringReminderEmail
 
 
 @pytest.mark.django_db
@@ -60,7 +61,7 @@ class TestExpireCommitmentCommand:
 
 
 @pytest.mark.django_db
-class TestSendReminderEmailsForCommitments:
+class TestSendOneTimeReminderEmailsForCommitments:
     """Tests for send_one_time_reminder_emails_for_commitments"""
 
     def test_reminder_emails_are_sent_for_all_non_future_dates(
@@ -103,10 +104,70 @@ class TestSendReminderEmailsForCommitments:
 
 
 @pytest.mark.django_db
+class TestSendRecurringReminderEmailsForCommitments:
+    """Tests for send_recurring_reminder_emails_for_commitments"""
+
+    def test_reminder_emails_are_sent_for_all_non_future_dates(
+        self, minimal_commitment, captured_email
+    ):
+        RecurringReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            next_email_date=datetime.date.today() - datetime.timedelta(days=1),
+            interval=30
+        )
+        # This is a quick way to clone minimal_commitment to avoid problems with one-to-one.
+        minimal_commitment.id = None
+        minimal_commitment.save()
+        RecurringReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            next_email_date=datetime.date.today(),
+            interval=30
+        )
+        minimal_commitment.id = None
+        minimal_commitment.save()
+        RecurringReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            next_email_date=datetime.date.today() + datetime.timedelta(days=1),
+            interval=30
+        )
+        send_recurring_reminder_emails_for_commitments()
+        assert len(captured_email) == 2
+
+    def test_next_email_dates_update_appropriately(
+        self, minimal_commitment
+    ):
+        RecurringReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            next_email_date=datetime.date.today() - datetime.timedelta(days=1),
+            interval=30
+        )
+        # This is a quick way to clone minimal_commitment to avoid problems with one-to-one.
+        minimal_commitment.id = None
+        minimal_commitment.save()
+        RecurringReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            next_email_date=datetime.date.today(),
+            interval=30
+        )
+        minimal_commitment.id = None
+        minimal_commitment.save()
+        RecurringReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            next_email_date=datetime.date.today() + datetime.timedelta(days=1),
+            interval=30
+        )
+        send_recurring_reminder_emails_for_commitments()
+        expected_next_date_for_emails_sent = datetime.date.today() + datetime.timedelta(days=30)
+        assert RecurringReminderEmail.objects.filter(
+            next_email_date=expected_next_date_for_emails_sent
+        ).count() == 2
+
+
+@pytest.mark.django_db
 class TestSendReminderEmailsCommand:
     """Tests for send_reminder_emails.Command integration"""
 
-    def test_called_command_sends_correct_emails(
+    def test_called_command_sends_correct_one_time_emails(
         self, minimal_commitment, captured_email
     ):
         CommitmentReminderEmail.objects.create(
@@ -120,6 +181,32 @@ class TestSendReminderEmailsCommand:
         CommitmentReminderEmail.objects.create(
             commitment=minimal_commitment,
             date=datetime.date.today() + datetime.timedelta(days=1)
+        )
+        call_command("send_reminder_emails")
+        assert len(captured_email) == 2
+
+    def test_called_command_sends_correct_recurring_emails(
+        self, minimal_commitment, captured_email
+    ):
+        RecurringReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            next_email_date=datetime.date.today() - datetime.timedelta(days=1),
+            interval=30
+        )
+        # This is a quick way to clone minimal_commitment to avoid problems with one-to-one.
+        minimal_commitment.id = None
+        minimal_commitment.save()
+        RecurringReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            next_email_date=datetime.date.today(),
+            interval=30
+        )
+        minimal_commitment.id = None
+        minimal_commitment.save()
+        RecurringReminderEmail.objects.create(
+            commitment=minimal_commitment,
+            next_email_date=datetime.date.today() + datetime.timedelta(days=1),
+            interval=30
         )
         call_command("send_reminder_emails")
         assert len(captured_email) == 2
