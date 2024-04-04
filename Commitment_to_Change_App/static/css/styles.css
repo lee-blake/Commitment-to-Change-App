@@ -334,6 +334,30 @@ form {
     overflow-wrap: break-word;
 }
 
+.in-progress-icon, .complete-icon, .past-due-icon, .discontinued-icon {
+    color: var(--accent-text);
+    font-size: 25px;
+    justify-content: center;
+    text-align: center;
+    border-radius: var(--standard-button-round);
+    border: 2px solid grey;
+}
+
+.in-progress-icon {
+    background-color: var(--in-progress);
+}
+
+.complete-icon {
+    background-color: var(--complete);
+}
+
+.past-due-icon {
+    background-color: var(--expired);
+}
+
+.discontinued-icon {
+    background-color: var(--discontinued);
+}
 /* 
 -------------------------------------------------------------------
     --- Form Styling ---

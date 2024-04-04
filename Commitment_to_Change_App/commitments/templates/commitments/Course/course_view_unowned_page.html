@@ -82,6 +82,7 @@
                 <tr>
                   <th scope="col" class="text-center">Student Name</th>
                   <th scope="col" class="text-center">Commitments Made</th>
+                  <th scope="col" class="text-center status-column">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -94,6 +95,30 @@
                           <button class="btn view-button mt-2">{{ commitment.title }}</button>
                         </a>
                       </br>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for commitment in clinician.course_commitments %}
+                      {% if commitment.status == 0 %}
+                        <div class="in-progress-icon mt-2" data-sort="{{ commitment.status }}">
+                          <i class="bi bi-arrow-repeat"></i>
+                        </div>
+                      {% endif %}
+                      {% if commitment.status == 1 %}
+                        <div class="complete-icon mt-2" data-sort="{{ commitment.status }}">
+                          <i class="bi bi-check2"></i>
+                        </div>
+                      {% endif %}
+                      {% if commitment.status == 2 %}
+                        <div class="past-due-icon mt-2" data-sort="{{ commitment.status }}">
+                          <i class="bi bi-x"></i>
+                        </div>
+                      {% endif %}
+                      {% if commitment.status == 3 %}
+                        <div class="discontinued-icon mt-2" data-sort="{{ commitment.status }}">
+                          <i class="bi bi-dash-circle"></i>
+                        </div>
+                      {% endif %}
                     {% endfor %}
                   </td>
                 </tr>
