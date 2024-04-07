@@ -3,19 +3,19 @@
 </div>
 <div class="text-center">
   {% if commitment.recurring_email %}
-  <div>
-    Reminder emails are scheduled to recur every {{ commitment.recurring_email.interval }} days.
-    The next email is planned for {{ commitment.recurring_email.next_email_date }}.
-    <a href="{% url 'delete RecurringReminderEmail' commitment_id=commitment.id %}">
-      <button class="btn standard-button m-2" type="submit">Cancel recurring emails</button>
-    </a>
-  </div>
-{% else %}
-  Reminder emails are currently not automatically scheduled for this commitment.
-  <div>
-    <a href="{% url 'create RecurringReminderEmail' commitment_id=commitment.id %}">
-      <button class="btn standard-button m-2" type="submit">Schedule a recurring reminder email</button>
-    </a>
-  </div>
-{% endif %}
+    <div>
+      Reminder emails are scheduled to recur every {{ commitment.recurring_email.interval }} days.
+      The next email is planned for {{ commitment.recurring_email.next_email_date }}.
+      <a href="{% url 'delete RecurringReminderEmail' commitment_id=commitment.id %}">
+        <button class="btn standard-button m-2" type="submit">Cancel recurring emails</button>
+      </a>
+    </div>
+  {% else %}
+    Reminder emails are currently not automatically scheduled for this commitment.
+    <div>
+      <a href="{% url 'create RecurringReminderEmail' commitment_id=commitment.id %}">
+        <button class="btn standard-button m-2" type="submit">Schedule a recurring reminder email</button>
+      </a>
+    </div>
+  {% endif %}
 </div>
