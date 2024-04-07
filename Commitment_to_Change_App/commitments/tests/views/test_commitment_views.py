@@ -80,6 +80,17 @@ class TestCreateCommitmentView:
             assert str(enrolled_course) in associated_course_select_contents
             assert str(non_enrolled_course) not in associated_course_select_contents
 
+        def test_reminder_preset_select_shows_in_page(
+            self, client, saved_clinician_profile,
+        ):
+            target_url = reverse("create Commitment")
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            reminder_schedule_select_regex = re.compile(
+                r"\<select[^\>]*name=\"reminder_schedule\"[^\>]*\>"
+            )
+            assert reminder_schedule_select_regex.search(html)
+
 
     class TestPost:
         """Tests for CreateCommitmentView.post"""
@@ -1180,9 +1191,21 @@ class TestCreateFromSuggestedCommitmentView:
             )
             assert "disabled" in description_input_regex.search(html)[0]
 
+        def test_reminder_preset_select_shows_in_page(
+            self, client, saved_clinician_profile,
+        ):
+            target_url = reverse("create Commitment")
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            reminder_schedule_select_regex = re.compile(
+                r"\<select[^\>]*name=\"reminder_schedule\"[^\>]*\>"
+            )
+            assert reminder_schedule_select_regex.search(html)
+
 
     class TestPost:
         """Tests for CreateFromSuggestedCommitmentView.post"""
+
         def test_rejects_provider_accounts_with_403(
             self, client, saved_provider_user, enrolled_course, commitment_template_1
         ):
