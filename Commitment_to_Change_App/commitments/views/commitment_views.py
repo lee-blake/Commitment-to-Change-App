@@ -6,13 +6,14 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from commitments.forms import CommitmentForm, GenericDeletePostKeySetForm, \
     CompleteCommitmentForm, DiscontinueCommitmentForm, ReopenCommitmentForm, \
-    CreateCommitmentFromSuggestedCommitmentForm, ClearCommitmentReminderEmailsForm
+    CreateCommitmentFromSuggestedCommitmentForm, ClearCommitmentReminderEmailsForm, \
+    CommitmentCreationForm
 from commitments.mixins import ClinicianLoginRequiredMixin
 from commitments.models import Commitment, ClinicianProfile, Course
 
 
 class CreateCommitmentView(ClinicianLoginRequiredMixin, CreateView):
-    form_class = CommitmentForm
+    form_class = CommitmentCreationForm
     template_name = "commitments/Commitment/make_commitment.html"
 
     def get_form_kwargs(self):
