@@ -9,7 +9,9 @@ function selectOrUnselectAllCheckboxes() {
 
 function generateMailtoLink() {
   const selectedEmails = getSelectedEmails();
-  const mailtoLink = "mailto:" + selectedEmails.join(",");
+  const defaultSubject = encodeURIComponent("Test Default Subject");
+  const defaultBody = encodeURIComponent("Test Default Body");
+  const mailtoLink = "mailto:" + selectedEmails.join(",") + "?subject=" + defaultSubject + "&body=" + defaultBody;
   redirectToMailtoLink(mailtoLink);
 }
 
