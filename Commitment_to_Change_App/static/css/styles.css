@@ -330,6 +330,45 @@ form {
     overflow-wrap: break-word;
 }
 
+/*
+-------------------------------------------------------------------
+    --- Social Media Buttons ---
+-------------------------------------------------------------------
+*/
+
+.social-share-button {
+    color: white;
+    border-radius: var(--standard-button-round);
+    display: inline-flex;
+    justify-content: center;
+    text-align: center;
+    transition: 0.3s;
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+}
+
+.social-share-button:hover {
+    filter: brightness(140%);
+    color: white;
+}
+
+.twitter-share-button {
+    background-color: black;
+}
+
+.twitter-share-button:hover {
+    background-color: #313131;
+}
+
+.linkedin-share-button {
+    background-color: #0073B1;
+}
+
+.facebook-share-button {
+    background-color: #0965FF;
+}
+
 /* 
 -------------------------------------------------------------------
     --- Form Styling ---
