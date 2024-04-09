@@ -5,7 +5,7 @@
 {% endblock course_help_modal %}
 
 {% block join_link %}
-<div class="foreground round-corners mt-3 mx-3">
+  <div class="foreground round-corners mt-3 mx-3">
     <div class="secondary-header-container">
       <h4>Invite Link</h4>
     </div>
@@ -74,30 +74,7 @@
               </br>
             {% endfor %}
           </td>
-          <td>
-            {% for commitment in clinician.course_commitments %}
-              {% if commitment.status == 0 %}
-                <div class="in-progress-icon mt-2" data-sort="{{ commitment.status }}">
-                  <i class="bi bi-arrow-repeat"></i>
-                </div>
-              {% endif %}
-              {% if commitment.status == 1 %}
-                <div class="complete-icon mt-2" data-sort="{{ commitment.status }}">
-                  <i class="bi bi-check2"></i>
-                </div>
-              {% endif %}
-              {% if commitment.status == 2 %}
-                <div class="past-due-icon mt-2" data-sort="{{ commitment.status }}">
-                  <i class="bi bi-x"></i>
-                </div>
-              {% endif %}
-              {% if commitment.status == 3 %}
-                <div class="discontinued-icon mt-2" data-sort="{{ commitment.status }}">
-                  <i class="bi bi-dash-circle"></i>
-                </div>
-              {% endif %}
-            {% endfor %}
-          </td>
+          <td>{% include "commitments/Course/course_associated_commitments_status_icon_selector.html" %}</td>
         </tr>
       {% endfor %}
     </tbody>
