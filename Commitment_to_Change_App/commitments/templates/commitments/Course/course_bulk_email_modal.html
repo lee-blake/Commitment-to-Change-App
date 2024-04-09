@@ -59,14 +59,15 @@
                   onClick="handleSubmitBulkEmail()">Compose email</button>
         </div>
         <div>
-          {{ course.title | json_script:"courseTitleJson" }}
-          {{ course.owner.institution | json_script:"courseInstitutionJson" }}
+          <script id="bulk-email-default-subject-text" type="application/json">"{{ course.title }} - {{ course.owner.institution }}"</script>
+          <script id="bulk-email-default-body-text" type="application/json">
+          "You are receiving this email because you are enrolled in the following course: {{ course.title }}, created by: {{ course.owner.institution }}"</script>
           <script>
-            const courseTitle = JSON.parse(document.getElementById("courseTitleJson").textContent);
-            const courseInstitution = JSON.parse(document.getElementById("courseInstitutionJson").textContent);
+            const defaultSubjectText = JSON.parse(document.getElementById("bulk-email-default-subject-text").textContent);
+            const defaultBodyText = JSON.parse(document.getElementById("bulk-email-default-body-text").textContent);
             
             function handleSubmitBulkEmail() {
-              generateMailtoLink(courseTitle, courseInstitution);
+              generateMailtoLink(defaultSubjectText, defaultBodyText);
             }
           </script>
         </div>

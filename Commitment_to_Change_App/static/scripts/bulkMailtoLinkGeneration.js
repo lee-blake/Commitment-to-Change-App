@@ -6,12 +6,11 @@ function selectOrUnselectAllCheckboxes() {
   $(".select-email-checkbox").prop("checked", this.checked);
 }
 
-function generateMailtoLink(courseTitle, courseInstitution) {
+function generateMailtoLink(defaultBodyText, defaultSubjectText) {
   const selectedEmails = getSelectedEmails();
-  const defaultSubject = encodeURIComponent(courseTitle + " - " + courseInstitution);
-  const defaultBody = encodeURIComponent("You are receiving this email because you are enrolled in the following course: " + 
-  courseTitle + ", created by: " + courseInstitution);
-  const mailtoLink = "mailto:" + selectedEmails.join(",") + "?subject=" + defaultSubject + "&body=" + defaultBody;
+  const encodedDefaultSubject = encodeURIComponent(defaultBodyText);
+  const encodedDefaultBody = encodeURIComponent(defaultSubjectText);
+  const mailtoLink = "mailto:" + selectedEmails.join(",") + "?subject=" + encodedDefaultSubject + "&body=" + encodedDefaultBody;
   redirectToMailtoLink(mailtoLink);
 }
 
