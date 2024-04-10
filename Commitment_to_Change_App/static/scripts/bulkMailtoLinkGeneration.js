@@ -1,15 +1,16 @@
 $(document).ready(function () {
   $("#select-all-emails-checkbox").click(selectOrUnselectAllCheckboxes);
-  $("#modal-bulk-email-submit-button").click(generateMailtoLink);
 });
 
 function selectOrUnselectAllCheckboxes() {
   $(".select-email-checkbox").prop("checked", this.checked);
 }
 
-function generateMailtoLink() {
+function generateMailtoLink(defaultBodyText, defaultSubjectText) {
   const selectedEmails = getSelectedEmails();
-  const mailtoLink = "mailto:" + selectedEmails.join(",");
+  const encodedDefaultSubject = encodeURIComponent(defaultBodyText);
+  const encodedDefaultBody = encodeURIComponent(defaultSubjectText);
+  const mailtoLink = "mailto:" + selectedEmails.join(",") + "?subject=" + encodedDefaultSubject + "&body=" + encodedDefaultBody;
   redirectToMailtoLink(mailtoLink);
 }
 

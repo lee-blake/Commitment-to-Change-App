@@ -55,8 +55,10 @@
                   data-bs-dismiss="modal">Cancel</button>
           <button type="submit"
                   id="modal-bulk-email-submit-button"
-                  class="standard-button">Compose email</button>
+                  class="standard-button"
+                  onClick="handleSubmitBulkEmail()">Compose email</button>
         </div>
+        {% include "commitments/Course/course_bulk_email_default_text.html" %}
       </div>
     </div>
   </div>
