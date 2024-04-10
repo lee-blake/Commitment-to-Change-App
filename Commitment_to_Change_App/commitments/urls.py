@@ -76,6 +76,11 @@ urlpatterns = [
           name="edit Course"
      ),
      path(
+          "course/<int:course_id>/delete/",
+          views.DeleteCourseView.as_view(),
+          name="delete Course"
+     ),
+     path(
           "course/<int:course_id>/suggested-commitments/select/",
           views.CourseChangeSuggestedCommitmentsView.as_view(),
           name="change Course suggested commitments"
@@ -147,5 +152,16 @@ urlpatterns = [
           "commitment/<int:commitment_id>/reminders/clear/",
           views.ClearCommitmentReminderEmailsView.as_view(),
           name="clear CommitmentReminderEmails"
+     ),
+
+     path(
+          "commitment/<int:commitment_id>/reminders/create/recurring/",
+          views.CreateRecurringReminderEmailView.as_view(),
+          name="create RecurringReminderEmail"
+     ),
+     path(
+          "commitment/<int:commitment_id>/reminders/recurring/delete/",
+          views.DeleteRecurringReminderEmailView.as_view(),
+          name="delete RecurringReminderEmail"
      ),
 ]

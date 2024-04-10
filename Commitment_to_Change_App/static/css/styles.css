@@ -330,6 +330,69 @@ form {
     overflow-wrap: break-word;
 }
 
+.in-progress-icon, .complete-icon, .past-due-icon, .discontinued-icon {
+    color: var(--accent-text);
+    font-size: 25px;
+    justify-content: center;
+    text-align: center;
+    border-radius: var(--standard-button-round);
+    border: 2px solid grey;
+}
+
+.in-progress-icon {
+    background-color: var(--in-progress);
+}
+
+.complete-icon {
+    background-color: var(--complete);
+}
+
+.past-due-icon {
+    background-color: var(--expired);
+}
+
+.discontinued-icon {
+    background-color: var(--discontinued);
+}
+/*
+-------------------------------------------------------------------
+    --- Social Media Buttons ---
+-------------------------------------------------------------------
+*/
+
+.social-share-button {
+    color: white;
+    border-radius: var(--standard-button-round);
+    display: inline-flex;
+    justify-content: center;
+    text-align: center;
+    transition: 0.3s;
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+}
+
+.social-share-button:hover {
+    filter: brightness(140%);
+    color: white;
+}
+
+.twitter-share-button {
+    background-color: black;
+}
+
+.twitter-share-button:hover {
+    background-color: #313131;
+}
+
+.linkedin-share-button {
+    background-color: #0073B1;
+}
+
+.facebook-share-button {
+    background-color: #0965FF;
+}
+
 /* 
 -------------------------------------------------------------------
     --- Form Styling ---

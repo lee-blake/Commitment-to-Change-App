@@ -23,50 +23,20 @@
       <div class="col-md-6 p-3">
         <div class="background round-corners pb-3">
           <div class="primary-header-container">
-            <h3>Description</h3>
+            <h3>Course Information</h3>
           </div>
-          <div class="text-center foreground p-1 round-corners mt-3 mx-3">
-            <p>{{ course.description }}</p>
-          </div>
-        </div>
-        <div class="background round-corners mt-3 pb-3">
-          <div class="primary-header-container">
-            <h3>Students</h3>
+          <div class="foreground round-corners mt-3 mx-3">
+            <div class="secondary-header-container">
+              <h4>Description</h4>
+            </div>
+            <div class="px-3 py-2">
+              <p>{{ course.description }}</p>
+            </div>
           </div>
 
           {% block join_link %}
           {% endblock join_link %}
 
-          <div class="foreground round-corners mt-3 mx-3">
-            <div class="secondary-header-container mb-3">
-              <h4>List of Students Enrolled:</h4>
-            </div>
-
-            {% block bulk_email_button %}
-            {% endblock bulk_email_button %}
-
-            {% block student_table %}
-              <div class="datatable-container round-corners">
-                <table id="clinician-course-student-datatable" class="display">
-                  <thead>
-                    <tr>
-                      <th scope="col">Student Name</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-
-                    {% for clinician in course.students.all %}
-                      <tr>
-                        <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
-                      </tr>
-                    {% endfor %}
-
-                  </tbody>
-                </table>
-              </div>
-            {% endblock student_table %}
-
-          </div>
         </div>
       </div>
       <div class="col-md-6 p-3">
@@ -87,27 +57,69 @@
           <div class="foreground text-center round-corners pb-3 mt-3 mx-3">
             {% include "commitments/Course/course_commitment_statistics_breakdown_section.html" %}
           </div>
-          <div class="foreground round-corners pb-3 mt-3 mx-3">
-            <div class="secondary-header-container">
-              <h4>Commitments Made in This Course:</h4>
-            </div>
+        </div>
+      </div>
+    </div>
+    <div class="background round-corners pb-3 mt-3 mx-2">
+      <div class="primary-header-container mb-3">
+        <h4>List of Students Enrolled:</h4>
+      </div>
+      <div class="text-center foreground p-1 round-corners mt-3 mx-3">
+        <div class="row">
+          <div class="col-md-6 my-3 order-md-2">
+
+            {% block bulk_email_button %}
+            {% endblock bulk_email_button %}
+
+          </div>
+          <div class="col-md-6 my-3 order-md-3">
 
             {% block course_commitment_csv_download_link %}
             {% endblock course_commitment_csv_download_link %}
 
-            {% include "commitments/Course/course_associated_commitments_panel.html" %}
           </div>
         </div>
-      </div>
-    </div>
-    <div class="container-fluid py-3 text-center">
 
-      {% block edit_button %}
-      {% endblock edit_button %}
-
-      {% block delete_button %}
-      {% endblock delete_button %}
+        {% block student_table %}
+          <div class="datatable-container round-corners">
+            <table id="clinician-course-student-datatable" class="display">
+              <thead>
+                <tr>
+                  <th scope="col" class="text-center">Student Name</th>
+                  <th scope="col" class="text-center">Commitments Made</th>
+                  <th scope="col" class="text-center status-column">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for clinician in students %}
+                  <tr>
+                    <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
+                    <td>
+                      {% for commitment in clinician.course_commitments %}
+                        <a href="{% url "view Commitment" commitment_id=commitment.id %}">
+                          <button class="btn view-button mt-2">{{ commitment.title }}</button>
+                        </a>
+                      </br>
+                    {% endfor %}
+                  </td>
+                  <td>{% include "commitments/Course/course_associated_commitments_status_icon_selector.html" %}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endblock student_table %}
 
     </div>
   </div>
+  <div class="container-fluid py-3 text-center">
+
+    {% block edit_button %}
+    {% endblock edit_button %}
+
+    {% block delete_button %}
+    {% endblock delete_button %}
+
+  </div>
+</div>
 {% endblock page_content %}
