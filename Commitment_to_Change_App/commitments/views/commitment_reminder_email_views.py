@@ -4,9 +4,10 @@ from django.views.generic.edit import CreateView, DeleteView, FormView
 from django.views.generic.list import ListView
 
 from commitments.forms import CommitmentReminderEmailForm, GenericDeletePostKeySetForm, \
-    ClearCommitmentReminderEmailsForm
+    ClearCommitmentReminderEmailsForm, RecurringReminderEmailForm
 from commitments.mixins import ClinicianLoginRequiredMixin
-from commitments.models import Commitment, ClinicianProfile, CommitmentReminderEmail
+from commitments.models import Commitment, ClinicianProfile, CommitmentReminderEmail, \
+    RecurringReminderEmail
 
 
 class CreateCommitmentReminderEmailView(ClinicianLoginRequiredMixin, CreateView):
@@ -83,16 +84,8 @@ class DeleteCommitmentReminderEmailView(ClinicianLoginRequiredMixin, DeleteView)
         )
 
 
-class ClearCommitmentReminderEmailsView(
-        ClinicianLoginRequiredMixin, FormView
-    ):
-    model = Commitment
-    form_class = ClearCommitmentReminderEmailsForm
+class ClearCommitmentReminderEmailsView(ClinicianLoginRequiredMixin, FormView):
     template_name = "commitments/CommitmentReminderEmail/clear_reminder_emails.html"
-
-    def get_queryset(self):
-        viewer = ClinicianProfile.objects.get(user=self.request.user)
-        return Commitment.objects.filter(owner=viewer)
 
     def get_object(self):
         viewer = ClinicianProfile.objects.get(user=self.request.user)
@@ -121,4 +114,59 @@ class ClearCommitmentReminderEmailsView(
             "view CommitmentReminderEmails",
             kwargs={"commitment_id": self.kwargs["commitment_id"]}
         )
-        
+
+
+class CreateRecurringReminderEmailView(ClinicianLoginRequiredMixin, CreateView):
+    template_name = "commitments/CommitmentReminderEmail/create_recurring_reminder_email.html"
+
+    def get_form(self, form_class=None):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        source_commitment = get_object_or_404(
+            Commitment,
+            id=self.kwargs["commitment_id"],
+            owner=viewer
+        )
+        return RecurringReminderEmailForm(
+            commitment=source_commitment,
+            **self.get_form_kwargs()
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["commitment"] = context["form"].instance.commitment
+        return context
+
+    def get_success_url(self):
+        return reverse(
+            "view CommitmentReminderEmails",
+            kwargs={"commitment_id": self.kwargs["commitment_id"]}
+        )
+
+
+class DeleteRecurringReminderEmailView(ClinicianLoginRequiredMixin, DeleteView):
+    form_class = GenericDeletePostKeySetForm
+    template_name = "commitments/CommitmentReminderEmail/delete_recurring_reminder_email.html"
+    context_object_name = "recurring_reminder_email"
+
+    def get_object(self, queryset=None):
+        viewer = ClinicianProfile.objects.get(user=self.request.user)
+        source_commitment = get_object_or_404(
+            Commitment,
+            id=self.kwargs["commitment_id"],
+            owner=viewer
+        )
+        return get_object_or_404(
+            RecurringReminderEmail,
+            commitment=source_commitment
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["commitment"] = get_object_or_404(Commitment, id=self.kwargs["commitment_id"])
+        return context
+
+    def get_success_url(self, **kwargs):
+        return reverse(
+            "view CommitmentReminderEmails",
+            kwargs={"commitment_id": self.kwargs["commitment_id"]}
+        )

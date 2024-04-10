@@ -1,5 +1,9 @@
 {% extends "commitments/Commitment/commitment_view_unowned_page.html" %}
 
+{% block twitter_share_button %}
+  {% include "commitments/Commitment/commitment_social_share_modal.html" %}
+{% endblock twitter_share_button %}
+
 {% block edit_button %}
   <form action="{% url "edit Commitment" commitment_id=commitment.id %}">
     <button class="standard-button primary-accent" type="submit">Edit Commitment</button>

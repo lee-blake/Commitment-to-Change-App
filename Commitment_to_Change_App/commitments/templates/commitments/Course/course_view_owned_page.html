@@ -87,3 +87,9 @@
     <button class="standard-button primary-accent" type="submit">Edit Course</button>
   </a>
 {% endblock edit_button %}
+
+{% block delete_button %}
+  <a href="{% url "delete Course" course_id=course.id %}">
+    <button class="standard-button primary-accent" type="submit">Delete Course</button>
+  </a>
+{% endblock delete_button %}

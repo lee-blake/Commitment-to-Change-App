@@ -92,10 +92,6 @@ form {
 ------------------------------------------------------------------- 
  */
 
-.full-width-textarea textarea {
-    width: 100%;
-}
-
 .round-corners {
     border-radius: var(--standard-round);
 }
@@ -358,6 +354,45 @@ form {
 .discontinued-icon {
     background-color: var(--discontinued);
 }
+/*
+-------------------------------------------------------------------
+    --- Social Media Buttons ---
+-------------------------------------------------------------------
+*/
+
+.social-share-button {
+    color: white;
+    border-radius: var(--standard-button-round);
+    display: inline-flex;
+    justify-content: center;
+    text-align: center;
+    transition: 0.3s;
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+}
+
+.social-share-button:hover {
+    filter: brightness(140%);
+    color: white;
+}
+
+.twitter-share-button {
+    background-color: black;
+}
+
+.twitter-share-button:hover {
+    background-color: #313131;
+}
+
+.linkedin-share-button {
+    background-color: #0073B1;
+}
+
+.facebook-share-button {
+    background-color: #0965FF;
+}
+
 /* 
 -------------------------------------------------------------------
     --- Form Styling ---
@@ -373,6 +408,9 @@ div.default-form input[type=submit] {
 
 div.default-form label {
     display: block;
+}
+div.default-form textarea {
+    width: 100%;
 }
 
 div.default-form select,

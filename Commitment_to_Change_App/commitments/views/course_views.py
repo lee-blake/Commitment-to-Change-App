@@ -1,13 +1,14 @@
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from commitments.business_logic import write_course_commitments_as_csv
 from commitments.forms import CommitmentTemplateForm, CourseForm, \
-    CourseSelectSuggestedCommitmentsForm, JoinCourseForm
+    CourseSelectSuggestedCommitmentsForm, JoinCourseForm, \
+    GenericDeletePostKeySetForm
 from commitments.generic_views import GeneratedTemporaryTextFileDownloadView
 from commitments.mixins import ProviderLoginRequiredMixin
 from commitments.models import ClinicianProfile, ProviderProfile, Course, Commitment
@@ -150,3 +151,18 @@ class DownloadCourseCommitmentsCSVView(
         viewer = ProviderProfile.objects.get(user=self.request.user)
         course = get_object_or_404(Course, id=course_id, owner=viewer)
         write_course_commitments_as_csv(course, temporary_file)
+
+
+class DeleteCourseView(ProviderLoginRequiredMixin, DeleteView):
+    model = Course
+    form_class = GenericDeletePostKeySetForm
+    template_name = "commitments/Course/course_delete_page.html"
+    pk_url_kwarg = "course_id"
+    context_object_name = "course"
+    success_url = reverse_lazy("provider dashboard")
+
+    def get_queryset(self):
+        viewer = ProviderProfile.objects.get(user=self.request.user)
+        return Course.objects.filter(
+            owner=viewer
+        )

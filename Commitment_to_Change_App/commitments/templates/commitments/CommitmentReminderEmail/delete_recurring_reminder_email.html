@@ -1,34 +1,32 @@
 {% extends "commitments/common/base.html" %}
 
 {% block title %}
-  Delete reminder email
+  Cancel recurring reminder email
 {% endblock title %}
 
 {% block page_content %}
   <div class="container-xl px-0 round-corners foreground">
     <div class="primary-header-container">
-      <h1>Delete all reminder emails</h1>
+      <h1>Cancel recurring reminder email</h1>
     </div>
     <div class="container-fluid px-3 py-3">
       <div class="p-1 round-corners background text-center">
-        <p>
-          Are you sure you want to delete all reminder emails for '{{ commitment.title }}'?
-          This includes any recurring reminder emails you have scheduled.
-          This action cannot be undone.
-        </p>
+        <p>Are you sure you want to cancel the recurring reminder email for '{{ commitment.title }}'?</p>
       </div>
       {# Render the error notes for the implicit form so that bad requests made #}
       {# during development will be easier to debug. Errors cannot occur during #}
       {# normal use of this form.#}
       {{ form.non_field_errors }}
-      {{ form.clear.errors }}
+      {{ form.delete.errors }}
       <div class="d-flex justify-content-center p-2">
         <div class="px-2 pt-3">
           <a href="{% url "view CommitmentReminderEmails" commitment_id=commitment.id %}">
-            <button class="view-button">Cancel</button>
+            <button class="view-button">Back</button>
           </a>
         </div>
-        <div class="px-2 pt-3">{% include "commitments/CommitmentReminderEmail/clear_reminder_emails_button.html" %}</div>
+        <div class="px-2 pt-3">
+          {% include "commitments/CommitmentReminderEmail/recurring_reminder_email_delete_button.html" %}
+        </div>
       </div>
     </div>
   </div>
