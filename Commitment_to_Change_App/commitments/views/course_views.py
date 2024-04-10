@@ -11,7 +11,7 @@ from commitments.forms import CommitmentTemplateForm, CourseForm, \
     GenericDeletePostKeySetForm
 from commitments.generic_views import GeneratedTemporaryTextFileDownloadView
 from commitments.mixins import ProviderLoginRequiredMixin
-from commitments.models import ClinicianProfile, ProviderProfile, Course
+from commitments.models import ClinicianProfile, ProviderProfile, Course, Commitment
 
 
 class CreateCourseView(ProviderLoginRequiredMixin, CreateView):
@@ -42,6 +42,12 @@ class ViewCourseView(LoginRequiredMixin, DetailView):
         context["suggested_commitments"] = course.suggested_commitments_list
         for suggested_commitment in context["suggested_commitments"]:
             suggested_commitment.enrich_with_course_specific_statistics(course)
+        context["students"] = course.students.all()
+        for student in context["students"]:
+            student.course_commitments = Commitment.objects.filter(
+                associated_course=course,
+                owner=student
+            ).all()
         return context
 
     def get_template_names(self):
