@@ -1,4 +1,6 @@
 import datetime
+from smtplib import SMTPException
+
 import pytest
 
 from django.core.management import call_command
@@ -8,7 +10,8 @@ from commitments.management.commands.expire_commitments import \
     expire_in_progress_commitments_past_deadline
 from commitments.management.commands.send_reminder_emails import \
     send_one_time_reminder_emails_for_commitments, \
-    send_recurring_reminder_emails_for_commitments
+    send_recurring_reminder_emails_for_commitments, \
+    try_to_send_all_emails
 from commitments.models import Commitment, CommitmentReminderEmail, RecurringReminderEmail
 
 
@@ -161,6 +164,26 @@ class TestSendRecurringReminderEmailsForCommitments:
         assert RecurringReminderEmail.objects.filter(
             next_email_date=expected_next_date_for_emails_sent
         ).count() == 2
+
+
+class TestTryToSendAllEmails:
+    """Tests for _try_to_send_all_emails"""
+
+    def test_one_failure_does_not_derail_other_emails(self):
+        class FailOnceEmail:
+            emails_sent = 0
+            has_failed = False
+
+            def send(self):
+                if not self.has_failed:
+                    self.has_failed = True
+                    raise SMTPException()
+                self.emails_sent += 1
+
+        fail_once = FailOnceEmail()
+        emails = [fail_once, fail_once, fail_once]
+        try_to_send_all_emails(emails)
+        assert fail_once.emails_sent == 2
 
 
 @pytest.mark.django_db
