@@ -12,6 +12,7 @@
     --primary-border: #630000;
     --secondary-accent: #b83130;
     --background: #DDE6EC;
+    --dark-background: #abb3b8;
     --foreground: #FFFFFF;
     --primary-text: #000000;
     --light-text: #7B7B7B;
@@ -334,11 +335,7 @@ form {
 
 .view-button:hover {
     border: 2px solid black;
-}
-
-.dashboard-button {
-    border: 2px solid black;
-    overflow-wrap: break-word;
+    filter: brightness(102%);
 }
 
 .in-progress-icon, .complete-icon, .past-due-icon, .discontinued-icon {

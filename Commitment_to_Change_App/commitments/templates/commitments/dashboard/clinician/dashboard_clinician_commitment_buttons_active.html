@@ -6,7 +6,7 @@
           <a href="{% url "view Commitment" commitment_id=commitment.id %}">
             <button type="button"
                     id="view-commitment-button"
-                    class="btn dashboard-button background round-corners p-2">{{ commitment.title }}</button>
+                    class="btn view-button">{{ commitment.title }}</button>
           </a>
         </h3>
         <h4>Due: {{ commitment.deadline }}</h4>
