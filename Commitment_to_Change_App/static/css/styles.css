@@ -326,14 +326,14 @@ form {
     vertical-align: middle;
 }
 
-.view-button {
+.alternate-button {
     background-color: var(--background);
     border: 2px solid grey;
     border-radius: var(--standard-button-round);
     transition: 0.3s ease-in-out;
 }
 
-.view-button:hover {
+.alternate-button:hover {
     border: 2px solid black;
     filter: brightness(102%);
 }
