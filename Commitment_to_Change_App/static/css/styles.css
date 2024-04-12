@@ -12,6 +12,7 @@
     --primary-border: #630000;
     --secondary-accent: #b83130;
     --background: #DDE6EC;
+    --dark-background: #abb3b8;
     --foreground: #FFFFFF;
     --primary-text: #000000;
     --light-text: #7B7B7B;
@@ -106,6 +107,17 @@ form {
 
 .table-layout-fixed {
     table-layout: fixed;
+}
+
+.accent-text-link {
+    color: var(--accent-text);
+    text-decoration: underline;
+    transition: 0.3s ease-in-out;
+}
+
+.accent-text-link:hover {
+    color: var(--accent-text);
+    filter: brightness(60%);
 }
 
 /* 
@@ -314,20 +326,16 @@ form {
     vertical-align: middle;
 }
 
-.view-button {
+.alternate-button {
     background-color: var(--background);
     border: 2px solid grey;
     border-radius: var(--standard-button-round);
     transition: 0.3s ease-in-out;
 }
 
-.view-button:hover {
+.alternate-button:hover {
     border: 2px solid black;
-}
-
-.dashboard-button {
-    border: 2px solid black;
-    overflow-wrap: break-word;
+    filter: brightness(102%);
 }
 
 .in-progress-icon, .complete-icon, .past-due-icon, .discontinued-icon {
