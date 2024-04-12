@@ -108,6 +108,17 @@ form {
     table-layout: fixed;
 }
 
+.accent-text-link {
+    color: var(--accent-text);
+    text-decoration: underline;
+    transition: 0.3s ease-in-out;
+}
+
+.accent-text-link:hover {
+    color: var(--accent-text);
+    filter: brightness(60%);
+}
+
 /* 
 -------------------------------------------------------------------
     --- Containers --- 
