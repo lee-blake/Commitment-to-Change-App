@@ -4,6 +4,11 @@ from commitments import views
 
 urlpatterns = [
      path(
+          "profile/clinician/view/",
+          views.ViewClinicianProfileView.as_view(),
+          name="view ClinicianProfile"
+     ),
+     path(
           "dashboard/",
           views.DashboardRedirectingView.as_view(),
           name="dashboard"
