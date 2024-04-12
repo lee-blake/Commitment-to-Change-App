@@ -23,6 +23,45 @@ def fixture_captured_email(settings):
 
 
 @pytest.mark.django_db
+class TestRegisterTypeChoiceView:
+    """Tests for RegisterTypeChoiceView"""
+
+    class TestGet:
+        """Tests for RegisterTypeChoiceView.get"""
+
+        @pytest.fixture(name="user")
+        def fixture_user(self):
+            return User.objects.create(
+                username="test-user",
+                password="password",
+                email="test@localhost"
+            )
+
+        def test_links_to_both_choices_if_not_logged_in(self, client):
+            target_url = reverse("register type choice")
+            html = client.get(target_url).content.decode()
+            clinician_url = reverse("register clinician")
+            provider_url = reverse("register provider")
+            assert clinician_url in html
+            assert provider_url in html
+
+        def test_does_not_link_to_registration_if_logged_in(self, client, user):
+            target_url = reverse("register type choice")
+            client.force_login(user)
+            html = client.get(target_url).content.decode()
+            clinician_url = reverse("register clinician")
+            provider_url = reverse("register provider")
+            assert clinician_url not in html
+            assert provider_url not in html
+
+        def test_clarifies_necessity_of_logout(self, client, user):
+            target_url = reverse("register type choice")
+            client.force_login(user)
+            html = client.get(target_url).content.decode()
+            assert "You must log out to do that" in html
+
+
+@pytest.mark.django_db
 class TestRegisterClinicianView:
     """Tests for RegisterClinicianView"""
 
