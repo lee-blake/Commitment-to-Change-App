@@ -35,9 +35,7 @@
                       <a href="{% url "view CommitmentTemplate" commitment_template_id=commitment_template.id %}">
                         <button type="button"
                                 id="view-commitment_template-button"
-                                class="btn alternate-button">
-                          {{ commitment_template.title }}
-                        </button>
+                                class="btn alternate-button">{{ commitment_template.title }}</button>
                       </a>
                     </td>
                     <td>{{ commitment_template.commitment_statistics.percentages.in_progress | floatformat:1 }}%</td>
