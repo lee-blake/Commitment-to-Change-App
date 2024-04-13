@@ -8,6 +8,13 @@ urlpatterns = [
           views.ViewClinicianProfileView.as_view(),
           name="view ClinicianProfile"
      ),
+
+     path(
+          "profile/provider/view/",
+          views.ViewProviderProfileView.as_view(),
+          name="view ProviderProfile"
+     ),
+
      path(
           "dashboard/",
           views.DashboardRedirectingView.as_view(),

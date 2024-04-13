@@ -1,0 +1,29 @@
+{% extends "commitments/common/base.html" %}
+
+{% block title %}
+  Manage Provider Profile
+{% endblock title %}
+
+{% block page_content %}
+  <div class="container-xl px-0 mb-3 foreground round-corners">
+    <div class="primary-header-container">
+      <h1>Manage Provider Profile</h1>
+    </div>
+    <div class="container-fluid px-3 pt-3">
+      <div class="my-2 px-3 py-1 round-corners background text-center">
+        <table>
+          <tr>
+            <th scope="row">Institution</th>
+            <td>
+              {% if provider_profile.institution %}
+                {{ provider_profile.institution }}
+              {% else %}
+                <em>Not provided</em>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock page_content %}

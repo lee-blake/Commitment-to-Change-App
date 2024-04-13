@@ -4,7 +4,7 @@ import pytest
 
 from django.urls import reverse
 
-from commitments.models import ClinicianProfile
+from commitments.models import ClinicianProfile, ProviderProfile
 
 
 @pytest.mark.django_db
@@ -89,6 +89,45 @@ class TestViewClinicianProfileView:
         ):
             client.force_login(saved_clinician_profile.user)
             target_url = reverse("view ClinicianProfile")
+            response = client.post(
+                target_url, {}
+            )
+            assert response.status_code == 405
+
+
+@pytest.mark.django_db
+class TestViewProviderProfileView:
+    """Tests for ViewProviderProfileView"""
+
+    class TestGet:
+        """Tests for ViewProviderProfileView.get"""
+
+        def test_rejects_clinician_accounts_with_403(self, client, saved_clinician_user):
+            target_url = reverse("view ProviderProfile")
+            client.force_login(saved_clinician_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        @pytest.mark.parametrize("institution", ["TestInstitution", "SecondProvider"])
+        def test_shows_institution_field(self, client, saved_provider_user, institution):
+            ProviderProfile.objects.create(
+                user=saved_provider_user,
+                institution=institution
+            )
+            target_url = reverse("view ProviderProfile")
+            client.force_login(saved_provider_user)
+            html = client.get(target_url).content.decode()
+            assert institution in html
+
+
+    class TestPost:
+        """Tests for ViewProviderProfileView.post"""
+
+        def test_rejects_post_with_405(
+            self, client, saved_provider_profile
+        ):
+            client.force_login(saved_provider_profile.user)
+            target_url = reverse("view ProviderProfile")
             response = client.post(
                 target_url, {}
             )
