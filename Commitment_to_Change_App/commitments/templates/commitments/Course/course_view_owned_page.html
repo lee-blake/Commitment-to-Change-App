@@ -69,7 +69,7 @@
             <td>
               {% for commitment in clinician.course_commitments %}
                 <a href="{% url "view Commitment" commitment_id=commitment.id %}">
-                  <button class="btn alternate-button mt-2">{{ commitment.title }}</button>
+                  <button class="btn alternate-button my-1">{{ commitment.title }}</button>
                 </a>
               </br>
             {% endfor %}

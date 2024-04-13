@@ -1,22 +1,27 @@
 {% for commitment in clinician.course_commitments %}
   {% if commitment.status == 0 %}
-    <div class="in-progress-icon mt-2" data-sort="{{ commitment.status }}">
-      <i class="bi bi-arrow-repeat"></i>
+    <div class="chart-legend-item-container">
+      <div class="chart-legend-color legend-color-in-progress"></div>
+      <span>In-progress</span>
     </div>
   {% endif %}
   {% if commitment.status == 1 %}
-    <div class="complete-icon mt-2" data-sort="{{ commitment.status }}">
-      <i class="bi bi-check2"></i>
+    <div class="chart-legend-item-container">
+      <div class="chart-legend-color legend-color-complete"></div>
+      <span>Complete</span>
     </div>
   {% endif %}
   {% if commitment.status == 2 %}
-    <div class="past-due-icon mt-2" data-sort="{{ commitment.status }}">
-      <i class="bi bi-x"></i>
+    <div class="chart-legend-item-container">
+      <div class="chart-legend-color legend-color-expired"></div>
+      <span>Past-due</span>
     </div>
+
   {% endif %}
   {% if commitment.status == 3 %}
-    <div class="discontinued-icon mt-2" data-sort="{{ commitment.status }}">
-      <i class="bi bi-dash-circle"></i>
+    <div class="chart-legend-item-container">
+      <div class="chart-legend-color legend-color-discontinued"></div>
+      <span>Discontinued</span>
     </div>
   {% endif %}
 {% endfor %}

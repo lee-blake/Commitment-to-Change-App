@@ -190,14 +190,12 @@ form {
     padding: 15px;
     margin-top: auto;
     margin-bottom: auto;
-
 }
 
 .chart-legend-item-container {
     font-size: 18px;
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
 }
 
 .chart-legend-color {
@@ -268,11 +266,13 @@ form {
     background-color: var(--foreground);
     border-radius: var(--standard-round);
     transition: 0.3s ease-in-out;
+
 }
 
 .close-x-button:hover {
     color: var(--primary-text);
     filter: brightness(90%);
+
 }
 
 .show-password-button {
@@ -359,14 +359,6 @@ form {
 
 .discontinued-icon {
     background-color: var(--discontinued);
-}
-
-.profile-table {
-    background-color: var(--foreground);
-    border-radius: var(--standard-round);
-    margin-left: auto;
-    margin-right: auto;
-    width: auto;
 }
 /*
 -------------------------------------------------------------------
