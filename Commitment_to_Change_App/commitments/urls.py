@@ -14,6 +14,11 @@ urlpatterns = [
           views.ViewClinicianProfileView.as_view(),
           name="view ClinicianProfile"
      ),
+     path(
+          "profile/clinician/edit/",
+          views.EditClinicianProfileView.as_view(),
+          name="edit ClinicianProfile"
+     ),
 
      path(
           "profile/provider/view/",

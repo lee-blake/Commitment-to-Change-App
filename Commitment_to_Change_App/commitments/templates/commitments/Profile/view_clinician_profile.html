@@ -43,6 +43,12 @@
             </td>
           </tr>
         </table>
+
+        {% block edit_button %}
+          <a href="{% url 'edit ClinicianProfile' %}">
+            <button class="standard-button primary-accent" type="submit">Edit Profile</button>
+          </a>
+        {% endblock edit_button %}
       </div>
     </div>
   </div>

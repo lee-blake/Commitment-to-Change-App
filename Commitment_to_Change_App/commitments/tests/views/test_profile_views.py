@@ -150,6 +150,149 @@ class TestViewClinicianProfileView:
 
 
 @pytest.mark.django_db
+class TestEditClinicianProfileView:
+    """Tests for EditClinicianProfileView"""
+
+    class TestGet:
+        """Tests for EditClinicianProfileView.get"""
+
+
+        def test_rejects_provider_account_with_403(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse(
+                "edit ClinicianProfile"
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client, saved_clinician_profile
+        ):
+            target_url = reverse(
+                "edit ClinicianProfile"
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        @pytest.mark.parametrize(
+            "names",
+            [("TestFirst", "TestLast"), ("SecondFormer", "SecondLatter")]
+        )
+        def test_name_fields_are_filled_by_default(
+            self, client, saved_clinician_profile, names
+        ):
+            first_name = names[0]
+            last_name = names[1]
+            saved_clinician_profile.first_name = first_name
+            saved_clinician_profile.last_name = last_name
+            saved_clinician_profile.save()
+            target_url = reverse(
+                "edit ClinicianProfile"
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            first_name_input_regex = re.compile(
+                r"\<input[^\>]*name=\"first_name\"[^\>]*\>"
+            )
+            first_name_input_match = first_name_input_regex.search(html)
+            assert first_name_input_match
+            assert f"value=\"{first_name}\"" in first_name_input_match[0]
+            last_name_input_regex = re.compile(
+                r"\<input[^\>]*name=\"last_name\"[^\>]*\>"
+            )
+            last_name_input_match = last_name_input_regex.search(html)
+            assert last_name_input_match
+            assert f"value=\"{last_name}\"" in last_name_input_match[0]
+
+        @pytest.mark.parametrize("institution", ["TestInstitution", "SecondProvider"])
+        def test_institution_field_is_filled_by_default(
+            self, client, saved_clinician_profile, institution
+        ):
+            saved_clinician_profile.institution = institution
+            saved_clinician_profile.save()
+            target_url = reverse(
+                "edit ClinicianProfile"
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            institution_input_regex = re.compile(
+                r"\<input[^\>]*name=\"institution\"[^\>]*\>"
+            )
+            institution_input_match = institution_input_regex.search(html)
+            assert institution_input_match
+            assert f"value=\"{institution}\"" in institution_input_match[0]
+
+
+    class TestPost:
+        """Tests for EditClinicianProfileView.post"""
+
+        def test_rejects_provider_account_with_403(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse(
+                "edit ClinicianProfile"
+            )
+            client.force_login(saved_provider_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_valid_request_alters_clinician_profile(
+            self, client, saved_clinician_profile
+        ):
+            saved_clinician_profile.first_name = "old first name"
+            saved_clinician_profile.last_name = "old last name"
+            saved_clinician_profile.institution = "old institution"
+            target_url = reverse(
+                "edit ClinicianProfile"
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {
+                    "first_name": "new first name",
+                    "last_name": "new last name",
+                    "institution": "new institution"
+                }
+            )
+            reloaded_clinician_profile = ClinicianProfile.objects.get(
+                id=saved_clinician_profile.id
+            )
+            assert reloaded_clinician_profile.first_name == "new first name"
+            assert reloaded_clinician_profile.last_name == "new last name"
+            assert reloaded_clinician_profile.institution == "new institution"
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_clinician_profile
+        ):
+            target_url = reverse(
+                "edit ClinicianProfile"
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {
+                    "first_name": "new first name",
+                    "last_name": "new last name",
+                    "institution": "new institution"
+                }
+            )
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view ClinicianProfile",
+            )
+
+
+@pytest.mark.django_db
 class TestViewProviderProfileView:
     """Tests for ViewProviderProfileView"""
 
