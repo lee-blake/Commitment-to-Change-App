@@ -9,11 +9,11 @@
     <div class="primary-header-container">
       <h1>Manage Provider Profile</h1>
     </div>
-    <div class="container-fluid px-3 pt-3">
-      <div class="my-2 px-3 py-1 round-corners background text-center">
-        <table>
+    <div class="container-fluid px-3 py-3">
+      <div class="pb-1 pt-3 round-corners background text-center">
+        <table class="table profile-table">
           <tr>
-            <th scope="row">Institution</th>
+            <th scope="row">Institution:</th>
             <td>
               {% if provider_profile.institution %}
                 {{ provider_profile.institution }}
