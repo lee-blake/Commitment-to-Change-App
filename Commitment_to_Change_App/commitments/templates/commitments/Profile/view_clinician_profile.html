@@ -1,0 +1,58 @@
+{% extends "commitments/common/base.html" %}
+
+{% block title %}
+  Manage Clinician Profile
+{% endblock title %}
+
+{% block page_content %}
+  <div class="container-xl px-0 mb-3 foreground round-corners">
+    <div class="primary-header-container">
+      <h1>Manage Clinician Profile</h1>
+    </div>
+    <div class="container-fluid px-3 pt-3">
+      <div class="pb-1 pt-3 round-corners background text-center">
+        <table class="table profile-table">
+          <tr>
+            <th scope="row">First Name:</th>
+            <td>
+              {% if clinician_profile.first_name %}
+                {{ clinician_profile.first_name }}
+              {% else %}
+                <em>Not provided</em>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Last Name:</th>
+            <td>
+              {% if clinician_profile.last_name %}
+                {{ clinician_profile.last_name }}
+              {% else %}
+                <em>Not provided</em>
+              {% endif %}
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">Institution:</th>
+            <td>
+              {% if clinician_profile.institution %}
+                {{ clinician_profile.institution }}
+              {% else %}
+                <em>Not provided</em>
+              {% endif %}
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="container-fluid py-3 text-center">
+
+        {% block edit_button %}
+          <a href="{% url 'edit ClinicianProfile' %}">
+            <button class="standard-button primary-accent" type="submit">Edit Profile</button>
+          </a>
+        {% endblock edit_button %}
+
+      </div>
+    </div>
+  </div>
+{% endblock page_content %}

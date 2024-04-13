@@ -38,7 +38,7 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li class="nav-item">
-            <a class="nav-link" href="#">Logged in as {{ request.user.username }}</a>
+            <a class="nav-link" href="{% url 'view Profile' %}">Logged in as {{ request.user.username }}</a>
           </li>
           <li class="nav-item">
             <li class="nav-link">{% include "commitments/common/logout_button.html" %}</li>
