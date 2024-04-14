@@ -17,6 +17,7 @@
     --primary-text: #000000;
     --light-text: #7B7B7B;
     --accent-text: #FFFFFF;
+    --error-red: #b60000;
     --in-progress: #8FC3D4;
     --complete: #7CC487;
     --discontinued: #717171;
@@ -345,6 +346,10 @@ form {
     align-items: center;
 }
 
+.error-text {
+    color: var(--error-red);
+    font-weight: bold;
+}
 /*
 -------------------------------------------------------------------
     --- Social Media Buttons ---
