@@ -29,6 +29,19 @@ function createStudentListDataTable(table_id) {
     bInfo: false,
     // Wrap search bar element in "text-center" div
     dom: '<"text-center"f>i',
+    // Replace any empty, null, or undefined values with "——"
+    columnDefs: [
+      { 
+        targets: "_all",
+        render: function ( data ) {
+          if(data === "" || data === null || data === undefined) {
+            return "——";
+          } else {
+            return data;
+          }
+        }
+      }
+    ]
   });
 }
 
