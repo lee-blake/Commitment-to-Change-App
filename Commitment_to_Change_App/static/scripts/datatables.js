@@ -29,19 +29,16 @@ function createStudentListDataTable(table_id) {
     bInfo: false,
     // Wrap search bar element in "text-center" div
     dom: '<"text-center"f>i',
-    // Select status-column and sort by data-sort value if it exists
-    // This is necessary because the status column has no text to sort by default
+    // Replace any empty, null, or undefined values with "——"
     columnDefs: [
-      {
-        targets: 'status-column',
-        orderable: true,
-        render: function (data, type) {
-          if (type === 'sort' || type === 'type') {
-            var element = $(data);
-            var sortValue = element.data('sort');
-            return sortValue !== undefined ? sortValue : data;
+      { 
+        targets: "_all",
+        render: function ( data ) {
+          if(data === "" || data === null || data === undefined) {
+            return "——";
+          } else {
+            return data;
           }
-          return data;
         }
       }
     ]
