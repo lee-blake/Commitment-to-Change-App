@@ -17,6 +17,7 @@
     --primary-text: #000000;
     --light-text: #7B7B7B;
     --accent-text: #FFFFFF;
+    --error-red: #b60000;
     --in-progress: #8FC3D4;
     --complete: #7CC487;
     --discontinued: #717171;
@@ -125,6 +126,7 @@ form {
     --- Containers --- 
 ------------------------------------------------------------------- 
  */
+
 .bulk-email-table-container {
     height: 60vh;
 }
@@ -190,14 +192,12 @@ form {
     padding: 15px;
     margin-top: auto;
     margin-bottom: auto;
-
 }
 
 .chart-legend-item-container {
     font-size: 18px;
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
 }
 
 .chart-legend-color {
@@ -268,11 +268,13 @@ form {
     background-color: var(--foreground);
     border-radius: var(--standard-round);
     transition: 0.3s ease-in-out;
+
 }
 
 .close-x-button:hover {
     color: var(--primary-text);
     filter: brightness(90%);
+
 }
 
 .show-password-button {
@@ -336,37 +338,17 @@ form {
     filter: brightness(102%);
 }
 
-.in-progress-icon, .complete-icon, .past-due-icon, .discontinued-icon {
-    color: var(--accent-text);
-    font-size: 25px;
-    justify-content: center;
-    text-align: center;
-    border-radius: var(--standard-button-round);
-    border: 2px solid grey;
+.student-table-status-icon {
+    border: 2px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
 }
 
-.in-progress-icon {
-    background-color: var(--in-progress);
-}
-
-.complete-icon {
-    background-color: var(--complete);
-}
-
-.past-due-icon {
-    background-color: var(--expired);
-}
-
-.discontinued-icon {
-    background-color: var(--discontinued);
-}
-
-.profile-table {
-    background-color: var(--foreground);
-    border-radius: var(--standard-round);
-    margin-left: auto;
-    margin-right: auto;
-    width: auto;
+.error-text {
+    color: var(--error-red);
+    font-weight: bold;
 }
 /*
 -------------------------------------------------------------------

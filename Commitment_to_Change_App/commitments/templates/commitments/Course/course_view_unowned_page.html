@@ -97,29 +97,35 @@
                     <td>
                       {% for commitment in clinician.course_commitments %}
                         <a href="{% url "view Commitment" commitment_id=commitment.id %}">
-                          <button class="btn alternate-button mt-2">{{ commitment.title }}</button>
+                          <button class="btn alternate-button my-1">{{ commitment.title }}</button>
                         </a>
-                      </br>
-                    {% endfor %}
-                  </td>
-                  <td>{% include "commitments/Course/course_associated_commitments_status_icon_selector.html" %}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      {% endblock student_table %}
+                        <br>
+                      {% endfor %}
+                    </td>
+                    <td>
+                      {% for commitment in clinician.course_commitments %}
+                        <div class="student-table-status-icon my-1">
+                          {% include "commitments/Course/course_associated_commitments_status_icon_selector.html" %}
+                        </div>
+                      {% endfor %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endblock student_table %}
+
+      </div>
+    </div>
+    <div class="container-fluid py-3 text-center">
+
+      {% block edit_button %}
+      {% endblock edit_button %}
+
+      {% block delete_button %}
+      {% endblock delete_button %}
 
     </div>
   </div>
-  <div class="container-fluid py-3 text-center">
-
-    {% block edit_button %}
-    {% endblock edit_button %}
-
-    {% block delete_button %}
-    {% endblock delete_button %}
-
-  </div>
-</div>
 {% endblock page_content %}
