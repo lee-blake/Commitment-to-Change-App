@@ -273,6 +273,10 @@ form {
     background-color:var(--background);
 }
 
+.navbar-toggler {
+    color: var(--primary-text);
+}
+
 .svg-container {
     display: inline-block;
     position: relative;
