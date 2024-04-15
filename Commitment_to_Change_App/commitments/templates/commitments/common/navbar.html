@@ -1,6 +1,8 @@
-<nav class="navbar navbar navbar-expand-lg foreground">
+<nav class="navbar navbar navbar-expand-lg foreground pt-3">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'dashboard' %}">CME Commitment To Change</a>
+    <div class="pb-2">
+      <a class="navbar-brand" href="{% url 'dashboard' %}">CME Commitment To Change</a>
+    </div>
     <button class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -11,7 +13,7 @@
       <i class="bi bi-list"></i>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
+      <ul class="navbar-nav pb-2 mr-auto">
         <li class="nav-item">
           <a aria-current="page" class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
         </li>
@@ -40,10 +42,10 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'view Profile' %}">Logged in as {{ request.user.username }}</a>
           </li>
-          <li class="nav-item mx-3">{% include "commitments/common/logout_button.html" %}</li>
+          <li class="nav-item mr-3 mb-2">{% include "commitments/common/logout_button.html" %}</li>
 
         {% else %}
-          <li class="nav-item mx-3">{% include "commitments/common/login_button.html" %}</li>
+          <li class="nav-item mr-3">{% include "commitments/common/login_button.html" %}</li>
         {% endif %}
         <li class="nav-item">
           <button id="theme-toggle" class="btn theme-toggle-button">
