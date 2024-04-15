@@ -270,8 +270,18 @@ class TestViewCommitmentView:
             description="This is the second description",
             deadline=date.fromisoformat("2000-01-01"),
             owner=saved_clinician_profile,
-            status=CommitmentStatus.EXPIRED
+            status=CommitmentStatus.EXPIRED,
         )
+
+    @pytest.fixture(name="commitment_associated_with_course", params=["Course1", "SecondCourse"])
+    def fixture_commitment_associated_with_course(
+        self, viewable_commitment_1, enrolled_course, request
+    ):
+        enrolled_course.title = request.param
+        enrolled_course.save()
+        viewable_commitment_1.associated_course = enrolled_course
+        viewable_commitment_1.save()
+        return viewable_commitment_1
 
 
     class TestGet:
@@ -487,6 +497,78 @@ class TestViewCommitmentView:
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             assert link_url not in html
+
+        def test_no_associated_course_shows_relevant_text(
+            self, client, saved_clinician_profile, viewable_commitment_1
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            no_associated_course_hint = re.compile(
+                r"(N|n)ot associated with (a|any) course"
+            )
+            assert no_associated_course_hint.search(html)
+
+        def test_associated_course_shows_course_title_to_owner(
+            self, client, saved_clinician_profile, commitment_associated_with_course
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert commitment_associated_with_course.associated_course.title in html
+
+        def test_associated_course_shows_course_title_to_other_clinician(
+            self, client, other_clinician_profile, commitment_associated_with_course
+        ):
+            client.force_login(other_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert commitment_associated_with_course.associated_course.title in html
+
+        def test_associated_course_shows_course_title_to_providers(
+            self, client, saved_provider_profile, commitment_associated_with_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert commitment_associated_with_course.associated_course.title in html
+
+        def test_associated_course_shows_course_title_to_anonymous_users(
+            self, client, commitment_associated_with_course
+        ):
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert commitment_associated_with_course.associated_course.title in html
+
+        def test_associated_course_links_to_course_for_owner(
+            self, client, saved_clinician_profile, commitment_associated_with_course
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            link_url = reverse(
+                "view Course",
+                kwargs={"course_id": commitment_associated_with_course.associated_course.id }
+            )
+            assert link_url in html
 
 
     class TestPost:
