@@ -31,6 +31,9 @@ class CommitmentForm(ModelForm):
         super(ModelForm, self).__init__(*args, **kwargs)
         self._set_owner_enrolled_courses_as_associated_course_options(owner)
         self._disable_editing_if_suggested_commitment()
+        self.fields['deadline'].widget.attrs.update({
+            "min": f"{datetime.date.today()}"
+        })
 
     def _set_owner_enrolled_courses_as_associated_course_options(self, owner):
         if not hasattr(self.instance, 'owner') or not self.instance.owner:
