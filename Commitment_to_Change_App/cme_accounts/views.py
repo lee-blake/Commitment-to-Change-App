@@ -1,5 +1,5 @@
 from django.contrib.auth.views import LoginView, LogoutView, PasswordResetView, \
-    PasswordResetConfirmView
+    PasswordResetConfirmView, PasswordChangeView, PasswordChangeDoneView
 from django.views.generic.base import TemplateView
 from django.urls import reverse_lazy
 
@@ -10,6 +10,15 @@ class SignInView(LoginView):
 
 class SignOutView(LogoutView):
     template_name = "accounts/logged_out.html"
+
+
+class ChangePasswordView(PasswordChangeView):
+    template_name = "accounts/change_password.html"
+    success_url = reverse_lazy("change password complete")
+
+
+class ChangePasswordCompleteView(PasswordChangeDoneView):
+    template_name = "accounts/change_password_complete.html"
 
 
 class ResetPasswordView(PasswordResetView):
