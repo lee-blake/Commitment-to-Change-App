@@ -1,0 +1,16 @@
+{% comment %}
+    These are scripts that are time-sensitive that must load immediately when the page loads.
+{% endcomment %}
+
+{% comment %}
+    This is a IIFE script (Immediately Invoked Function Expression) that gets and sets the user's theme preference on page load.
+    We need to include it here because loading it from a separate JavaScript file is too slow and can cause theme flickering.
+{% endcomment %}
+<script>
+    (function() {
+            var theme = localStorage.getItem('theme');
+            if (theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            }
+    })();
+</script>

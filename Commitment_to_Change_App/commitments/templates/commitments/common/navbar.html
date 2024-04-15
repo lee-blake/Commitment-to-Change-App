@@ -1,6 +1,8 @@
-<nav class="navbar navbar-light navbar-expand-lg foreground">
+<nav class="navbar navbar navbar-expand-lg foreground pt-3">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'dashboard' %}">CME Commitment To Change</a>
+    <div class="pb-2">
+      <a class="navbar-brand" href="{% url 'dashboard' %}">CME Commitment To Change</a>
+    </div>
     <button class="navbar-toggler"
             type="button"
             data-bs-toggle="collapse"
@@ -8,47 +10,48 @@
             aria-controls="navbarSupportedContent"
             aria-expanded="false"
             aria-label="Toggle navigation">
-      <span class="navbar-light navbar-toggler-icon"></span>
+      <i class="bi bi-list"></i>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
+      <ul class="navbar-nav pb-2 mr-auto">
+        <li class="nav-item nav-item-align-center">
           <a aria-current="page" class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
         </li>
 
         {% if request.user.is_authenticated %}
           {% if request.user.is_clinician %}
-            <li class="nav-item">
+            <li class="nav-item nav-item-align-center">
               <a class="nav-link" href="{% url "create Commitment" %}">Make a commitment</a>
             </li>
           {% endif %}
 
           {% if request.user.is_provider %}
-            <li class="nav-item">
+            <li class="nav-item nav-item-align-center">
               <a class="nav-link" href="{% url "statistics overview" %}">Statistics</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item nav-item-align-center">
               <a class="nav-link" href="{% url "create Course" %}">Create a course</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item nav-item-align-center">
               <a class="nav-link" href="{% url 'create CommitmentTemplate' %}">Create a Commitment Template</a>
             </li>
           {% endif %}
 
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li class="nav-item">
+          <li class="nav-item mr-2">
             <a class="nav-link" href="{% url 'view Profile' %}">Logged in as {{ request.user.username }}</a>
           </li>
-          <li class="nav-item">
-            <li class="nav-link">{% include "commitments/common/logout_button.html" %}</li>
-          </li>
+          <li class="nav-item mr-3 mb-2">{% include "commitments/common/logout_button.html" %}</li>
 
         {% else %}
-          <li class="nav-item">
-            <li class="nav-link">{% include "commitments/common/login_button.html" %}</li>
-          </li>
+          <li class="nav-item mr-3">{% include "commitments/common/login_button.html" %}</li>
         {% endif %}
+        <li class="nav-item">
+          <button id="theme-toggle" class="btn theme-toggle-button">
+            <i id="theme-icon"></i>
+          </button>
+        </li>
 
       </ul>
     </div>

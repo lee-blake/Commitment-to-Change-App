@@ -6,17 +6,16 @@
 ------------------------------------------------------------------- 
  */
 
-:root {
-    --primary-accent: #780a08;
-    --primary-select: #e61d02;
+ :root {
+    --background: #DDE6EC;
+    --foreground: #FFFFFF;
+    --foreground-alternate: #eeeeee;
+    --primary-text: #000000;
+    --light-text: #4d4d4d;
+    --accent-text: #FFFFFF;
+    --primary-accent: #780a08;  
     --primary-border: #630000;
     --secondary-accent: #b83130;
-    --background: #DDE6EC;
-    --dark-background: #abb3b8;
-    --foreground: #FFFFFF;
-    --primary-text: #000000;
-    --light-text: #7B7B7B;
-    --accent-text: #FFFFFF;
     --error-red: #b60000;
     --in-progress: #8FC3D4;
     --complete: #7CC487;
@@ -24,6 +23,35 @@
     --expired: #ffa2a2;
     --standard-round: 15px;
     --standard-button-round: 10px;
+}
+
+[data-theme="dark"] {
+    --primary-text: #ffffff;
+    --background: #272727;
+    --foreground: #363636;
+    --foreground-alternate: #474747;
+    --light-text: #c0c0c0;
+    --accent-text: #FFFFFF;
+    .popover, .popover-header {
+        background-color: var(--foreground);
+        color: var(--primary-text);
+      }
+      
+    .modal-content {
+        background-color: var(--foreground);
+        color: var(--primary-text);
+    }
+    
+    input[type="text"], input[type="date"], 
+    input[type="number"], input[type="email"], input[type="password"], textarea, select {
+        background-color: var(--foreground);
+        color: var(--primary-text);
+    }
+    /* Change all text to use primary-text by default. 
+    This will be overwritten by any other specific rules */
+    * {
+        color: var(--primary-text);
+    }
 }
 
 /* 
@@ -57,10 +85,6 @@ form {
 .primary-accent {
     background-color: var(--primary-accent);
     color: var(--accent-text);
-}
-
-.primary-select {
-    background-color: var(--primary-select);
 }
 
 .primary-border {
@@ -227,6 +251,38 @@ form {
     fill: var(--expired);
 }
 
+.nav-item-align-center {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.navbar-brand {
+    color: var(--primary-text);
+    border-radius: var(--standard-button-round);
+    transition: 0.3s ease-in-out;
+}
+
+.navbar-brand:hover {
+    color: var(--primary-text);
+    background-color:var(--background);
+}
+
+.nav-link {
+    color: var(--light-text);
+    border-radius: var(--standard-button-round);
+    transition: 0.3s ease-in-out;
+ }
+
+.nav-link:hover {
+    color: var(--primary-text);
+    background-color:var(--background);
+}
+
+.navbar-toggler {
+    color: var(--primary-text);
+}
+
 .svg-container {
     display: inline-block;
     position: relative;
@@ -302,18 +358,43 @@ form {
     padding-right: clamp(15px, 10%, 300px);
 }
 
+.theme-toggle-button {
+    color: var(--primary-text);
+    background-color: var(--background);
+    border-color:grey;
+    border-radius: 100%;
+    transition: 0.3s ease-in-out;
+}
+
 .standard-button {
     background-color: var(--primary-accent);
     border: 2px solid var(--primary-border);
     border-radius: var(--standard-button-round);
     color: var(--accent-text);
-    transition: 0.3s ease-in-out;
 }
 
+.standard-button, .alternate-button {
+    border-width: 2px;
+    border-style: solid;
+    border-radius: var(--standard-button-round);
+    transition: 0.3s ease-in-out;
+}
 .standard-button:hover {
     color: var(--accent-text);
-    border: 2px solid black;
+    border-color: black;
     filter: brightness(130%);
+}
+
+.alternate-button {
+    color: var(--primary-text);
+    background-color: var(--background);
+    border-color: grey;
+}
+
+.alternate-button:hover, .theme-toggle-button:hover {
+    color: var(--primary-text);
+    border-color: var(--primary-text);
+    filter: brightness(104%);
 }
 
 .title_header {
@@ -324,18 +405,6 @@ form {
 
 .vertically-center-td td {
     vertical-align: middle;
-}
-
-.alternate-button {
-    background-color: var(--background);
-    border: 2px solid grey;
-    border-radius: var(--standard-button-round);
-    transition: 0.3s ease-in-out;
-}
-
-.alternate-button:hover {
-    border: 2px solid black;
-    filter: brightness(102%);
 }
 
 .student-table-status-icon {
