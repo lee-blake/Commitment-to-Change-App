@@ -30,6 +30,7 @@ class CommitmentForm(ModelForm):
         owner = kwargs.pop("owner")
         super(ModelForm, self).__init__(*args, **kwargs)
         self._set_owner_enrolled_courses_as_associated_course_options(owner)
+        self._disable_editing_if_suggested_commitment()
 
     def _set_owner_enrolled_courses_as_associated_course_options(self, owner):
         if not hasattr(self.instance, 'owner') or not self.instance.owner:
@@ -37,7 +38,6 @@ class CommitmentForm(ModelForm):
         elif owner != self.instance.owner:
             raise ValueError("Cannot change the owner of a commitment!")
         self.fields['associated_course'].queryset = self.instance.owner.course_set.all()
-        self._disable_editing_if_suggested_commitment()
 
     def _disable_editing_if_suggested_commitment(self):
         if self.instance.source_template:
