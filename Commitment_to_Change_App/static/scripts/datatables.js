@@ -47,7 +47,7 @@ function createStudentListDataTable(table_id) {
 
 function createBulkEmailDataTable(table_id) {
   $(table_id).DataTable({
-    // autoWidth scales onlyon page refresh. Disabling allows us to use bootstrap class scaling
+    // autoWidth scales only on page refresh. Disabling allows us to use bootstrap class scaling
     autoWidth: false,
     // Disable pagination; Always displays everything in the list
     paging: false,
@@ -61,6 +61,16 @@ function createBulkEmailDataTable(table_id) {
     columnDefs: [
       { width: "16px", targets: "datatable-select-column" },
       { orderable: false, targets: "datatable-select-column" },
+      { 
+        targets: "_all",
+        render: function ( data ) {
+          if(data === "" || data === null || data === undefined) {
+            return "——";
+          } else {
+            return data;
+          }
+        }
+      },
     ],
   });
 }
