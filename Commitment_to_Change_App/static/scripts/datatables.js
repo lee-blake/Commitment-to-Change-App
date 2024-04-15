@@ -32,7 +32,7 @@ function createStudentListDataTable(table_id) {
     // Replace any empty, null, or undefined values with "——"
     columnDefs: [
       { 
-        targets: "_all",
+        targets: "replace-empty-cell-with-dash",
         render: function ( data ) {
           if(data === "" || data === null || data === undefined) {
             return "——";
@@ -62,7 +62,7 @@ function createBulkEmailDataTable(table_id) {
       { width: "16px", targets: "datatable-select-column" },
       { orderable: false, targets: "datatable-select-column" },
       { 
-        targets: "_all",
+        targets: "replace-empty-cell-with-dash",
         render: function ( data ) {
           if(data === "" || data === null || data === undefined) {
             return "——";
