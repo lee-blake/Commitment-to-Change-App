@@ -6,6 +6,14 @@ $(document).ready(function () {
   createBulkEmailDataTable("#provider-course-student-datatable-bulk-email");
 });
 
+function replaceEmptyCellWithDash(data) {
+  if(data === "" || data === null || data === undefined) {
+    return "——";
+  } else {
+    return data;
+  }
+}
+
 function createStandardDataTable(table_id) {
   $(table_id).DataTable({
     // autoWidth scales onlyon page refresh. Disabling allows us to use bootstrap class scaling
@@ -33,13 +41,7 @@ function createStudentListDataTable(table_id) {
     columnDefs: [
       { 
         targets: "replace-empty-cell-with-dash",
-        render: function ( data ) {
-          if(data === "" || data === null || data === undefined) {
-            return "——";
-          } else {
-            return data;
-          }
-        }
+        render: replaceEmptyCellWithDash
       }
     ]
   });
@@ -63,13 +65,7 @@ function createBulkEmailDataTable(table_id) {
       { orderable: false, targets: "datatable-select-column" },
       { 
         targets: "replace-empty-cell-with-dash",
-        render: function ( data ) {
-          if(data === "" || data === null || data === undefined) {
-            return "——";
-          } else {
-            return data;
-          }
-        }
+        render: replaceEmptyCellWithDash
       },
     ],
   });
