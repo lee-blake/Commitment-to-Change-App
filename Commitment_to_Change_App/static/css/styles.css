@@ -251,6 +251,12 @@ form {
     fill: var(--expired);
 }
 
+.nav-item-align-center {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .navbar-brand {
     color: var(--primary-text);
     border-radius: var(--standard-button-round);

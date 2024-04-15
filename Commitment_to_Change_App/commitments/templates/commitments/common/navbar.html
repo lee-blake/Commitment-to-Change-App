@@ -14,32 +14,32 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav pb-2 mr-auto">
-        <li class="nav-item">
+        <li class="nav-item nav-item-align-center">
           <a aria-current="page" class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
         </li>
 
         {% if request.user.is_authenticated %}
           {% if request.user.is_clinician %}
-            <li class="nav-item">
+            <li class="nav-item nav-item-align-center">
               <a class="nav-link" href="{% url "create Commitment" %}">Make a commitment</a>
             </li>
           {% endif %}
 
           {% if request.user.is_provider %}
-            <li class="nav-item">
+            <li class="nav-item nav-item-align-center">
               <a class="nav-link" href="{% url "statistics overview" %}">Statistics</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item nav-item-align-center">
               <a class="nav-link" href="{% url "create Course" %}">Create a course</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item nav-item-align-center">
               <a class="nav-link" href="{% url 'create CommitmentTemplate' %}">Create a Commitment Template</a>
             </li>
           {% endif %}
 
         </ul>
         <ul class="nav navbar-nav navbar-right">
-          <li class="nav-item">
+          <li class="nav-item mr-2">
             <a class="nav-link" href="{% url 'view Profile' %}">Logged in as {{ request.user.username }}</a>
           </li>
           <li class="nav-item mr-3 mb-2">{% include "commitments/common/logout_button.html" %}</li>
