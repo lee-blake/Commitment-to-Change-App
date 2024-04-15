@@ -1,13 +1,19 @@
 {% extends "commitments/common/base.html" %}
 
-{% block title %} Choose an Account Type {% endblock title %}
+{% block title %}
+  Choose an Account Type
+{% endblock title %}
 
 {% block page_content %}
-<div class="container">
+  <div class="container">
     <div class="p-3 round-corners pb-3 text-center default-form foreground">
-        <h1>Choose an Account Type</h1>
-        <a href="{% url 'register clinician' %}"><button class="standard-button">Clinician Account</button></a>
-        <a href="{% url 'register provider' %}"><button class="standard-button">Provider Account</button></a>
+      <h1>Choose an Account Type</h1>
+      <a href="{% url 'register clinician' %}">
+        <button class="standard-button">Clinician Account</button>
+      </a>
+      <a href="{% url 'register provider' %}">
+        <button class="standard-button">Provider Account</button>
+      </a>
     </div>
-</div>
+  </div>
 {% endblock page_content %}

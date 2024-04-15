@@ -1,0 +1,14 @@
+<div>
+  <script id="bulk-email-default-subject-text" type="application/json">"{{ course.title }} - {{ course.owner.institution }}"</script>
+  <script id="bulk-email-default-body-text" type="application/json">
+    "You are receiving this email because you are enrolled in the following course: {{ course.title }}, created by: {{ course.owner.institution }}"
+  </script>
+  <script>
+    const defaultSubjectText = JSON.parse(document.getElementById("bulk-email-default-subject-text").textContent);
+    const defaultBodyText = JSON.parse(document.getElementById("bulk-email-default-body-text").textContent);
+      
+    function handleSubmitBulkEmail() {
+      generateMailtoLink(defaultSubjectText, defaultBodyText);
+    }
+  </script>
+</div>

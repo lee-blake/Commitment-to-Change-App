@@ -9,7 +9,7 @@ import pytest
 from django.urls import reverse
 
 from commitments.enums import CommitmentStatus
-from commitments.models import Commitment
+from commitments.models import Commitment, CommitmentReminderEmail
 from commitments.tests.helpers import convert_date_to_general_regex
 
 
@@ -79,6 +79,17 @@ class TestCreateCommitmentView:
             assert "value=\"\"" in associated_course_select_contents
             assert str(enrolled_course) in associated_course_select_contents
             assert str(non_enrolled_course) not in associated_course_select_contents
+
+        def test_reminder_preset_select_shows_in_page(
+            self, client, saved_clinician_profile,
+        ):
+            target_url = reverse("create Commitment")
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            reminder_schedule_select_regex = re.compile(
+                r"\<select[^\>]*name=\"reminder_schedule\"[^\>]*\>"
+            )
+            assert reminder_schedule_select_regex.search(html)
 
 
     class TestPost:
@@ -259,8 +270,18 @@ class TestViewCommitmentView:
             description="This is the second description",
             deadline=date.fromisoformat("2000-01-01"),
             owner=saved_clinician_profile,
-            status=CommitmentStatus.EXPIRED
+            status=CommitmentStatus.EXPIRED,
         )
+
+    @pytest.fixture(name="commitment_associated_with_course", params=["Course1", "SecondCourse"])
+    def fixture_commitment_associated_with_course(
+        self, viewable_commitment_1, enrolled_course, request
+    ):
+        enrolled_course.title = request.param
+        enrolled_course.save()
+        viewable_commitment_1.associated_course = enrolled_course
+        viewable_commitment_1.save()
+        return viewable_commitment_1
 
 
     class TestGet:
@@ -476,6 +497,78 @@ class TestViewCommitmentView:
                 kwargs={"commitment_id": viewable_commitment_1.id}
             )
             assert link_url not in html
+
+        def test_no_associated_course_shows_relevant_text(
+            self, client, saved_clinician_profile, viewable_commitment_1
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": viewable_commitment_1.id}
+            )
+            html = client.get(target_url).content.decode()
+            no_associated_course_hint = re.compile(
+                r"(N|n)ot associated with (a|any) course"
+            )
+            assert no_associated_course_hint.search(html)
+
+        def test_associated_course_shows_course_title_to_owner(
+            self, client, saved_clinician_profile, commitment_associated_with_course
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert commitment_associated_with_course.associated_course.title in html
+
+        def test_associated_course_shows_course_title_to_other_clinician(
+            self, client, other_clinician_profile, commitment_associated_with_course
+        ):
+            client.force_login(other_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert commitment_associated_with_course.associated_course.title in html
+
+        def test_associated_course_shows_course_title_to_providers(
+            self, client, saved_provider_profile, commitment_associated_with_course
+        ):
+            client.force_login(saved_provider_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert commitment_associated_with_course.associated_course.title in html
+
+        def test_associated_course_shows_course_title_to_anonymous_users(
+            self, client, commitment_associated_with_course
+        ):
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            assert commitment_associated_with_course.associated_course.title in html
+
+        def test_associated_course_links_to_course_for_owner(
+            self, client, saved_clinician_profile, commitment_associated_with_course
+        ):
+            client.force_login(saved_clinician_profile.user)
+            target_url = reverse(
+                "view Commitment",
+                kwargs={"commitment_id": commitment_associated_with_course.id}
+            )
+            html = client.get(target_url).content.decode()
+            link_url = reverse(
+                "view Course",
+                kwargs={"course_id": commitment_associated_with_course.associated_course.id }
+            )
+            assert link_url in html
 
 
     class TestPost:
@@ -1180,9 +1273,21 @@ class TestCreateFromSuggestedCommitmentView:
             )
             assert "disabled" in description_input_regex.search(html)[0]
 
+        def test_reminder_preset_select_shows_in_page(
+            self, client, saved_clinician_profile,
+        ):
+            target_url = reverse("create Commitment")
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            reminder_schedule_select_regex = re.compile(
+                r"\<select[^\>]*name=\"reminder_schedule\"[^\>]*\>"
+            )
+            assert reminder_schedule_select_regex.search(html)
+
 
     class TestPost:
         """Tests for CreateFromSuggestedCommitmentView.post"""
+
         def test_rejects_provider_accounts_with_403(
             self, client, saved_provider_user, enrolled_course, commitment_template_1
         ):
@@ -1388,6 +1493,32 @@ class TestCompleteCommitmentView:
             reloaded_commitment = Commitment.objects.get(id=saved_completable_commitment.id)
             assert reloaded_commitment.status == CommitmentStatus.COMPLETE
 
+        def test_good_request_clears_reminder_emails(
+            self, client, saved_completable_commitment, saved_clinician_profile
+        ):
+            CommitmentReminderEmail.objects.create(
+                commitment=saved_completable_commitment,
+                date=date.today() + timedelta(days=1)
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=saved_completable_commitment,
+                date=date.today() + timedelta(days=2)
+            )
+            target_url = reverse(
+                "complete Commitment", 
+                kwargs={
+                    "commitment_id": saved_completable_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"complete": "true"}
+            )
+            assert not CommitmentReminderEmail.objects.filter(
+                commitment=saved_completable_commitment
+            ).exists()
+
         def test_rejects_non_owner_with_no_changes(
             self, client,saved_completable_commitment, other_clinician_profile
         ):
@@ -1501,6 +1632,32 @@ class TestDiscontinueCommitmentView:
             )
             reloaded_commitment = Commitment.objects.get(id=saved_discontinueable_commitment.id)
             assert reloaded_commitment.status == CommitmentStatus.DISCONTINUED
+
+        def test_good_request_clears_reminder_emails(
+            self, client, saved_discontinueable_commitment, saved_clinician_profile
+        ):
+            CommitmentReminderEmail.objects.create(
+                commitment=saved_discontinueable_commitment,
+                date=date.today() + timedelta(days=1)
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=saved_discontinueable_commitment,
+                date=date.today() + timedelta(days=2)
+            )
+            target_url = reverse(
+                "discontinue Commitment", 
+                kwargs={
+                    "commitment_id": saved_discontinueable_commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"discontinue": "true"}
+            )
+            assert not CommitmentReminderEmail.objects.filter(
+                commitment=saved_discontinueable_commitment
+            ).exists()
 
         def test_rejects_non_owner_with_no_changes(
             self, client,saved_discontinueable_commitment, other_clinician_profile

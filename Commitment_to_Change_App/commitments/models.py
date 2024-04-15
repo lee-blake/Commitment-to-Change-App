@@ -1,6 +1,7 @@
 import datetime
 
 from django.core.mail import send_mail
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.template.loader import render_to_string
 
@@ -134,37 +135,50 @@ class CommitmentReminderEmail(models.Model):
         ]
     )
 
-    email_subject_template = "commitments/CommitmentReminderEmail/reminder_email_subject.txt"
-    email_body_template = "commitments/CommitmentReminderEmail/reminder_email_body.txt"
-
     def send(self):
-        context = self._generate_context()
-        send_mail(
-            subject=self._get_mail_subject(context),
-            message=self._get_mail_body(context),
-            from_email=None, # This uses the default email for the site
-            recipient_list=[self.commitment.owner.email]
-        )
+        _send_reminder_email(self.commitment)
         # If successful, the email should *not* be sent again. Delete it.
         self.delete()
 
-    def _generate_context(self):
-        days_remaining = (self.commitment.deadline - datetime.date.today()).days
-        return {
-            "date": self.date,
-            "commitment": self.commitment,
-            "owner": self.commitment.owner,
-            "days_remaining": days_remaining
-        }
 
-    def _get_mail_subject(self, context):
-        return render_to_string(
-            self.email_subject_template,
-            context=context
-        )
+class RecurringReminderEmail(models.Model):
+    created = models.DateTimeField("Date/Time of creation", auto_now_add=True)
+    last_updated = models.DateTimeField("Date/Time of last modification", auto_now=True)
+    commitment = models.OneToOneField(
+        Commitment, on_delete=models.CASCADE, related_name="recurring_email"
+    )
+    interval = models.PositiveSmallIntegerField(
+        "Interval between emails, in days",
+        validators=[
+            MinValueValidator(limit_value=1)
+        ]
+    )
+    next_email_date = models.DateField()
 
-    def _get_mail_body(self, context):
-        return render_to_string(
-            self.email_body_template,
-            context=context
-        )
+    def send(self):
+        _send_reminder_email(self.commitment)
+        self.next_email_date = datetime.date.today() + datetime.timedelta(days=self.interval)
+        self.save()
+
+
+def _send_reminder_email(commitment):
+    days_remaining = (commitment.deadline - datetime.date.today()).days
+    context = {
+        "commitment": commitment,
+        "owner": commitment.owner,
+        "days_remaining": days_remaining
+    }
+    subject = render_to_string(
+        "commitments/CommitmentReminderEmail/reminder_email_subject.txt",
+        context=context
+    )
+    body = render_to_string(
+        "commitments/CommitmentReminderEmail/reminder_email_body.txt",
+        context=context
+    )
+    send_mail(
+        subject=subject,
+        message=body,
+        from_email=None, # This uses the default email for the site
+        recipient_list=[commitment.owner.email]
+    )

@@ -1,22 +1,23 @@
-$(document).ready(function() {
-  $('#select-all-emails-checkbox').click(selectOrUnselectAllCheckboxes);
-  $('#modal-bulk-email-submit-button').click(generateMailtoLink);
+$(document).ready(function () {
+  $("#select-all-emails-checkbox").click(selectOrUnselectAllCheckboxes);
 });
 
 function selectOrUnselectAllCheckboxes() {
-  $('.select-email-checkbox').prop('checked', this.checked);
-} 
+  $(".select-email-checkbox").prop("checked", this.checked);
+}
 
-function generateMailtoLink() {
+function generateMailtoLink(defaultBodyText, defaultSubjectText) {
   const selectedEmails = getSelectedEmails();
-  const mailtoLink = 'mailto:' + selectedEmails.join(',');
+  const encodedDefaultSubject = encodeURIComponent(defaultBodyText);
+  const encodedDefaultBody = encodeURIComponent(defaultSubjectText);
+  const mailtoLink = "mailto:" + selectedEmails.join(",") + "?subject=" + encodedDefaultSubject + "&body=" + encodedDefaultBody;
   redirectToMailtoLink(mailtoLink);
 }
 
 function getSelectedEmails() {
   const selectedEmails = [];
-  $('.select-email-checkbox:checked').each(function() {
-    selectedEmails.push($(this).data('email'));
+  $(".select-email-checkbox:checked").each(function () {
+    selectedEmails.push($(this).data("email"));
   });
   return selectedEmails;
 }

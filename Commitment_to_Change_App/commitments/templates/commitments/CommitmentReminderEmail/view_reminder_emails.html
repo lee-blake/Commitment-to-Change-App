@@ -9,6 +9,10 @@
     <div class="primary-header-container">
       <h1>Reminder emails for {{ commitment.title }}</h1>
     </div>
+    {% include "commitments/CommitmentReminderEmail/view_reminder_emails_section_recurring.html" %}
+    <div class="secondary-header-container">
+      <h2>One-time emails</h2>
+    </div>
     <div class="table-responsive text-center">
       <table class="table table-striped table-layout-fixed">
         <thead>
@@ -24,7 +28,9 @@
               <td>{{ reminder_email.date }}</td>
               <td>
                 <a href="{% url "delete CommitmentReminderEmail" commitment_id=commitment.id reminder_email_id=reminder_email.id %}">
-                  <button class="standard-button"><i class="bi bi-trash"></i> Delete</button>
+                  <button class="standard-button">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
                 </a>
               </td>
             </tr>
@@ -39,14 +45,22 @@
       </table>
       <div class="container pb-3">
         <div class="row">
-          <div class="col-md-6 order-md-2">
+          <div class="col-md-4 order-md-3">
             <a href="{% url 'view Commitment' commitment_id=commitment.id %}">
-              <button class="btn view-button m-2" type="submit">Back to commitment</button>
+              <button class="btn alternate-button m-2" type="submit">Back to commitment</button>
+            </a>
+          </div>
+
+          <div class="col-md-4 order-md-2">
+            <a href="{% url 'clear CommitmentReminderEmails' commitment_id=commitment.id %}">
+              <button class="btn standard-button m-2" type="submit">
+                <i class="bi bi-trash"></i> Delete all reminder emails
+              </button>
             </a>
           </div>
 
           {% block create_button %}
-            <div class="col-md-6 order-md-1">
+            <div class="col-md-4 order-md-1">
               <a href="{% url 'create CommitmentReminderEmail' commitment_id=commitment.id %}">
                 <button class="btn standard-button m-2" type="submit">Schedule a reminder email</button>
               </a>

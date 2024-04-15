@@ -1,7 +1,9 @@
 <button class="standard-button"
         role="button"
         data-bs-toggle="modal"
-        data-bs-target="#send-bulk-email-modal"><i class="bi bi-envelope-at-fill"></i> Send bulk email</button>
+        data-bs-target="#send-bulk-email-modal">
+  <i class="bi bi-envelope-at-fill"></i> Send bulk email
+</button>
 <div class="modal fade"
      id="send-bulk-email-modal"
      tabindex="-1"
@@ -10,25 +12,30 @@
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title w-100 text-center" id="send-bulk-email-modal-Label">Select students to email</h1>
+        <h1 class="modal-title w-100 text-center"
+            id="send-bulk-email-modal-Label">Select students to email</h1>
         <button type="button"
                 class="btn-close close-x-button"
                 data-bs-dismiss="modal"
                 aria-label="Close">X</button>
       </div>
-      <div class="modal-body text-left">
+      <div class="modal-body">
         <div class="table-responsive bulk-email-table-container">
           <table id="provider-course-student-datatable-bulk-email" class="display">
             <thead>
               <tr>
-                <th class="datatable-select-column" scope="col"><input type="checkbox" id="select-all-emails-checkbox"></th>
+                <th scope="col" class="datatable-select-column">
+                  <input type="checkbox" id="select-all-emails-checkbox">
+                </th>
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
+                <th scope="col" class="text-center replace-empty-cell-with-dash">Commitments Made</th>
+                <th scope="col"
+                    class="text-center status-column replace-empty-cell-with-dash">Status</th>
               </tr>
             </thead>
             <tbody>
-
-              {% for clinician in course.students.all %}
+              {% for clinician in students %}
                 <tr>
                   <td class="text-center">
                     <input type="checkbox"
@@ -37,21 +44,37 @@
                   </td>
                   <td>{% include "commitments/Course/course_enrolled_student_profile_popover.html" %}</td>
                   <td>{{ clinician.email }}</td>
-                </tr>
-              {% endfor %}
-
-            </tbody>
-          </table>
-        </div>
-        <div class="modal-footer d-flex align-items-center justify-content-between">
-          <button type="button"
-                  class="btn-close close-x-button"
-                  data-bs-dismiss="modal">Cancel</button>
-          <button type="submit"
-                  id="modal-bulk-email-submit-button"
-                  class="standard-button">Compose email</button>
-        </div>
+                  <td>
+                    {% for commitment in clinician.course_commitments %}
+                      <a href="{% url "view Commitment" commitment_id=commitment.id %}">
+                        <button class="btn alternate-button my-1">{{ commitment.title }}</button>
+                      </a>
+                    </br>
+                  {% endfor %}
+                </td>
+                <td>
+                  {% for commitment in clinician.course_commitments %}
+                    <div class="student-table-status-icon my-1">
+                      {% include "commitments/Course/course_associated_commitments_status_icon_selector.html" %}
+                    </div>
+                  {% endfor %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
+      <div class="modal-footer d-flex align-items-center justify-content-between">
+        <button type="button"
+                class="btn-close close-x-button"
+                data-bs-dismiss="modal">Cancel</button>
+        <button type="submit"
+                id="modal-bulk-email-submit-button"
+                class="standard-button"
+                onClick="handleSubmitBulkEmail()">Compose email</button>
+      </div>
+      {% include "commitments/Course/course_bulk_email_default_text.html" %}
     </div>
   </div>
+</div>
 </div>

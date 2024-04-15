@@ -1,32 +1,33 @@
 {% extends "commitments/common/base.html" %}
 
-{% block title %} Select Suggested Commitments for {{ course.title }} {% endblock title %}
+{% block title %}
+  Select Suggested Commitments for {{ course.title }}
+{% endblock title %}
 
 {% block page_content %}
-<div class="container-xl text-center">
+  <div class="container-xl text-center">
     <div class="row g-5">
-        <div class="col" align="center">
-            <div class="pb-3 foreground round-corners">
-                <div class="primary-header-container">
-                    <h1>Select Suggested Commitments for:</h1>
-                </div>
-                <div class="secondary-accent p-2">
-                    <h2>{{ course.title }}</h2>
-                </div>
-                {% include "commitments/CommitmentTemplate/commitment_template_create_modal.html" %}
-                <br>
-                <br>
-                <div>
-                    <form 
-                    action="{% url 'change Course suggested commitments' course_id=course.id %}" 
-                    method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                </div>
-                    <input type="submit" value="Submit" class="standard-button">
-                </form>
+      <div class="col" align="center">
+        <div class="pb-3 foreground round-corners">
+          <div class="primary-header-container">
+            <h1>Select Suggested Commitments for:</h1>
+          </div>
+          <div class="secondary-accent p-2">
+            <h2>{{ course.title }}</h2>
+          </div>
+          {% include "commitments/CommitmentTemplate/commitment_template_create_modal.html" %}
+          <br>
+          <br>
+          <div>
+            <form action="{% url 'change Course suggested commitments' course_id=course.id %}"
+                  method="post">
+              {% csrf_token %}
+              {{ form.as_p }}
             </div>
+            <input type="submit" value="Submit" class="standard-button">
+          </form>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock page_content %}

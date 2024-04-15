@@ -11,6 +11,18 @@ from cme_accounts.models import User
 from cme_accounts.views import ResetPasswordView, ResetPasswordConfirmView
 
 
+@pytest.fixture(name="existing_user")
+def fixture_existing_user():
+    user = User.objects.create(
+        username="existing_user",
+        email="a@localhost",
+        password="old_password"
+    )
+    user.set_password(user.password)
+    user.save()
+    return user
+
+
 @pytest.fixture(name="captured_email")
 def fixture_captured_email(settings):
     """This fixture ensures that Django uses the memory backend for email during tests. 
@@ -171,6 +183,112 @@ class TestSignOutView:
             client.force_login(valid_user)
             html = client.post(reverse("logout")).content.decode()
             assert "You have successfully logged out" in html
+
+
+@pytest.mark.django_db
+class TestChangePasswordView:
+    """Tests for ChangePasswordView"""
+
+    class TestGet:
+        """Tests for ChangePasswordView.get
+
+        Even though we do not override this method, we should verify that the templates render
+        correctly for the users."""
+
+        def test_shows_post_form_pointing_to_this_view(self, client, existing_user):
+            target_url = reverse("change password")
+            client.force_login(existing_user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_shows_required_form_fields(self, client, existing_user):
+            target_url = reverse("change password")
+            client.force_login(existing_user)
+            html = client.get(target_url).content.decode()
+            assert "name=\"old_password\"" in html
+            assert "name=\"new_password1\"" in html
+            assert "name=\"new_password2\"" in html
+
+    class TestPost:
+        """Tests for ChangePasswordView.post
+
+        Even though we do not override this method, we should verify that the templates render
+        correctly for the users."""
+
+        def test_invalid_post_data_shows_get_with_error_messages(
+            self, client, existing_user
+        ):
+            target_url = reverse("change password")
+            client.force_login(existing_user)
+            html = client.post(
+                target_url,
+                {
+                    "new_password1": "p@ssword17",
+                    "new_password2": "does_not_match"
+                }
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*method=\"(post|POST)\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_valid_post_data_resets_password(
+            self, client, existing_user
+        ):
+            target_url = reverse("change password")
+            client.force_login(existing_user)
+            response = client.post(
+                target_url,
+                {
+                    "old_password": "old_password",
+                    "new_password1": "p@ssword17",
+                    "new_password2": "p@ssword17"
+                }
+            )
+            print(response.content.decode())
+            assert client.login(username=existing_user.username, password="p@ssword17")
+
+        def test_valid_post_data_redirects_correctly(self, client, existing_user):
+            target_url = reverse("change password")
+            client.force_login(existing_user)
+            response = client.post(
+                target_url,
+                {
+                    "old_password": "old_password",
+                    "new_password1": "p@ssword17",
+                    "new_password2": "p@ssword17"
+                }
+            )
+            assert response.status_code == 302
+            assert response.url == reverse("change password complete")
+
+
+@pytest.mark.django_db
+class TestChangePasswordCompleteView:
+    """Tests for ChangePasswordCompleteView"""
+
+    def test_get_returns_correct_page_with_link_to_profile(self, client, existing_user):
+        client.force_login(existing_user)
+        response = client.get(reverse("change password complete"))
+        assert response.status_code == 200
+        html = response.content.decode()
+        assert "Password change complete" in html
+        link_matches = re.compile(
+            reverse("view Profile")
+        ).findall(html)
+        # Make sure we have a second link in the page so the user has somewhere to go next.
+        assert len(link_matches) == 2
 
 
 @pytest.mark.django_db

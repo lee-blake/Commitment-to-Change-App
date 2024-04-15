@@ -1,20 +1,22 @@
 <div class="container-fluid">
   <div class="row foreground p-1 round-corners m-3">
-      <div class="col-md-12">
-          <div class="text-center">
-            <h3>
-              <a href="{% url "view Commitment" commitment_id=commitment.id %}"><button type="button" id="view-commitment-button" class="btn dashboard-button background round-corners p-2">{{ commitment.title }}</button></a>
-                  <p>Due: {{ commitment.deadline }}</p>
-              </h3>
-          </div>
+    <div class="col-md-12">
+      <div class="text-center pt-2">
+        <h3>
+          <a href="{% url "view Commitment" commitment_id=commitment.id %}">
+            <button type="button"
+                    id="view-commitment-button"
+                    class="btn alternate-button">{{ commitment.title }}</button>
+          </a>
+        </h3>
+        <h4>Due: {{ commitment.deadline }}</h4>
       </div>
-
-      <div class="col-md-12">
-          <div class="text-center mb-3">
-            {% include "commitments/Commitment/commitment_complete_modal.html" %}
-            {% include "commitments/Commitment/commitment_discontinue_modal.html" %}
-          </div>
+    </div>
+    <div class="col-md-12">
+      <div class="text-center mb-2 pt-1">
+        {% include "commitments/Commitment/commitment_complete_modal.html" %}
+        {% include "commitments/Commitment/commitment_discontinue_modal.html" %}
       </div>
-
+    </div>
   </div>
 </div>

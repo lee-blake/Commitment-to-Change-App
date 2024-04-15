@@ -7,7 +7,7 @@ import pytest
 
 from django.urls import reverse
 
-from commitments.models import CommitmentReminderEmail
+from commitments.models import CommitmentReminderEmail, RecurringReminderEmail
 from commitments.tests.helpers import convert_date_to_general_regex
 
 @pytest.fixture(name="existing_commitment")
@@ -83,7 +83,7 @@ class TestCreateCommitmentReminderEmailView:
 
 
     class TestPost:
-        """Tests for CreateCommitmentView.post"""
+        """Tests for CreateCommitmentReminderEmailView.post"""
 
         def test_invalid_request_returns_the_get_page_with_error_notes(
             self, client, saved_clinician_user, existing_commitment
@@ -147,16 +147,8 @@ class TestCreateCommitmentReminderEmailView:
 
 
 @pytest.mark.django_db
-class TestViewCommitmentReminderEmailView:
-    """Tests for ViewCommitmentReminderEmailView"""
-
-    @pytest.fixture(name="saved_commitment_template")
-    def fixture_saved_commitment_template(self, saved_provider_profile):
-        return CommitmentReminderEmail.objects.create(
-            owner=saved_provider_profile,
-            title="Should not occur randomly in HTML 123481234",
-            description="Also should not occur randomly 12498123hfdwjas"
-        )
+class TestViewCommitmentReminderEmailsView:
+    """Tests for ViewCommitmentReminderEmailsView"""
 
     def test_rejects_provider_accounts_with_403(
         self, client, saved_provider_user, existing_commitment
@@ -238,7 +230,7 @@ class TestViewCommitmentReminderEmailView:
         )
         assert reminder_email_url_2 in html
 
-    def test_links_to_create_page(
+    def test_links_to_create_one_time_email_page(
         self, client, saved_clinician_profile, existing_commitment
     ):
         target_url = reverse(
@@ -252,6 +244,111 @@ class TestViewCommitmentReminderEmailView:
             kwargs={ "commitment_id": existing_commitment.id }
         )
         assert link_url in html
+
+    def test_links_to_delete_all_page(
+        self, client, saved_clinician_profile, existing_commitment
+    ):
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        link_url = reverse(
+            "clear CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        assert link_url in html
+
+    @pytest.mark.parametrize("interval", [29, 31])
+    def test_existing_recurring_email_displays_its_info(
+        self, client, saved_clinician_profile, existing_commitment, interval
+    ):
+        RecurringReminderEmail.objects.create(
+            commitment=existing_commitment,
+            interval=interval,
+            next_email_date=datetime.date.today()
+        )
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        interval_phrase_regex = re.compile(
+                f"{interval}" + r"\s*day"
+        )
+        assert interval_phrase_regex.search(html)
+
+    def test_existing_recurring_email_does_not_display_create_link(
+        self, client, saved_clinician_profile, existing_commitment
+    ):
+        RecurringReminderEmail.objects.create(
+            commitment=existing_commitment,
+            interval=30,
+            next_email_date=datetime.date.today()
+        )
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        link_url = reverse(
+            "create RecurringReminderEmail", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        assert link_url not in html
+
+    def test_non_existing_recurring_email_does_display_create_link(
+        self, client, saved_clinician_profile, existing_commitment
+    ):
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        link_url = reverse(
+            "create RecurringReminderEmail", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        assert link_url in html
+
+    def test_existing_recurring_email_does_display_create_link(
+        self, client, saved_clinician_profile, existing_commitment
+    ):
+        RecurringReminderEmail.objects.create(
+            commitment=existing_commitment,
+            interval=30,
+            next_email_date=datetime.date.today()
+        )
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        link_url = reverse(
+            "delete RecurringReminderEmail", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        assert link_url in html
+
+    def test_non_existing_recurring_email_does_not_display_delete_link(
+        self, client, saved_clinician_profile, existing_commitment
+    ):
+        target_url = reverse(
+            "view CommitmentReminderEmails", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        client.force_login(saved_clinician_profile.user)
+        html = client.get(target_url).content.decode()
+        link_url = reverse(
+            "delete RecurringReminderEmail", 
+            kwargs={ "commitment_id": existing_commitment.id }
+        )
+        assert link_url not in html
 
 
 @pytest.mark.django_db
@@ -393,7 +490,7 @@ class TestDeleteCommitmentReminderEmailView:
             )
             assert error_notes_regex.search(html)
 
-        def test_valid_request_deletes_commitment_template(
+        def test_valid_request_deletes_reminder_email(
             self, client, saved_clinician_profile, existing_reminder_email
         ):
             target_url = reverse(
@@ -432,5 +529,530 @@ class TestDeleteCommitmentReminderEmailView:
                 "view CommitmentReminderEmails", 
                 kwargs={
                     "commitment_id": existing_reminder_email.commitment.id
+                }
+            )
+
+
+@pytest.mark.django_db
+class TestClearCommitmentReminderEmailsView:
+    """Tests for ClearCommitmentReminderEmailsView"""
+
+    @pytest.fixture(name="existing_reminder_emails")
+    def fixture_existing_reminder_emails(self, make_quick_commitment):
+        commitment = make_quick_commitment()
+        return [
+            CommitmentReminderEmail.objects.create(
+                commitment=commitment,
+                date=datetime.date.today() + datetime.timedelta(days=1)
+            ),
+            CommitmentReminderEmail.objects.create(
+                commitment=commitment,
+                date=datetime.date.today() + datetime.timedelta(days=2)
+            ),
+        ]
+
+    class TestGet:
+        """Tests for ClearCommitmentReminderEmailsView.get"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+            client.force_login(saved_provider_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_clinicians_with_404(
+            self, client, other_clinician_profile, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client,saved_clinician_profile, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_hidden_clear_field_is_set(
+            self, client, saved_clinician_profile, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            delete_input_regex = re.compile(
+                r"\<input[^\>]*name=\"clear\"[^\>]*\>"
+            )
+            delete_input_match = delete_input_regex.search(html)
+            assert delete_input_match
+            assert "type=\"hidden\"" in delete_input_match[0]
+            nonempty_value_regex = re.compile(
+                r"value=\"[^\"]+\""
+            )
+            assert nonempty_value_regex.search(delete_input_match[0])
+
+    class TestPost:
+        """Tests for ClearCommitmentReminderEmailsView.post"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+            client.force_login(saved_provider_user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_clinicians_with_404(
+            self, client, other_clinician_profile, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_invalid_request_returns_the_get_page_with_error_notes(
+            self, client, saved_clinician_profile, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.post(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_invalid_request_deletes_no_reminder_emails_for_commitment(
+            self, client, saved_clinician_profile, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {}
+            )
+            assert CommitmentReminderEmail.objects.filter(
+                commitment=existing_reminder_emails[0].commitment
+            ).count() == 2
+
+        def test_valid_request_deletes_all_one_time_reminder_emails_for_commitment(
+            self, client, saved_clinician_profile, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"clear": "true"}
+            )
+            assert not CommitmentReminderEmail.objects.filter(
+                commitment=existing_reminder_emails[0].commitment
+            ).exists()
+
+        def test_valid_request_deletes_recurring_email_for_commitment(
+            self, client, saved_clinician_profile, make_quick_commitment
+        ):
+            commitment = make_quick_commitment()
+            RecurringReminderEmail.objects.create(
+                commitment=commitment,
+                next_email_date=datetime.date.today(),
+                interval=7
+            )
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"clear": "true"}
+            )
+            assert not RecurringReminderEmail.objects.filter(
+                commitment=commitment
+            ).exists()
+
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_clinician_profile, existing_reminder_emails
+        ):
+            target_url = reverse(
+                "clear CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id,
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {"clear": "true"}
+            )
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_reminder_emails[0].commitment.id
+                }
+            )
+
+
+@pytest.mark.django_db
+class TestCreateRecurringReminderEmailView:
+    """Tests for CreateRecurringReminderEmailView"""
+
+    class TestGet:
+        """Tests for CreateRecurringReminderEmailView.get"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_commitment
+        ):
+            client.force_login(saved_provider_user)
+            response = client.get(
+                reverse(
+                    "create RecurringReminderEmail",
+                    kwargs={"commitment_id": existing_commitment.id}
+                )
+            )
+            assert response.status_code == 403
+
+        def test_rejects_other_clinicians_with_404(
+            self, client, other_clinician_profile, existing_commitment
+        ):
+            target_url = reverse(
+                "create RecurringReminderEmail",
+                kwargs={ "commitment_id": existing_commitment.id }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client, saved_clinician_user, existing_commitment
+        ):
+            target_url = reverse(
+                "create RecurringReminderEmail",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_shows_required_interval_field(
+            self, client, saved_clinician_user, existing_commitment
+        ):
+            target_url = reverse(
+                "create RecurringReminderEmail",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_user)
+            html = client.get(target_url).content.decode()
+            interval_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"interval\"[^\>]*\>"
+            )
+            interval_input_tag_match = interval_input_tag_regex.search(html)
+            assert interval_input_tag_match
+            interval_input_tag = interval_input_tag_match[0]
+            required_attribute_regex = re.compile(r"\srequired(=\"\")?[\s\>]")
+            assert required_attribute_regex.search(interval_input_tag)
+
+
+    class TestPost:
+        """Tests for CreateRecurringReminderEmailView.post"""
+
+        def test_invalid_request_returns_the_get_page_with_error_notes(
+            self, client, saved_clinician_user, existing_commitment
+        ):
+            target_url = reverse(
+                "create RecurringReminderEmail",
+                kwargs={"commitment_id": existing_commitment.id}
+            )
+            client.force_login(saved_clinician_user)
+            html = client.post(
+                target_url,
+                {"date": ""}
+            ).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_valid_request_creates_recurring_reminder_email_with_right_commitment(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                reverse(
+                    "create RecurringReminderEmail",
+                    kwargs={"commitment_id": existing_commitment.id}
+                ),
+                {
+                    "interval": "30"
+                }
+            )
+            recurring_reminder_email = RecurringReminderEmail.objects.get(
+                interval=30
+            )
+            assert recurring_reminder_email.commitment == existing_commitment
+
+        def test_valid_request_redirects_to_correct_url(
+            self, client, saved_clinician_profile, existing_commitment
+        ):
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                reverse(
+                    "create RecurringReminderEmail",
+                    kwargs={"commitment_id": existing_commitment.id}
+                ),
+                {
+                    "interval": "30"
+                }
+            )
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view CommitmentReminderEmails",
+                kwargs={ "commitment_id": existing_commitment.id }
+            )
+
+
+@pytest.mark.django_db
+class TestDeleteRecurringReminderEmailView:
+    """Tests for DeleteRecurringReminderEmailView"""
+
+    @pytest.fixture(name="existing_recurring_reminder")
+    def fixture_existing_recurring_reminder(self, make_quick_commitment):
+        return RecurringReminderEmail.objects.create(
+            commitment=make_quick_commitment(),
+            next_email_date=datetime.date.today() + datetime.timedelta(days=1),
+            interval=30
+        )
+
+    class TestGet:
+        """Tests for DeleteRecurringReminderEmailView.get"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_recurring_reminder
+        ):
+            target_url = reverse(
+                "delete RecurringReminderEmail", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
+                }
+            )
+            client.force_login(saved_provider_user)
+            response = client.get(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_clinicians_with_404(
+            self, client, other_clinician_profile, existing_recurring_reminder
+        ):
+            target_url = reverse(
+                "delete RecurringReminderEmail", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.get(target_url)
+            assert response.status_code == 404
+
+        def test_shows_post_form_pointing_to_this_view(
+            self, client,saved_clinician_profile, existing_recurring_reminder
+        ):
+            target_url = reverse(
+                "delete RecurringReminderEmail", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            match = form_regex.search(html)
+            assert match
+            form_tag = match[0]
+            post_method_regex = re.compile(r"method=\"(post|POST)\"")
+            assert post_method_regex.search(form_tag)
+
+        def test_hidden_delete_field_is_set(
+            self, client, saved_clinician_profile, existing_recurring_reminder
+        ):
+            target_url = reverse(
+                "delete RecurringReminderEmail", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            delete_input_regex = re.compile(
+                r"\<input[^\>]*name=\"delete\"[^\>]*\>"
+            )
+            delete_input_match = delete_input_regex.search(html)
+            assert delete_input_match
+            assert "type=\"hidden\"" in delete_input_match[0]
+            nonempty_value_regex = re.compile(
+                r"value=\"[^\"]+\""
+            )
+            assert nonempty_value_regex.search(delete_input_match[0])
+
+
+    class TestPost:
+        """Tests for DeleteRecurringReminderEmailView.post"""
+
+        def test_rejects_provider_accounts_with_403(
+            self, client, saved_provider_user, existing_recurring_reminder
+        ):
+            target_url = reverse(
+                "delete RecurringReminderEmail", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
+                }
+            )
+            client.force_login(saved_provider_user)
+            response = client.post(target_url)
+            assert response.status_code == 403
+
+        def test_rejects_other_clinicians_with_404(
+            self, client, other_clinician_profile, existing_recurring_reminder
+        ):
+            target_url = reverse(
+                "delete RecurringReminderEmail", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
+                }
+            )
+            client.force_login(other_clinician_profile.user)
+            response = client.post(target_url)
+            assert response.status_code == 404
+
+        def test_invalid_request_returns_the_get_page_with_error_notes(
+            self, client, saved_clinician_profile, existing_recurring_reminder
+        ):
+            target_url = reverse(
+                "delete RecurringReminderEmail", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            html = client.post(target_url).content.decode()
+            form_regex = re.compile(
+                r"\<form[^\>]*action=\"" + target_url + r"\"[^\>]*\>"
+            )
+            assert form_regex.search(html)
+            error_notes_regex = re.compile(
+                r"\<ul[^\>]*class=\"[^\"]*errorlist[^\"]*\"[^\>]*>"
+            )
+            assert error_notes_regex.search(html)
+
+        def test_valid_request_deletes_reminder_email(
+            self, client, saved_clinician_profile, existing_recurring_reminder
+        ):
+            target_url = reverse(
+                "delete RecurringReminderEmail", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            client.post(
+                target_url,
+                {"delete": "true"}
+            )
+            assert not RecurringReminderEmail.objects.filter(
+                id=existing_recurring_reminder.id
+            ).exists()
+
+        def test_valid_request_redirects_correctly(
+            self, client, saved_clinician_profile, existing_recurring_reminder
+        ):
+            target_url = reverse(
+                "delete RecurringReminderEmail", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
+                }
+            )
+            client.force_login(saved_clinician_profile.user)
+            response = client.post(
+                target_url,
+                {"delete": "true"}
+            )
+            assert response.status_code == 302
+            assert response.url == reverse(
+                "view CommitmentReminderEmails", 
+                kwargs={
+                    "commitment_id": existing_recurring_reminder.commitment.id
                 }
             )

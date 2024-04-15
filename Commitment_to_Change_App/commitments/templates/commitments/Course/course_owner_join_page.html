@@ -1,20 +1,22 @@
 {% extends "commitments/common/base.html" %}
 
-{% block title %} Course join page {% endblock title %}
+{% block title %}
+  Course join page
+{% endblock title %}
 
 {% block page_content %}
   <div class="container-xl px-0 round-corners foreground">
     <div class="primary-header-container">
-        <h1>Join page for {{ course.title }}</h1>
+      <h1>Join page for {{ course.title }}</h1>
     </div>
     <div class="container-fluid px-3 py-3">
       <div class="p-3 round-corners background text-center">
         <p>
-            This page will allow clinicians to confirm that they want to join
-            your course <strong><em>{{ course.title }}</em></strong>. This confirmation
-            is not shown to you because this account is not a clinician account and cannot
-            enroll in the course as a student. You can distribute the link to this page and
-            clinicians will be able to use it to enroll as students.
+          This page will allow clinicians to confirm that they want to join
+          your course <strong><em>{{ course.title }}</em></strong>. This confirmation
+          is not shown to you because this account is not a clinician account and cannot
+          enroll in the course as a student. You can distribute the link to this page and
+          clinicians will be able to use it to enroll as students.
         </p>
       </div>
     </div>

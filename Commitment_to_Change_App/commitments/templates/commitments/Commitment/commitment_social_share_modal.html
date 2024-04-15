@@ -1,0 +1,56 @@
+<a class="alternate-button p-2"
+   style="color:{% block icon_color %}{% endblock icon_color %}"
+   role="button"
+   data-bs-toggle="modal"
+   data-bs-target="#social_share_modal"><i class="bi bi-share-fill"></i> Share on Social Media
+</a>
+<div class="modal fade"
+     id="social_share_modal"
+     tabindex="-1"
+     aria-labelledby="social_share_modalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog standard-modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="social_share_modalLabel">Share on Social Media</h1>
+        <button type="button"
+                class="btn-close close-x-button"
+                data-bs-dismiss="modal"
+                aria-label="Close">X</button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="row">
+          <div class="col-md-4 my-2 order-md-2">
+            <a class="social-share-button twitter-share-button"
+               href="https://twitter.com/intent/tweet?text={{ 'I have made the following commitment to change @StanfordCME: '|iriencode }}{{ request.build_absolute_uri }}"
+               data-size="large"
+               target="_blank">
+              <i class="bi bi-twitter-x"></i>
+            </a>
+          </div>
+          <div class="col-md-4 my-2 order-md-2">
+            <a class="social-share-button facebook-share-button"
+               href="https://www.facebook.com/sharer.php?u={{ request.build_absolute_uri }}"
+               data-size="large"
+               target="_blank">
+              <i class="bi bi-facebook"></i>
+            </a>
+          </div>
+          <div class="col-md-4 my-2 order-md-2">
+            <a class="social-share-button linkedin-share-button"
+               href="https://www.linkedin.com/feed/?shareActive=true&text={{ 'I have made the following commitment to change: '|iriencode }}{{ request.build_absolute_uri }}"
+               data-size="large"
+               target="_blank">
+              <i class="bi bi-linkedin"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button"
+                class="btn-close close-x-button"
+                data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

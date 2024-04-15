@@ -1,0 +1,16 @@
+{% if commitment.status_text == "In Progress" %}
+  <div class="chart-legend-color legend-color-in-progress"></div>
+  <span>In-progress</span>
+{% endif %}
+{% if commitment.status_text == "Complete" %}
+  <div class="chart-legend-color legend-color-complete"></div>
+  <span>Complete</span>
+{% endif %}
+{% if commitment.status_text == "Past Due" %}
+  <div class="chart-legend-color legend-color-expired"></div>
+  <span>Past-due</span>
+{% endif %}
+{% if commitment.status_text == "Discontinued" %}
+  <div class="chart-legend-color legend-color-discontinued"></div>
+  <span>Discontinued</span>
+{% endif %}

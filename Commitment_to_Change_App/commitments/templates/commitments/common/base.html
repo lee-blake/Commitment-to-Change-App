@@ -1,25 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta name="description" content="CME Commitment to Change App">
     <meta name="keywords" content="CME, Commitment, Change, Clinician">
-    <title>{% block title %}{% endblock title %}</title>
+    <title>
+
+      {% block title %}
+      {% endblock title %}
+
+    </title>
+
+    {% block open_graph_metadata %}
+    {% endblock open_graph_metadata %}
+
     {% block static_styles %}
-    {% include "commitments/common/base_styles.html" %}
+      {% include "commitments/common/base_styles.html" %}
     {% endblock static_styles %}
-</head>
-<body>
-<header>
-    {% include "commitments/common/navbar.html" %}
-</header>
-<main>
-    <div class="py-3 px-1">
-        {% block page_content %}{% endblock page_content %}
-    </div>
-</main>
-{% block static_scripts %}
-{% include "commitments/common/base_scripts.html" %}
-{% endblock static_scripts %}
-</body>
+
+  </head>
+  <body>
+    <header>
+      {% include "commitments/common/navbar.html" %}
+    </header>
+    <main>
+      <div class="py-3 px-1">
+
+        {% block page_content %}
+        {% endblock page_content %}
+
+      </div>
+    </main>
+
+    {% block static_scripts %}
+      {% include "commitments/common/base_scripts.html" %}
+    {% endblock static_scripts %}
+
+  </body>
 </html>

@@ -1,9 +1,10 @@
-<div class="secondary-header-container">
-    <h4>Status Breakdown</h4>
+<div class="secondary-header-container mb-2">
+  <h4>Status Breakdown</h4>
 </div>
-    {% if course.commitment_statistics.total == 0 %}
-        <p>No commitments have been made in this course.</p>
-    {% else %}
-    <h5>Total Commitments: {{ course.commitment_statistics.total }}</h5>
-    {% include "commitments/common/commitment_status_pie_chart.html" with commitment_data_object=course.commitment_statistics %}
+
+{% if course.commitment_statistics.total == 0 %}
+  <p>No commitments have been made in this course.</p>
+{% else %}
+  <h5>Total Commitments: {{ course.commitment_statistics.total }}</h5>
+  {% include "commitments/common/commitment_status_pie_chart.html" with commitment_data_object=course.commitment_statistics %}
 {% endif %}

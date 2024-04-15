@@ -1,24 +1,28 @@
 {% extends "commitments/common/base.html" %}
 
-{% block title %} {{ commitment.title }} view {% endblock title %}
+{% block title %}
+  {{ commitment.title }} view
+{% endblock title %}
 
 {% block page_content %}
-<div class="container-fluid">
+  <div class="container-fluid">
     <div class="container-fluid p-1 my-3 commitment-title round-corners primary-accent">
-        <h1>{{ commitment.title }}</h1>
+      <h1>{{ commitment.title }}</h1>
     </div>
     <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
-        <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
-            <p>Are you sure you want to delete {{ commitment.title }}
-            that finishes on {{ commitment.deadline }}?</p>
-        </div>
-        {# Render the error notes for the implicit form so that bad requests made #}
-        {# during development will be easier to debug. Errors cannot occur during #}
-        {# normal use of this form.#}
-        {{ form.non_field_errors }}
-        {{ form.delete.errors }}
-        <a href="{% url "edit Commitment" commitment_id=commitment.id %}">Cancel</a>
-        {% include "commitments/Commitment/commitment_delete_button.html" %}
+      <div class="container-fluid p-1 my-3 round-corners secondary-accent text-center">
+        <p>
+          Are you sure you want to delete {{ commitment.title }}
+          that finishes on {{ commitment.deadline }}?
+        </p>
+      </div>
+      {# Render the error notes for the implicit form so that bad requests made #}
+      {# during development will be easier to debug. Errors cannot occur during #}
+      {# normal use of this form.#}
+      {{ form.non_field_errors }}
+      {{ form.delete.errors }}
+      <a href="{% url "edit Commitment" commitment_id=commitment.id %}">Cancel</a>
+      {% include "commitments/Commitment/commitment_delete_button.html" %}
     </div>
-</div>
+  </div>
 {% endblock page_content %}

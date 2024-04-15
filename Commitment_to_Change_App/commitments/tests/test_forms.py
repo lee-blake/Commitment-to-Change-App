@@ -1,4 +1,5 @@
 import datetime
+import re
 
 import pytest
 
@@ -7,8 +8,10 @@ from cme_accounts.models import User
 from commitments.enums import CommitmentStatus
 from commitments.forms import CommitmentForm, CourseForm, CompleteCommitmentForm,\
     DiscontinueCommitmentForm, ReopenCommitmentForm, CreateCommitmentFromSuggestedCommitmentForm, \
-    JoinCourseForm
-from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course
+    JoinCourseForm, ClearCommitmentReminderEmailsForm, RecurringReminderEmailForm, \
+    CommitmentCreationForm
+from commitments.models import ClinicianProfile, Commitment, CommitmentTemplate, Course, \
+    CommitmentReminderEmail, RecurringReminderEmail
 
 
 @pytest.fixture(name="unsaved_in_progress_commitment")
@@ -92,6 +95,87 @@ class TestCommitmentForm:
             )
             resulting_commitment = form.save(commit=False)
             assert resulting_commitment.associated_course == minimal_course
+
+
+class TestCommitmentCreationForm:
+    """Tests for CommitmentCreationForm"""
+
+    @pytest.mark.django_db
+    class TestSave:
+        """Tests for CommitmentCreationForm.save"""
+
+        def test_form_still_creates_commitment(self, minimal_clinician):
+            form = CommitmentCreationForm(
+                {
+                    "title": "Commitment title",
+                    "description": "Description",
+                    "deadline": datetime.date.today()
+                },
+                owner = minimal_clinician
+            )
+            commitment = form.save(commit=True)
+            assert Commitment.objects.filter(id=commitment.id).exists()
+
+        def test_no_reminders_does_not_create_any_reminders(self, minimal_clinician):
+            form = CommitmentCreationForm(
+                {
+                    "title": "Commitment title",
+                    "description": "Description",
+                    "deadline": datetime.date.today(),
+                    "reminder_schedule": CommitmentCreationForm.ReminderOption.NO_REMINDERS
+                },
+                owner = minimal_clinician
+            )
+            commitment = form.save(commit=True)
+            assert not CommitmentReminderEmail.objects.filter(commitment=commitment).exists()
+            assert not RecurringReminderEmail.objects.filter(commitment=commitment).exists()
+
+        def test_deadline_only_creates_single_on_deadline(self, minimal_clinician):
+            form = CommitmentCreationForm(
+                {
+                    "title": "Commitment title",
+                    "description": "Description",
+                    "deadline": datetime.date.today(),
+                    "reminder_schedule": CommitmentCreationForm.ReminderOption.DEADLINE_ONLY
+                },
+                owner = minimal_clinician
+            )
+            commitment = form.save(commit=True)
+            assert not RecurringReminderEmail.objects.filter(commitment=commitment).exists()
+            assert CommitmentReminderEmail.objects.filter(commitment=commitment).count() == 1
+            assert CommitmentReminderEmail.objects.get(
+                commitment=commitment
+            ).date == commitment.deadline
+
+        def test_monthly_creates_recurring_only(self, minimal_clinician):
+            form = CommitmentCreationForm(
+                {
+                    "title": "Commitment title",
+                    "description": "Description",
+                    "deadline": datetime.date.today(),
+                    "reminder_schedule": CommitmentCreationForm.ReminderOption.MONTHLY
+                },
+                owner = minimal_clinician
+            )
+            commitment = form.save(commit=True)
+            assert not CommitmentReminderEmail.objects.filter(commitment=commitment).exists()
+            assert RecurringReminderEmail.objects.filter(commitment=commitment).exists()
+            assert RecurringReminderEmail.objects.get(commitment=commitment).interval == 30
+
+        def test_weekly_creates_recurring_only(self, minimal_clinician):
+            form = CommitmentCreationForm(
+                {
+                    "title": "Commitment title",
+                    "description": "Description",
+                    "deadline": datetime.date.today(),
+                    "reminder_schedule": CommitmentCreationForm.ReminderOption.WEEKLY
+                },
+                owner = minimal_clinician
+            )
+            commitment = form.save(commit=True)
+            assert not CommitmentReminderEmail.objects.filter(commitment=commitment).exists()
+            assert RecurringReminderEmail.objects.filter(commitment=commitment).exists()
+            assert RecurringReminderEmail.objects.get(commitment=commitment).interval == 7
 
 
 class TestCourseForm:
@@ -409,6 +493,30 @@ class TestCreateCommitmentFromSuggestedCommitmentForm:
             assert form.instance.title == source_template.title
 
 
+    @pytest.mark.django_db
+    class TestSave:
+        """Tests for CreateCommitmentFromSuggestedCommitmentForm.save"""
+
+        def test_form_can_create_reminder_emails(
+            self, minimal_clinician, minimal_commitment_template, minimal_course
+        ):
+            minimal_course.students.add(minimal_clinician)
+            form = CreateCommitmentFromSuggestedCommitmentForm(
+                minimal_commitment_template,
+                minimal_course,
+                {
+                    "deadline": datetime.date.today(),
+                    "reminder_schedule": CommitmentCreationForm.ReminderOption.DEADLINE_ONLY
+                },
+                owner = minimal_clinician
+            )
+            commitment = form.save(commit=True)
+            assert CommitmentReminderEmail.objects.filter(commitment=commitment).count() == 1
+            assert CommitmentReminderEmail.objects.get(
+                commitment=commitment
+            ).date == commitment.deadline
+
+
 class TestJoinCourseForm:
     """Tests for JoinCourseForm"""
 
@@ -440,3 +548,103 @@ class TestJoinCourseForm:
             )
             form.save()
             assert minimal_course.students.contains(minimal_clinician)
+
+
+@pytest.mark.django_db
+class TestClearCommitmentReminderEmailsForm:
+    """Tests for ClearCommitmentReminderEmailsForm"""
+
+    class TestFields:
+        """Tests for the fields of ClearCommitmentReminderEmailsForm"""
+
+        def test_missing_clear_field_is_invalid(self, minimal_commitment):
+            form = ClearCommitmentReminderEmailsForm(
+                minimal_commitment,
+                {"clear": False}
+            )
+            assert not form.is_valid()
+
+
+    class TestSave:
+        """Tests for ClearCommitmentReminderEmailsForm.save"""
+
+        def test_save_deletes_all_reminder_emails_for_commitment(self, minimal_commitment):
+            CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=datetime.date.today() + datetime.timedelta(days=1)
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=datetime.date.today() + datetime.timedelta(days=2)
+            )
+            ClearCommitmentReminderEmailsForm(
+                minimal_commitment,
+                {"clear": True}
+            ).save()
+            assert CommitmentReminderEmail.objects.filter(
+                commitment=minimal_commitment
+            ).count() == 0
+
+        def test_save_does_not_delete_emails_for_other_commitments(
+            self, minimal_commitment, minimal_clinician
+        ):
+            form_commitment = Commitment.objects.create(
+                title="Commitment whose emails will be deleted by form",
+                description="It does not have any emails to delete",
+                owner=minimal_clinician,
+                deadline=datetime.date.today()
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=datetime.date.today() + datetime.timedelta(days=1)
+            )
+            CommitmentReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                date=datetime.date.today() + datetime.timedelta(days=2)
+            )
+            ClearCommitmentReminderEmailsForm(
+                form_commitment,
+                {"clear": True}
+            ).save()
+            assert CommitmentReminderEmail.objects.filter(
+                commitment=minimal_commitment
+            ).count() == 2
+
+        def test_save_deletes_recurring_email_if_present(
+            self, minimal_commitment
+        ):
+            RecurringReminderEmail.objects.create(
+                commitment=minimal_commitment,
+                next_email_date=datetime.date.today(),
+                interval=30
+            )
+            ClearCommitmentReminderEmailsForm(
+                minimal_commitment,
+                {"clear": True}
+            ).save()
+            assert RecurringReminderEmail.objects.filter(
+                commitment=minimal_commitment
+            ).count() == 0
+
+
+class TestRecurringReminderEmailForm:
+    """Tests for RecurringReminderEmailForm"""
+
+    class TestInit:
+        """Tests for RecurringReminderEmailForm.__init__"""
+
+        def test_commitment_is_set_even_with_no_instance(self):
+            commitment = Commitment()
+            form = RecurringReminderEmailForm(commitment)
+            assert form.instance.commitment == commitment
+
+        def test_interval_input_tag_attributes_set_correctly(self):
+            form = RecurringReminderEmailForm(Commitment())
+            interval_input_tag_regex = re.compile(
+                r"\<input[^\>]*name=\"interval\"[^\>]*\>"
+            )
+            interval_input_tag_match = interval_input_tag_regex.search(str(form))
+            assert interval_input_tag_match
+            interval_input_tag = interval_input_tag_match[0]
+            assert "30" in interval_input_tag
+            assert "min=\"1\"" in interval_input_tag or "min='1'" in interval_input_tag

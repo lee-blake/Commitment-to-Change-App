@@ -4,6 +4,29 @@ from commitments import views
 
 urlpatterns = [
      path(
+          "profile/",
+          views.ProfileRedirectingView.as_view(),
+          name="view Profile"
+     ),
+
+     path(
+          "profile/clinician/view/",
+          views.ViewClinicianProfileView.as_view(),
+          name="view ClinicianProfile"
+     ),
+     path(
+          "profile/clinician/edit/",
+          views.EditClinicianProfileView.as_view(),
+          name="edit ClinicianProfile"
+     ),
+
+     path(
+          "profile/provider/view/",
+          views.ViewProviderProfileView.as_view(),
+          name="view ProviderProfile"
+     ),
+
+     path(
           "dashboard/",
           views.DashboardRedirectingView.as_view(),
           name="dashboard"
@@ -76,6 +99,11 @@ urlpatterns = [
           name="edit Course"
      ),
      path(
+          "course/<int:course_id>/delete/",
+          views.DeleteCourseView.as_view(),
+          name="delete Course"
+     ),
+     path(
           "course/<int:course_id>/suggested-commitments/select/",
           views.CourseChangeSuggestedCommitmentsView.as_view(),
           name="change Course suggested commitments"
@@ -142,5 +170,21 @@ urlpatterns = [
           "commitment/<int:commitment_id>/reminders/<int:reminder_email_id>/delete/",
           views.DeleteCommitmentReminderEmailView.as_view(),
           name="delete CommitmentReminderEmail"
+     ),
+     path(
+          "commitment/<int:commitment_id>/reminders/clear/",
+          views.ClearCommitmentReminderEmailsView.as_view(),
+          name="clear CommitmentReminderEmails"
+     ),
+
+     path(
+          "commitment/<int:commitment_id>/reminders/create/recurring/",
+          views.CreateRecurringReminderEmailView.as_view(),
+          name="create RecurringReminderEmail"
+     ),
+     path(
+          "commitment/<int:commitment_id>/reminders/recurring/delete/",
+          views.DeleteRecurringReminderEmailView.as_view(),
+          name="delete RecurringReminderEmail"
      ),
 ]
