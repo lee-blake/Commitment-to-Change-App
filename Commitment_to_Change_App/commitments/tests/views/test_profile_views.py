@@ -134,6 +134,15 @@ class TestViewClinicianProfileView:
             ).search(html)
             assert not not_provided_matches
 
+        def test_links_to_change_password_page(
+            self, client, saved_clinician_profile
+        ):
+            target_url = reverse("view ClinicianProfile")
+            client.force_login(saved_clinician_profile.user)
+            html = client.get(target_url).content.decode()
+            link_url = reverse("change password")
+            assert link_url in html
+
 
     class TestPost:
         """Tests for ViewClinicianProfileView.post"""
@@ -315,6 +324,15 @@ class TestViewProviderProfileView:
             client.force_login(saved_provider_user)
             html = client.get(target_url).content.decode()
             assert institution in html
+
+        def test_links_to_change_password_page(
+            self, client, saved_provider_profile
+        ):
+            target_url = reverse("view ProviderProfile")
+            client.force_login(saved_provider_profile.user)
+            html = client.get(target_url).content.decode()
+            link_url = reverse("change password")
+            assert link_url in html
 
 
     class TestPost:
