@@ -378,12 +378,13 @@ form {
 .alternate-button {
     color: var(--primary-text);
     background-color: var(--background);
-    border-color:grey;
+    border-color: grey;
 }
 
 .alternate-button:hover, .theme-toggle-button:hover {
-    border-color: black;
-    filter: brightness(102%);
+    color: var(--primary-text);
+    border-color: var(--primary-text);
+    filter: brightness(104%);
 }
 
 .title_header {
