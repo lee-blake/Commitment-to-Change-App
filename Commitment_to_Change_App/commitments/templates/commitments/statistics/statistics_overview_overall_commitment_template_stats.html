@@ -1,3 +1,5 @@
+{% load percentformat %}
+
 <div class="text-center py-1">
   <div class="table-responsive">
     <table class="table">
@@ -10,10 +12,10 @@
         <th scope="col">Total number</th>
       </tr>
       <tr>
-        <td>{{ overall_commitment_template_stats.percentages.in_progress | floatformat:1 }}%</td>
-        <td>{{ overall_commitment_template_stats.percentages.expired | floatformat:1 }}%</td>
-        <td>{{ overall_commitment_template_stats.percentages.complete | floatformat:1 }}%</td>
-        <td>{{ overall_commitment_template_stats.percentages.discontinued | floatformat:1 }}%</td>
+        <td>{{ overall_commitment_template_stats.percentages.in_progress | percentformat:1 }}</td>
+        <td>{{ overall_commitment_template_stats.percentages.expired | percentformat:1 }}</td>
+        <td>{{ overall_commitment_template_stats.percentages.complete | percentformat:1 }}</td>
+        <td>{{ overall_commitment_template_stats.percentages.discontinued | percentformat:1 }}</td>
         <td>{{ overall_commitment_template_stats.total }}</td>
       </tr>
     </table>

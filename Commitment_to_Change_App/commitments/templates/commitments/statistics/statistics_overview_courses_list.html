@@ -1,3 +1,5 @@
+{% load percentformat %}
+
 <div class="p-2">
   <div class="secondary-header-container">
     <h2>Detailed statistics by course</h2>
@@ -48,10 +50,10 @@
                     <td>
                       {% if course.end_date %}{{ course.end_date }}{% endif %}
                     </td>
-                    <td>{{ course.commitment_statistics.percentages.in_progress | floatformat:1 }}%</td>
-                    <td>{{ course.commitment_statistics.percentages.expired | floatformat:1 }}%</td>
-                    <td>{{ course.commitment_statistics.percentages.complete | floatformat:1 }}%</td>
-                    <td>{{ course.commitment_statistics.percentages.discontinued | floatformat:1 }}%</td>
+                    <td>{{ course.commitment_statistics.percentages.in_progress | percentformat:1 }}</td>
+                    <td>{{ course.commitment_statistics.percentages.expired | percentformat:1 }}</td>
+                    <td>{{ course.commitment_statistics.percentages.complete | percentformat:1 }}</td>
+                    <td>{{ course.commitment_statistics.percentages.discontinued | percentformat:1 }}</td>
                     <td>{{ course.commitment_statistics.total }}</td>
                   </tr>
                 {% endfor %}
