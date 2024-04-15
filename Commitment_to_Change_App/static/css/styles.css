@@ -10,28 +10,29 @@
     --background: #DDE6EC;
     --foreground: #FFFFFF;
     --foreground-alternate: #eeeeee;
-    --primary-text: #000000;
+    --primary-text: #2E2D29;
     --light-text: #4d4d4d;
     --accent-text: #FFFFFF;
-    --primary-accent: #780a08;  
+    --primary-accent: #8C1515;  
     --primary-border: #630000;
-    --secondary-accent: #b83130;
+    --secondary-accent: #C74632;
     --error-red: #b60000;
     --in-progress: #8FC3D4;
     --complete: #7CC487;
     --discontinued: #717171;
-    --expired: #ffa2a2;
+    --expired: #ff7474;
     --standard-round: 15px;
     --standard-button-round: 10px;
 }
 
 [data-theme="dark"] {
     --primary-text: #ffffff;
-    --background: #272727;
-    --foreground: #363636;
+    --background: #2E2D29;
+    --foreground: #43423E;
     --foreground-alternate: #474747;
     --light-text: #c0c0c0;
     --accent-text: #FFFFFF;
+    --discontinued: #c4c4c4;
     .popover, .popover-header {
         background-color: var(--foreground);
         color: var(--primary-text);
