@@ -135,6 +135,16 @@ form {
     table-layout: fixed;
 }
 
+.primary-text-link {
+    color: var(--primary-text);
+    text-decoration: underline;
+    transition: 0.3s ease-in-out;
+}
+
+.primary-text-link:hover {
+    color: var(--light-text);
+}
+
 .accent-text-link {
     color: var(--accent-text);
     text-decoration: underline;

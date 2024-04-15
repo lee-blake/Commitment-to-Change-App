@@ -26,6 +26,16 @@
 
       </div>
       <div class="my-1 p-3 round-corners background text-center">
+        <p>
+          {% block associated_course_info %}
+            {% if commitment.associated_course %}
+              Made as part of <strong>{{ commitment.associated_course }}</strong>
+              offered by <strong>{{ commitment.associated_course.owner.institution }}</strong>
+            {% else %}
+              <em>Not associated with any course.</em>
+            {% endif %}
+          {% endblock associated_course_info %}
+        </p>
         <p>Started: {{ commitment.created.date }}</p>
         <p>Due: {{ commitment.deadline }}</p>
         <p>Status: {{ commitment.status_text }}</p>
