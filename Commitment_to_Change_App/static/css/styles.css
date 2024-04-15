@@ -11,7 +11,7 @@
     --foreground: #FFFFFF;
     --foreground-alternate: #eeeeee;
     --primary-text: #000000;
-    --light-text: #7B7B7B;
+    --light-text: #4d4d4d;
     --accent-text: #FFFFFF;
     --primary-accent: #780a08;  
     --primary-border: #630000;
@@ -30,8 +30,25 @@
     --background: #272727;
     --foreground: #363636;
     --foreground-alternate: #474747;
-    --light-text: #969696;
+    --light-text: #c0c0c0;
     --accent-text: #FFFFFF;
+    .popover, .popover-header {
+        background-color: var(--foreground);
+        color: var(--primary-text);
+      }
+      
+    .modal-content {
+        background-color: var(--foreground);
+        color: var(--primary-text);
+    }
+    
+    input[type="text"], input[type="date"], 
+    input[type="number"], input[type="email"], input[type="password"], textarea, select {
+        background-color: var(--foreground);
+        color: var(--primary-text);
+    }
+    /* Change all text to use primary-text by default. 
+    This will be overwritten by any other specific rules */
     * {
         color: var(--primary-text);
     }
@@ -181,22 +198,6 @@ form {
 ------------------------------------------------------------------- 
  */
 
-.popover, .popover-header {
-    background-color: var(--foreground);
-    color: var(--primary-text);
-  }
-  
-.modal-content {
-    background-color: var(--foreground);
-    color: var(--primary-text);
-}
-
-input[type="text"], input[type="date"], 
-input[type="number"], input[type="email"], input[type="password"], textarea, select {
-    background-color: var(--foreground);
-    color: var(--primary-text);
-}
-
 .base-popover-button {
     text-decoration-line: underline !important;
     text-decoration-style: dotted !important;
@@ -248,6 +249,28 @@ input[type="number"], input[type="email"], input[type="password"], textarea, sel
 .legend-color-expired {
     background-color: var(--expired);
     fill: var(--expired);
+}
+
+.navbar-brand {
+    color: var(--primary-text);
+    border-radius: var(--standard-button-round);
+    transition: 0.3s ease-in-out;
+}
+
+.navbar-brand:hover {
+    color: var(--primary-text);
+    background-color:var(--background);
+}
+
+.nav-link {
+    color: var(--light-text);
+    border-radius: var(--standard-button-round);
+    transition: 0.3s ease-in-out;
+ }
+
+.nav-link:hover {
+    color: var(--primary-text);
+    background-color:var(--background);
 }
 
 .svg-container {
@@ -325,6 +348,14 @@ input[type="number"], input[type="email"], input[type="password"], textarea, sel
     padding-right: clamp(15px, 10%, 300px);
 }
 
+.theme-toggle-button {
+    color: var(--primary-text);
+    background-color: var(--background);
+    border-color:grey;
+    border-radius: 100%;
+    transition: 0.3s ease-in-out;
+}
+
 .standard-button {
     background-color: var(--primary-accent);
     border: 2px solid var(--primary-border);
@@ -350,7 +381,7 @@ input[type="number"], input[type="email"], input[type="password"], textarea, sel
     border-color:grey;
 }
 
-.alternate-button:hover {
+.alternate-button:hover, .theme-toggle-button:hover {
     border-color: black;
     filter: brightness(102%);
 }
