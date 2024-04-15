@@ -11,7 +11,7 @@
     </div>
     <div class="container-fluid px-3 pt-3">
       <div class="my-2 px-3 py-1 round-corners background text-center">
-        <p>{{ commitment_template.description }}</p>
+        <p>{{ commitment_template.description | linebreaksbr }}</p>
       </div>
       {% include "commitments/CommitmentTemplate/commitment_template_view_page_statistics.html" %}
       <div class="container-fluid p-2 text-center">
