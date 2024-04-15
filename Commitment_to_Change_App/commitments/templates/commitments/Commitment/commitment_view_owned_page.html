@@ -4,6 +4,18 @@
   {% include "commitments/Commitment/commitment_social_share_modal.html" %}
 {% endblock twitter_share_button %}
 
+{% block associated_course_info %}
+  {% if commitment.associated_course %}
+    Made as part of <strong>
+    <a class="primary-text-link"
+       href="{% url 'view Course' course_id=commitment.associated_course.id %}">{{ commitment.associated_course }}</a>
+  </strong>
+  offered by <strong>{{ commitment.associated_course.owner.institution }}</strong>
+{% else %}
+  <em>Not associated with any course.</em>
+{% endif %}
+{% endblock associated_course_info %}
+
 {% block edit_button %}
   <form action="{% url "edit Commitment" commitment_id=commitment.id %}">
     <button class="standard-button primary-accent" type="submit">Edit Commitment</button>
