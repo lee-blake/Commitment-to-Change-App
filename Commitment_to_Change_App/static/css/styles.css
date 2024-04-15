@@ -25,14 +25,13 @@
     --standard-button-round: 10px;
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #272727;
-        --foreground: #363636;
-        --primary-text: #ffffff;
-        --light-text: #969696;
-        --accent-text: #FFFFFF;
-    }
+[data-theme="dark"] {
+    --primary-text: #ffffff;
+    --background: #272727;
+    --foreground: #363636;
+    --foreground-alternate: #474747;
+    --light-text: #969696;
+    --accent-text: #FFFFFF;
     * {
         color: var(--primary-text);
     }

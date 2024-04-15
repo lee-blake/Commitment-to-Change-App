@@ -1,4 +1,4 @@
-<nav class="navbar navbar-light navbar-expand-lg foreground">
+<nav class="navbar navbar navbar-expand-lg foreground">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'dashboard' %}">CME Commitment To Change</a>
     <button class="navbar-toggler"
@@ -8,7 +8,7 @@
             aria-controls="navbarSupportedContent"
             aria-expanded="false"
             aria-label="Toggle navigation">
-      <span class="navbar-light navbar-toggler-icon"></span>
+      <span class="navbar navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
@@ -37,6 +37,9 @@
 
         </ul>
         <ul class="nav navbar-nav navbar-right">
+          <li class="nav-item">
+            <button id="theme-toggle" class="btn alternate-button">Toggle Theme</button>
+          </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'view Profile' %}">Logged in as {{ request.user.username }}</a>
           </li>
