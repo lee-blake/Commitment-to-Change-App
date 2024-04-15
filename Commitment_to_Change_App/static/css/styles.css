@@ -350,6 +350,15 @@ form {
     color: var(--error-red);
     font-weight: bold;
 }
+
+.profile-table {
+    background-color: var(--foreground);
+    border-radius: var(--standard-round);
+    margin-left: auto;
+    margin-right: auto;
+    width: auto;
+}
+
 /*
 -------------------------------------------------------------------
     --- Social Media Buttons ---

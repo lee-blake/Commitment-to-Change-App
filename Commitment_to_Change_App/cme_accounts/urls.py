@@ -14,6 +14,16 @@ urlpatterns = [
         name="logout"
     ),
     path(
+        "password-change/",
+        views.ChangePasswordView.as_view(),
+        name="change password"
+    ),
+    path(
+        "password-change/done/",
+        views.ChangePasswordCompleteView.as_view(),
+        name="change password complete"
+    ),
+    path(
         "password-reset/",
         views.ResetPasswordView.as_view(),
         name="reset password"
