@@ -32,7 +32,7 @@
     --foreground-alternate: #474747;
     --light-text: #c0c0c0;
     --accent-text: #FFFFFF;
-    --discontinued: #c4c4c4;
+    --discontinued: #979797;
     .popover, .popover-header {
         background-color: var(--foreground);
         color: var(--primary-text);
