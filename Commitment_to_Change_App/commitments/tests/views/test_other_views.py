@@ -436,6 +436,18 @@ class TestStatisticsOverviewView:
             )
             assert create_course_link_regex.search(html)
 
+        def test_does_not_show_cells_with_percentage_when_percentages_are_undefined(
+            self, client, saved_provider_profile, enrolled_course, commitment_template_1
+        ):  # pylint: disable=unused-argument
+            # enrolled_course and commitment_template_1 are *implicitly* used to create
+            # course and commitment template tables to ensure the test applies to them too.
+            client.force_login(saved_provider_profile.user)
+            html = client.get(reverse("statistics overview")).content.decode()
+            percentage_in_cell_regex = re.compile(
+                r"<td(\>|\s+[^\>]\>)\s*[\d\.]*\s*\%\s*</td>"
+            )
+            assert not percentage_in_cell_regex.search(html)
+
 
     class TestPost:
         """Tests for StatisticsOverviewView.post"""
